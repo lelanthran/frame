@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 #include "ds_str.h"
 #include "phoc.h"
@@ -131,6 +132,7 @@ int main (int argc, char **argv)
    int ret = EXIT_FAILURE;
    const char *dbfile = cline_getopt (argc, argv, "dbfile", 0);
    const char *create = cline_getopt (argc, argv, "create", 0);
+   const char *title = cline_getopt (argc, argv, "title", 0);
 
    if (!dbfile[0]) {
       fprintf (stderr, "No file specified with --dbfile\n");
@@ -151,6 +153,19 @@ int main (int argc, char **argv)
          fprintf (stderr, "OOM error: strcat homedir construction\n");
          return EXIT_FAILURE;
       }
+   }
+
+   // If user wants only the title, print the title and exit immediately.
+   if (title) {
+      phocus_header_t *header = phocus_read_header (dbfile);
+      if (!header) {
+         fprintf (stderr, "Failed to read [%s]: %m\n", dbfile);
+         return EXIT_FAILURE;
+      }
+      printf ("%zu:%s\n",
+            phocus_header_id (header), phocus_header_title (header));
+      phocus_header_del (header);
+      return EXIT_SUCCESS;
    }
 
    phocus_t *phocus = NULL;
