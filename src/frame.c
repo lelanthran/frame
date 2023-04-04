@@ -127,17 +127,23 @@ static void cline_skipopt (int *argc, char ***argv)
    }
 }
 
+static const char *cline_find_command (int argc, char **argv)
+{
+   for (int i=1; i<argc; i++) {
+      if (argv[i] && strlen(argv[i]) >= 2 && (memcmp (argv[i], "--", 2))!=0) {
+         return argv[i];
+      }
+   }
+   return NULL;
+}
+
 int main (int argc, char **argv)
 {
    int ret = EXIT_FAILURE;
    const char *dbfile = cline_getopt (argc, argv, "dbfile", 0);
-   const char *create = cline_getopt (argc, argv, "create", 0);
-   const char *title = cline_getopt (argc, argv, "title", 0);
+   const char *nhistory = cline_getopt (argc, argv, "history", 0);
 
-   if (!dbfile[0]) {
-      fprintf (stderr, "No file specified with --dbfile\n");
-      return EXIT_FAILURE;
-   }
+   frm_t *frm = NULL;
 
    if (!dbfile) {
       // TODO: Windows compatibility
@@ -145,47 +151,71 @@ int main (int argc, char **argv)
       if (!homedir) {
          fprintf (stderr,
                "Missing $HOME in environment and no --dbfile specified");
-         return EXIT_FAILURE;
+         goto cleanup;
       }
 
       dbfile = ds_str_cat (homedir, "/.framedb", NULL);
       if (!dbfile) {
          fprintf (stderr, "OOM error: strcat homedir construction\n");
-         return EXIT_FAILURE;
-      }
-   }
-
-   // If user wants only the title, print the title and exit immediately.
-   if (title) {
-      frm_header_t *header = frm_read_header (dbfile);
-      if (!header) {
-         fprintf (stderr, "Failed to read [%s]: %m\n", dbfile);
-         return EXIT_FAILURE;
-      }
-      printf ("%zu:%s\n",
-            frm_header_id (header), frm_header_title (header));
-      frm_header_del (header);
-      return EXIT_SUCCESS;
-   }
-
-   frm_t *frm = NULL;
-
-   if (create) {
-      if (!(frm = frm_create (dbfile))) {
-         fprintf (stderr, "Failed to create [%s]: %m\n", dbfile);
-         return EXIT_FAILURE;
+         goto cleanup;
       }
    } else {
-      if (!(frm = frm_open (dbfile))) {
-         fprintf (stderr, "Failed to open [%s]: %m\n", dbfile);
-         return EXIT_FAILURE;
-      }
+      // So we can free it later
+      dbfile = ds_str_dup (dbfile);
    }
 
    // Done with options, skip to command
-   cline_skipopt (&argc, &argv);
+   const char *command = cline_find_command (argc, argv);
+   printf ("Frame v%s\nCommand [%s]\n", frame_version, command);
 
-   printf ("Frame v%s\nCommand [%s]\n", frame_version, argv[1]);
+   // If user wants only the title, print the title and exit immediately.
+   if ((strcmp ("title", argv[1]))==0) {
+      size_t history = 1;
+      if (nhistory) {
+         if ((sscanf (nhistory, "%zu", &history))!=1) {
+            fprintf (stderr, "Specified history length of [%s] is invalid\n",
+                  nhistory);
+            goto cleanup;
+         }
+      }
+      if (history > 100) {
+         fprintf (stderr, "History limited to %zu\n", history);
+      }
+
+      frm_header_t *header = frm_read_header (dbfile);
+      if (!header) {
+         fprintf (stderr, "Failed to read [%s]: %m\n", dbfile);
+         goto cleanup;
+      }
+      for (size_t i=0; i<history; i++) {
+         printf ("%zu:%s\n", frm_header_id (header, i),
+                             frm_header_title (header, i));
+      }
+      frm_header_del (header);
+      ret = EXIT_SUCCESS;
+      goto cleanup;
+   }
+
+   // If user wants to create a new file, create it and exit
+   if ((strcmp ("create", command))==0) {
+      if (!(frm = frm_create (dbfile))) {
+         fprintf (stderr, "Failed to create [%s]: %m\n", dbfile);
+         goto cleanup;
+      }
+      ret = EXIT_SUCCESS;
+      goto cleanup;
+   } else {
+      if (!(frm = frm_open (dbfile))) {
+         fprintf (stderr, "Failed to open [%s]: %m\n", dbfile);
+         goto cleanup;
+      }
+   }
+
+   fprintf (stderr, "Unknown command [%s]\n", command);
+
+cleanup:
+   free (dbfile);
+   frm_close(frm);
    return ret;
 }
 

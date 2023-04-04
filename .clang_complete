@@ -1,5 +1,6 @@
 -I.
 -I./include
+-std=gnu99
 -Dframe_version='"0.0.1"'
 -DBUILD_TIMESTAMP='"201909162104"'
 

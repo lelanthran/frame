@@ -11,8 +11,8 @@ extern "C" {
 
    frm_header_t *frm_read_header (const char *fname);
    void frm_header_del (frm_header_t *header);
-   size_t frm_header_id (frm_header_t *header);
-   const char *frm_header_title (frm_header_t *header);
+   size_t frm_header_id (frm_header_t *header, size_t index);
+   const char *frm_header_title (frm_header_t *header, size_t index);
 
    frm_t *frm_create (const char *fname);
    frm_t *frm_open (const char *fname);
