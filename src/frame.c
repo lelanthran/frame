@@ -4,7 +4,7 @@
 #include <stdbool.h>
 
 #include "ds_str.h"
-#include "phoc.h"
+#include "frm.h"
 
 // From: https://gist.github.com/lelanthran/4d50105c2d0594b5c15aeaeed72f84c3
 /* *****************************************************************
@@ -148,7 +148,7 @@ int main (int argc, char **argv)
          return EXIT_FAILURE;
       }
 
-      dbfile = ds_str_cat (homedir, "/.phocusdb", NULL);
+      dbfile = ds_str_cat (homedir, "/.framedb", NULL);
       if (!dbfile) {
          fprintf (stderr, "OOM error: strcat homedir construction\n");
          return EXIT_FAILURE;
@@ -157,26 +157,26 @@ int main (int argc, char **argv)
 
    // If user wants only the title, print the title and exit immediately.
    if (title) {
-      phocus_header_t *header = phocus_read_header (dbfile);
+      frm_header_t *header = frm_read_header (dbfile);
       if (!header) {
          fprintf (stderr, "Failed to read [%s]: %m\n", dbfile);
          return EXIT_FAILURE;
       }
       printf ("%zu:%s\n",
-            phocus_header_id (header), phocus_header_title (header));
-      phocus_header_del (header);
+            frm_header_id (header), frm_header_title (header));
+      frm_header_del (header);
       return EXIT_SUCCESS;
    }
 
-   phocus_t *phocus = NULL;
+   frm_t *frm = NULL;
 
    if (create) {
-      if (!(phocus = phocus_create (dbfile))) {
+      if (!(frm = frm_create (dbfile))) {
          fprintf (stderr, "Failed to create [%s]: %m\n", dbfile);
          return EXIT_FAILURE;
       }
    } else {
-      if (!(phocus = phocus_open (dbfile))) {
+      if (!(frm = frm_open (dbfile))) {
          fprintf (stderr, "Failed to open [%s]: %m\n", dbfile);
          return EXIT_FAILURE;
       }
@@ -185,7 +185,7 @@ int main (int argc, char **argv)
    // Done with options, skip to command
    cline_skipopt (&argc, &argv);
 
-   printf ("Phocus v%s\nCommand [%s]\n", phocus_version, argv[1]);
+   printf ("Frame v%s\nCommand [%s]\n", frame_version, argv[1]);
    return ret;
 }
 
