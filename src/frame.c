@@ -140,28 +140,28 @@ static const char *cline_find_command (int argc, char **argv)
 int main (int argc, char **argv)
 {
    int ret = EXIT_FAILURE;
-   const char *dbfile = cline_getopt (argc, argv, "dbfile", 0);
+   const char *dbpath = cline_getopt (argc, argv, "dbpath", 0);
    const char *nhistory = cline_getopt (argc, argv, "history", 0);
 
    frm_t *frm = NULL;
 
-   if (!dbfile) {
+   if (!dbpath) {
       // TODO: Windows compatibility
       const char *homedir = getenv ("HOME");
       if (!homedir) {
          fprintf (stderr,
-               "Missing $HOME in environment and no --dbfile specified");
+               "Missing $HOME in environment and no --dbpath specified");
          goto cleanup;
       }
 
-      dbfile = ds_str_cat (homedir, "/.framedb", NULL);
-      if (!dbfile) {
+      dbpath = ds_str_cat (homedir, "/.framedb", NULL);
+      if (!dbpath) {
          fprintf (stderr, "OOM error: strcat homedir construction\n");
          goto cleanup;
       }
    } else {
       // So we can free it later
-      dbfile = ds_str_dup (dbfile);
+      dbpath = ds_str_dup (dbpath);
    }
 
    // Done with options, skip to command
@@ -182,9 +182,9 @@ int main (int argc, char **argv)
          fprintf (stderr, "History limited to %zu\n", history);
       }
 
-      frm_header_t *header = frm_read_header (dbfile);
+      frm_header_t *header = frm_read_header (dbpath);
       if (!header) {
-         fprintf (stderr, "Failed to read [%s]: %m\n", dbfile);
+         fprintf (stderr, "Failed to read [%s]: %m\n", dbpath);
          goto cleanup;
       }
       for (size_t i=0; i<history; i++) {
@@ -198,15 +198,15 @@ int main (int argc, char **argv)
 
    // If user wants to create a new file, create it and exit
    if ((strcmp ("create", command))==0) {
-      if (!(frm = frm_create (dbfile))) {
-         fprintf (stderr, "Failed to create [%s]: %m\n", dbfile);
+      if (!(frm = frm_create (dbpath))) {
+         fprintf (stderr, "Failed to create [%s]: %m\n", dbpath);
          goto cleanup;
       }
       ret = EXIT_SUCCESS;
       goto cleanup;
    } else {
-      if (!(frm = frm_open (dbfile))) {
-         fprintf (stderr, "Failed to open [%s]: %m\n", dbfile);
+      if (!(frm = frm_open (dbpath))) {
+         fprintf (stderr, "Failed to open [%s]: %m\n", dbpath);
          goto cleanup;
       }
    }
@@ -214,7 +214,7 @@ int main (int argc, char **argv)
    fprintf (stderr, "Unknown command [%s]\n", command);
 
 cleanup:
-   free (dbfile);
+   free (dbpath);
    frm_close(frm);
    return ret;
 }

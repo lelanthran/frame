@@ -8,6 +8,7 @@
 #include <fcntl.h>
 
 #include "frm.h"
+#include "ds_str.h"
 
 /* ********************************************************** */
 /* ********************************************************** */
@@ -67,7 +68,7 @@ static frm_header_t *header_read (FILE *inf)
    return ret;
 }
 
-bool header_write (frm_header_t *h, FILE *outf)
+static bool header_write (frm_header_t *h, FILE *outf)
 {
    if (!h || !outf)
       return false;
@@ -94,12 +95,17 @@ static void header_del (frm_header_t *header)
 }
 
 
-frm_header_t *frm_read_header (const char *fname)
+frm_header_t *frm_read_header (const char *dbpath)
 {
-   FILE *inf = fopen (fname, "rb");
-   if (!inf) {
+   char *header_path = ds_str_cat (dbpath, "/header", NULL);
+   if (!header_path)
       return NULL;
-   }
+
+   FILE *inf = fopen (header_path, "rb");
+   free (header_path);
+
+   if (!inf)
+      return NULL;
 
    frm_header_t *header = header_read (inf);
 
@@ -133,8 +139,10 @@ const char *frm_header_title (frm_header_t *header, size_t index)
 /* ********************************************************** */
 
 struct node_t {
+   uint32_t id;
    char *title;
    char *content;
+   char *fpath;
    struct node_t *parent;
    // ds_array_t *children;
 };
@@ -149,21 +157,23 @@ struct frm_t {
    struct node_t *root_node;
 };
 
-frm_t *frm_create (const char *fname)
+frm_t *frm_create (const char *dbpath)
 {
-   int flags = O_WRONLY | O_CREAT | O_EXCL;
-   mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
-   int fd = open (fname, flags, mode);
+   static const mode_t mode = 0777;
 
-   if (fd < 0) {
+   if ((mkdir (dbpath, mode))!=0)
       return NULL;
-   }
 
    /* ********************* */
    bool error = true;
    frm_t *ret = NULL;
+   char *header_path = ds_str_cat (dbpath, "/header", NULL);
+   if (!header_path)
+      goto cleanup;
 
-   FILE *outf = fdopen (fd, "wb");
+   FILE *outf = fopen (header_path, "wb");
+   free (header_path);
+
    if (!outf)
       goto cleanup;
 
@@ -185,21 +195,53 @@ cleanup:
    if (outf) {
       fclose (outf);
    }
-   if (fd > 0) {
-      close (fd);
+
+   return ret;
+}
+
+frm_t *frm_open (const char *dbpath)
+{
+   bool error = true;
+   frm_t *ret = NULL;
+   char *header_path = NULL;
+
+   if (!(ret = calloc (1, sizeof *ret)))
+      goto cleanup;
+
+   header_path = ds_str_cat (dbpath, "/header", NULL);
+   if (!header_path)
+      goto cleanup;
+
+   FILE *inf = fopen (header_path, "rb");
+   if (!inf)
+      goto cleanup;
+
+   if (!(ret->header = header_read (inf)))
+      goto cleanup;
+
+   // TODO: Read the root node
+   error = false;
+
+cleanup:
+   free (header_path);
+
+   if (inf) {
+      fclose (inf);
+   }
+
+   if (error) {
+      frm_close (ret);
+      ret = NULL;
    }
 
    return ret;
 }
 
-frm_t *frm_open (const char *fname)
+void frm_close (frm_t *frm)
 {
-   return NULL;
-}
+   if (!frm)
+      return;
 
-bool frm_close (frm_t *frm)
-{
    header_del (frm->header);
    free (frm);
-   return false;
 }
