@@ -2,22 +2,23 @@
 #ifndef H_FRM
 #define H_FRM
 
-typedef struct frm_header_t frm_header_t;
-typedef struct frm_t frm_t;
+#define FRM_ERROR(...)     do {\
+   fprintf (stderr, "[%s:%i] ", __FILE__, __LINE__);\
+   fprintf (stderr, __VA_ARGS__);\
+} while (0)
+
+typedef struct frm_nodeinfo_t frm_nodeinfo_t;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-   frm_header_t *frm_read_header (const char *dbpath);
-   void frm_header_del (frm_header_t *header);
-   size_t frm_header_id (frm_header_t *header, size_t index);
-   const char *frm_header_title (frm_header_t *header, size_t index);
+   bool frm_create (const char *dbpath);
+   bool frm_init (const char *dbpath);
+   void frm_close (char *saved_path);
 
-   frm_t *frm_create (const char *dbpath);
-   frm_t *frm_open (const char *dbpath);
-   void frm_close (frm_t *frm);
-
+   frm_nodeinfo_t *frm_node_read (const char *dbpath, const char *path, ...);
+   void frm_node_free (frm_nodeinfo_t *ni);
 
 #ifdef __cplusplus
 };
