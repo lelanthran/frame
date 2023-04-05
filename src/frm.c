@@ -138,15 +138,6 @@ const char *frm_header_title (frm_header_t *header, size_t index)
 /* ********************************************************** */
 /* ********************************************************** */
 
-struct node_t {
-   uint32_t id;
-   char *title;
-   char *content;
-   char *fpath;
-   struct node_t *parent;
-   // ds_array_t *children;
-};
-
 
 /* ********************************************************** */
 /* ********************************************************** */
@@ -184,7 +175,10 @@ frm_t *frm_create (const char *dbpath)
       goto cleanup;
 
    ret->header->format_version = 1;
-   error = header_write(ret->header, outf) ? false : true;
+   if (!(header_write(ret->header, outf)))
+      goto cleanup;
+
+   error = false;
 
 cleanup:
    if (error) {
