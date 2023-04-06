@@ -29,8 +29,11 @@ extern "C" {
    char *frm_date_str (frm_t *frm);
 
    bool frm_push (frm_t *frm, const char *name, const char *message);
-   bool frm_payload_append (frm_t *frm, const char *message);
    bool frm_payload_replace (frm_t *frm, const char *message);
+   bool frm_payload_append (frm_t *frm, const char *message);
+
+   bool frm_up (frm_t *frm);
+   bool frm_switch (frm_t *frm, const char *target);
 
 #ifdef __cplusplus
 };

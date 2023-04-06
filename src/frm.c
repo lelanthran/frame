@@ -202,6 +202,11 @@ static frm_t *frm_alloc (const char *dbpath, const char *olddir)
       frm_free (ret);
       ret = NULL;
    }
+
+   size_t dbpath_len = strlen (dbpath);
+   if (ret->dbpath[dbpath_len-1] == '/')
+      ret->dbpath[dbpath_len-1] = 0;
+
    return ret;
 }
 
@@ -424,7 +429,7 @@ struct info_t {
    uint64_t mtime;
 };
 
-static bool read_info (frm_t *frm, struct info_t *dst, char *fname)
+static bool read_info (frm_t *frm, struct info_t *dst, const char *fname)
 {
    if (!frm) {
       FRM_ERROR ("Error, null object passed for frm_t\n");
@@ -474,7 +479,7 @@ static bool write_info (frm_t *frm, const struct info_t *info, const char *fname
 
    char tstring[47];
    if (!(frm_writefile (fname,
-               "mtime:", uint64_string (tstring, (uint64_t)time(NULL)), "\n",
+               "mtime:", uint64_string (tstring, info->mtime), "\n",
                NULL))) {
       FRM_ERROR ("Failed to write info: %m\n");
       return false;
@@ -486,13 +491,13 @@ static bool write_info (frm_t *frm, const struct info_t *info, const char *fname
 static bool update_info_mtime (frm_t *frm, const char *fname)
 {
    struct info_t info;
-   if (!(read_info (frm, &info, "info"))) {
+   if (!(read_info (frm, &info, fname))) {
       FRM_ERROR ("Failed to read info file: %m\n");
       return false;
    }
 
    info.mtime = time (NULL);
-   if (!(write_info (frm, &info, "info"))) {
+   if (!(write_info (frm, &info, fname))) {
       FRM_ERROR ("Failed to update info file: %m\n");
       return false;
    }
@@ -558,7 +563,6 @@ bool frm_push (frm_t *frm, const char *name, const char *message)
       return false;
    }
 
-   // TODO: Update the history
    char *pwd = getcwd (NULL, 0);
    if (!(history_append(frm->dbpath, pwd))) {
       FRM_ERROR ("Failed to update history\n");
@@ -617,3 +621,82 @@ bool frm_payload_append (frm_t *frm, const char *message)
 
    return ret;
 }
+
+bool frm_up (frm_t *frm)
+{
+   if (!frm) {
+      FRM_ERROR ("Error: null object passed for frm_t\n");
+      return false;
+   }
+
+   char *pwd = getcwd (NULL, 0);
+   if (!pwd) {
+      FRM_ERROR ("Error: could not retrieve the current working directory: %m\n");
+      return false;
+   }
+
+   if ((strcmp (frm->dbpath, pwd))==0) {
+      FRM_ERROR ("Error: cannot go up a level beyond dbpath [%s]\n", frm->dbpath);
+      free (pwd);
+      return false;
+   }
+
+   char *olddir = pushdir ("..");
+   if (!olddir) {
+      FRM_ERROR ("Failed to switch directory [..]: %m\n");
+      free (pwd);
+      return false;
+   }
+
+   free (pwd);
+   pwd = getcwd (NULL, 0);
+   if (!pwd) {
+      FRM_ERROR ("Error: could not retrieve the current working directory: %m\n");
+      return false;
+   }
+
+   if (!(history_append (frm->dbpath, pwd))) {
+      FRM_ERROR ("Failed to set the working node to [root]\n");
+      free (olddir);
+      free (pwd);
+      return false;
+   }
+
+   free (pwd);
+   free (olddir);
+   return true;
+}
+
+bool frm_switch (frm_t *frm, const char *target)
+{
+   if (!frm) {
+      FRM_ERROR ("Error: null object passed for frm_t\n");
+      return false;
+   }
+
+   if ((chdir (frm->dbpath))!=0) {
+      FRM_ERROR ("Failed to switch to dbpath [%s]\n", frm->dbpath);
+      return false;
+   }
+
+   if ((chdir (target))!=0) {
+      FRM_ERROR ("Failed to switch to target [%s]\n", target);
+      return false;
+   }
+
+   char *pwd = getcwd (NULL, 0);
+   if (!pwd) {
+      FRM_ERROR ("Error: could not retrieve the current working directory: %m\n");
+      return false;
+   }
+
+   if (!(history_append (frm->dbpath, pwd))) {
+      FRM_ERROR ("Failed to set the working node to [root]\n");
+      free (pwd);
+      return false;
+   }
+
+   free (pwd);
+   return true;
+}
+

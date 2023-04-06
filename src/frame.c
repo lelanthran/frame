@@ -323,6 +323,30 @@ int main (int argc, char **argv)
       goto cleanup;
    }
 
+   if ((strcmp (command, "up"))==0) {
+      if (!(frm_up (frm))) {
+         fprintf (stderr, "Failed to move a node up the tree\n");
+         ret = EXIT_FAILURE;
+      }
+      goto cleanup;
+   }
+
+   if ((strcmp (command, "switch"))==0) {
+      char *target = cline_command_get(1);
+      if (!target || !target[0]) {
+         fprintf (stderr, "Must specify an absolute path to switch to\n");
+         free (target);
+         ret = EXIT_FAILURE;
+         goto cleanup;
+      }
+      if (!(frm_switch (frm, target))) {
+         fprintf (stderr, "Failed to switch to node [%s]\n", target);
+         ret = EXIT_FAILURE;
+      }
+      free (target);
+      goto cleanup;
+   }
+
    // The default, with no arguments, is to print out the help message.
    // If we got to this point we have a command but it is unrecognised.
    fprintf (stderr, "Unrecognised command [%s]\n", command);
