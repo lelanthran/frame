@@ -14,6 +14,10 @@ typedef struct frm_t frm_t;
 extern "C" {
 #endif
 
+   char *frm_readfile (const char *fname);
+   bool frm_vwritefile (const char *fname, const char *data, va_list ap);
+   bool frm_writefile (const char *fname, const char *data, ...);
+
    frm_t *frm_create (const char *dbpath);
    frm_t *frm_init (const char *dbpath);
    void frm_close (frm_t *frm);
@@ -23,6 +27,8 @@ extern "C" {
    char *frm_payload (frm_t *frm);
    uint64_t frm_date_epoch (frm_t *frm);
    char *frm_date_str (frm_t *frm);
+
+   bool frm_push (frm_t *frm, const char *name, const char *message);
 
 #ifdef __cplusplus
 };

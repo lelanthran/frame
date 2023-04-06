@@ -55,72 +55,6 @@ static void popdir (char **olddir)
    *olddir = NULL;
 }
 
-static bool writefile (const char *name, const char *data, ...)
-{
-   va_list ap;
-
-   FILE *outf = fopen (name, "w");
-   if (!outf) {
-      FRM_ERROR ("Failed to open [%s] for writing: %m\n", name);
-      return false;
-   }
-
-   va_start (ap, data);
-   while (data) {
-      fprintf (outf, "%s", data);
-      data = va_arg (ap, const char *);
-   }
-   fclose (outf);
-   va_end (ap);
-   return true;
-}
-
-static char *readfile (const char *name)
-{
-   FILE *inf = fopen (name, "r");
-   if (!inf) {
-      FRM_ERROR ("Failed to open [%s] for reading: %m\n", name);
-      return NULL;
-   }
-
-   if ((fseek (inf, 0, SEEK_END))!=0) {
-      FRM_ERROR ("Failed to seek EOF [%s]: %m\n", name);
-      fclose (inf);
-      return NULL;
-   }
-
-   long len = ftell (inf);
-   if (len < 0) {
-      FRM_ERROR ("Failed to determine file length [%s]: %m\n", name);
-      fclose (inf);
-      return NULL;
-   }
-
-   if ((fseek (inf, 0, SEEK_SET))!=0) {
-      FRM_ERROR ("Failed to reset file position [%s]: %m\n", name);
-      fclose (inf);
-      return NULL;
-   }
-
-   char *ret = malloc (len + 1);
-   if (!ret) {
-      FRM_ERROR ("OOM error allocating file contents [%s]\n", name);
-      fclose (inf);
-      return NULL;
-   }
-
-   size_t nbytes = fread (ret, 1, len, inf);
-   if (nbytes != (size_t)len) {
-      FRM_ERROR ("Read {%zu of %li] bytes in [%s]: %m\n", nbytes, len, name);
-      fclose (inf);
-      free (ret);
-      return NULL;
-   }
-
-   fclose (inf);
-   ret[len] = 0;
-   return ret;
-}
 
 static char *history_read (const char *dbpath, size_t count)
 {
@@ -130,7 +64,7 @@ static char *history_read (const char *dbpath, size_t count)
       return NULL;
    }
 
-   char *history = readfile ("history");
+   char *history = frm_readfile ("history");
    if (!history) {
       // Ignoring empty history. History is allowed to be empty.
       history = ds_str_dup ("");
@@ -175,11 +109,11 @@ static bool history_append (const char *dbpath, const char *path)
       return false;
    }
 
-   if (!(writefile ("history",
+   if (!(frm_writefile ("history",
                path, "\n",
                history, "\n",
                NULL))) {
-      FRM_ERROR ("Failed to write file [%s/working_node]\n", dbpath);
+      FRM_ERROR ("Failed to write file [%s/working_node]: %m\n", dbpath);
       free (history);
       popdir (&pwd);
       return false;
@@ -214,13 +148,13 @@ static bool node_create (const char *path, const char *name, const char *msg)
 
 
    char tstring[47];
-   if (!(writefile ("info", "mtime: ", get_unix_time(tstring), "\n", NULL))) {
-      FRM_ERROR ("Failed to create info file [%s/%s/info]\n", path, name);
+   if (!(frm_writefile ("info", "mtime: ", get_unix_time(tstring), "\n", NULL))) {
+      FRM_ERROR ("Failed to create info file [%s/%s/info]: %m\n", path, name);
       return false;
    }
 
-   if (!(writefile ("payload", msg, "\n", NULL))) {
-      FRM_ERROR ("Failed to create payload file [%s/%s/payload]\n", path, name);
+   if (!(frm_writefile ("payload", msg, "\n", NULL))) {
+      FRM_ERROR ("Failed to create payload file [%s/%s/payload]: %m\n", path, name);
       popdir (&newdir);
       popdir (&pwd);
       return false;
@@ -270,40 +204,106 @@ static frm_t *frm_alloc (const char *dbpath, const char *olddir)
    return ret;
 }
 
+char *frm_readfile (const char *name)
+{
+   FILE *inf = fopen (name, "r");
+   if (!inf) {
+      FRM_ERROR ("Failed to open [%s] for reading: %m\n", name);
+      return NULL;
+   }
+
+   if ((fseek (inf, 0, SEEK_END))!=0) {
+      FRM_ERROR ("Failed to seek EOF [%s]: %m\n", name);
+      fclose (inf);
+      return NULL;
+   }
+
+   long len = ftell (inf);
+   if (len < 0) {
+      FRM_ERROR ("Failed to determine file length [%s]: %m\n", name);
+      fclose (inf);
+      return NULL;
+   }
+
+   if ((fseek (inf, 0, SEEK_SET))!=0) {
+      FRM_ERROR ("Failed to reset file position [%s]: %m\n", name);
+      fclose (inf);
+      return NULL;
+   }
+
+   char *ret = malloc (len + 1);
+   if (!ret) {
+      FRM_ERROR ("OOM error allocating file contents [%s]\n", name);
+      fclose (inf);
+      return NULL;
+   }
+
+   size_t nbytes = fread (ret, 1, len, inf);
+   if (nbytes != (size_t)len) {
+      FRM_ERROR ("Read {%zu of %li] bytes in [%s]: %m\n", nbytes, len, name);
+      fclose (inf);
+      free (ret);
+      return NULL;
+   }
+
+   fclose (inf);
+   ret[len] = 0;
+   return ret;
+}
+
+bool frm_vwritefile (const char *name, const char *data, va_list ap)
+{
+   FILE *outf = fopen (name, "w");
+   if (!outf) {
+      FRM_ERROR ("Failed to open [%s] for writing: %m\n", name);
+      return false;
+   }
+
+   while (data) {
+      fprintf (outf, "%s", data);
+      data = va_arg (ap, const char *);
+   }
+   fclose (outf);
+   return true;
+}
+
+bool frm_writefile (const char *fname, const char *data, ...)
+{
+   va_list ap;
+
+   va_start (ap, data);
+   bool ret = frm_vwritefile (fname, data, ap);
+   va_end (ap);
+
+   return ret;
+}
 
 frm_t *frm_create (const char *dbpath)
 {
    static const mode_t mode = 0777;
    if ((mkdir (dbpath, mode))!=0) {
       FRM_ERROR ("Failed to create directory [%s]: %m\n", dbpath);
-      return false;
+      return NULL;
    }
 
    if (!(node_create (dbpath, "root", "ENTER YOUR NOTES HERE"))) {
       FRM_ERROR ("Failed to create node [%s/root]: %m\n", dbpath);
-      return false;
+      return NULL;
    }
 
    char *pwd = pushdir (dbpath);
    if (!pwd) {
       FRM_ERROR ("Failed to store current working directory\n");
-      return false;
+      return NULL;
    }
-
-   bool error = true;
 
    if (!(history_append (dbpath, "root"))) {
       FRM_ERROR ("Failed to set the working node to [root]\n");
-      goto cleanup;
-   }
-
-   error = false;
-
-cleanup:
-   popdir (&pwd);
-   if (error) {
+      popdir (&pwd);
       return NULL;
    }
+
+   popdir (&pwd);
    return frm_init (dbpath);
 }
 
@@ -318,7 +318,7 @@ frm_t *frm_init (const char *dbpath)
       goto cleanup;
    }
 
-   char *history = readfile ("history");
+   char *history = frm_readfile ("history");
    char *node = NULL;
    if (!history) {
       FRM_ERROR ("Warning: no history found, defaulting to root node\n");
@@ -348,6 +348,7 @@ frm_t *frm_init (const char *dbpath)
    }
 
    error = false;
+
 cleanup:
    free (pwd);
    free (history);
@@ -355,7 +356,6 @@ cleanup:
    free (newpath);
    if (error) {
       frm_close (ret);
-      pwd = NULL;
    }
 
    return ret;
@@ -363,6 +363,9 @@ cleanup:
 
 void frm_close (frm_t *frm)
 {
+   if (!frm)
+      return;
+
    popdir (&frm->olddir);
    free (frm->dbpath);
    free (frm);
@@ -406,7 +409,7 @@ char *frm_payload (frm_t *frm)
       FRM_ERROR ("Error, null object passed for frm_t\n");
       return ds_str_dup ("");
    }
-   char *ret = readfile ("payload");
+   char *ret = frm_readfile ("payload");
    if (!ret) {
       FRM_ERROR ("Failed to read [payload]: %m\n");
       return ds_str_dup ("");
@@ -450,7 +453,7 @@ uint64_t frm_date_epoch (frm_t *frm)
       FRM_ERROR ("Error, null object passed for frm_t\n");
       return (uint64_t)-1;
    }
-   char *tmp = readfile ("info");
+   char *tmp = frm_readfile ("info");
    if (!tmp) {
       FRM_ERROR ("Failed to read [info]: %m\n");
       return (uint64_t)-1;
@@ -474,5 +477,45 @@ char *frm_date_str (frm_t *frm)
    if (eol)
       *eol = 0;
    return ds_str_dup (tmp);
+}
+
+bool frm_push (frm_t *frm, const char *name, const char *message)
+{
+   if (!frm) {
+      FRM_ERROR ("Error, null object passed for frm_t\n");
+      return false;
+   }
+
+   if ((mkdir (name, 0777))!=0) {
+      FRM_ERROR ("Failed to create directory [%s]: %m\n", name);
+      return false;
+   }
+
+   char *olddir = pushdir (name);
+   if (!olddir) {
+      FRM_ERROR ("Failed to switch to [%s]: %m\n", name);
+      return false;
+   }
+
+   if (!(frm_writefile ("payload", message, "\n", NULL))) {
+      FRM_ERROR ("Failed to write message to [%s/payload]: %m\n", name);
+      popdir (&olddir);
+      return false;
+   }
+
+   char tstring[47];
+   if (!(frm_writefile ("info", "mtime: ", get_unix_time(tstring), "\n", NULL))) {
+      FRM_ERROR ("Failed to create info file [%s/info]: %m\n", name);
+      return false;
+   }
+
+   // TODO: Update the history
+   if (!(history_append(frm->dbpath, name))) {
+      FRM_ERROR ("Failed to update history\n");
+      return false;
+   }
+
+   free (olddir);
+   return true;
 }
 

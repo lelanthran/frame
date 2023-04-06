@@ -4,6 +4,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include <unistd.h>
+
 #include "ds_str.h"
 #include "frm.h"
 
@@ -99,6 +101,9 @@ static char *cline_command_get (size_t index)
       return NULL;
    }
 
+   if (*cmd == '\xfe')
+      cmd++;
+
    char *end = strchr (cmd, '\xfe');
    if (!end) {
       fprintf (stderr, "Internal error, no command delimiter xfe found\n");
@@ -116,10 +121,67 @@ static char *cline_command_get (size_t index)
    return ret;
 }
 
+static char edlin[1024 * 1024];
+static char *run_editor (void)
+{
+   char *message = NULL;
+   char *editor = getenv ("EDITOR");
+   if (!editor || !editor[0]) {
+      FRM_ERROR ("Warning: no $EDITOR specified.\n");
+      printf ("Enter the message, ending with a single period "
+               "on a line by itself\n");
+      while ((fgets (edlin, sizeof edlin -1, stdin))!=NULL) {
+         if (edlin[0] == '.')
+            break;
+         if (!(ds_str_append (&message, edlin, NULL))) {
+            FRM_ERROR ("OOM reading edlin input\n");
+            free (message);
+            return NULL;
+         }
+      }
+   } else {
+      char fname[] = "frame-tmpfile-XXXXXX";
+      int fd = mkstemp (fname);
+      if (fd < 0) {
+         FRM_ERROR ("Failed to create temporary file: %m\n");
+         return NULL;
+      }
+      close (fd);
+      char *shcmd = ds_str_cat (editor, " ", fname, NULL);
+      printf ("Waiting for [%s] to return\n", shcmd);
+      int exitcode = system (shcmd);
+      free (shcmd);
+      if (exitcode != 0) {
+         FRM_ERROR ("Editor aborted, aborting: %m\n");
+         return NULL;
+      }
+      if (!(frm_writefile (fname,
+                  "\n",
+                  "Replace this content with your message.",
+                  "\n",
+                  "There is no limit on the length of messages\n",
+                  NULL))) {
+         FRM_ERROR ("Failed to edit temporary file [%s]: %m\n", fname);
+         return NULL;
+      }
+      message = frm_readfile (fname);
+      if (!message) {
+         FRM_ERROR ("Failed to read editor output, aborting\n");
+         return NULL;
+      }
+   }
+   return message;
+}
+
+static void print_helpmsg (void)
+{
+   fprintf (stderr, "TODO: The help message\n");
+}
+
 
 int main (int argc, char **argv)
 {
-   int ret = EXIT_FAILURE;
+   int ret = EXIT_SUCCESS;
    cline_parse_options (argc, argv);
    cline_parse_commands (argc, argv);
 
@@ -131,16 +193,24 @@ int main (int argc, char **argv)
    char *message = cline_option_get ("message");
    frm_t *frm = NULL;
 
+   if (!command || !command[0]) {
+      print_helpmsg ();
+      ret = EXIT_FAILURE;
+      goto cleanup;
+   }
+
    if (!dbpath) {
       // TODO: Windows compatibility
       const char *home = getenv("HOME");
       if (!home || !home[0]) {
          fprintf (stderr, "No --dbpath specified and $HOME is not set\n");
+         ret = EXIT_FAILURE;
          goto cleanup;
       }
       dbpath = ds_str_cat (home, "/.framedb", NULL);
       if (!dbpath) {
          fprintf (stderr, "OOM error copying $HOME\n");
+         ret = EXIT_FAILURE;
          goto cleanup;
       }
    }
@@ -160,6 +230,7 @@ int main (int argc, char **argv)
 
    if (!(frm = frm_init (dbpath))) {
       fprintf (stderr, "Failed to load db from [%s]\n", dbpath);
+      ret = EXIT_FAILURE;
       goto cleanup;
    }
 
@@ -176,6 +247,7 @@ int main (int argc, char **argv)
       } while ((tok = strtok_r (NULL, "\n", &sptr)));
       printf ("\n");
       free (history);
+      goto cleanup;
    }
 
    if ((strcmp (command, "status"))==0) {
@@ -194,9 +266,41 @@ int main (int argc, char **argv)
       free (current);
       free (mtime);
       free (payload);
+      goto cleanup;
    }
 
-   ret = EXIT_SUCCESS;
+   if ((strcmp (command, "push"))==0) {
+      char *name = cline_command_get(1);
+      if (!name || !name[0]) {
+         fprintf (stderr, "Must specify a name for the new frame being pushed\n");
+         free (name);
+         ret = EXIT_FAILURE;
+         goto cleanup;
+      }
+      char *message = cline_option_get ("message");
+      if (!message) {
+         message = run_editor ();
+      }
+
+      if (!(frm_push (frm, name, message))) {
+         fprintf (stderr, "Failed to create new frame\n");
+         free (name);
+         free (message);
+         ret = EXIT_FAILURE;
+         goto cleanup;
+      }
+      free (name);
+      free (message);
+      name = frm_current (frm);
+      printf ("Created new frame [%s]\n", name);
+      free (name);
+      goto cleanup;
+   }
+
+   // The default, with no arguments, is to print out the help message.
+   // If we got to this point we have a command but it is unrecognised.
+   fprintf (stderr, "Unrecognised command [%s]\n", command);
+   ret = EXIT_FAILURE;
 
 cleanup:
    frm_close (frm);
