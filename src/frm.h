@@ -34,6 +34,8 @@ extern "C" {
 
    bool frm_up (frm_t *frm);
    bool frm_switch (frm_t *frm, const char *target);
+   bool frm_delete (frm_t *frm, const char *target);
+   bool frm_pop (frm_t *frm);
 
 #ifdef __cplusplus
 };

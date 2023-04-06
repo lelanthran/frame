@@ -347,6 +347,14 @@ int main (int argc, char **argv)
       goto cleanup;
    }
 
+   if ((strcmp (command, "pop"))==0) {
+      if (!(frm_pop (frm))) {
+         fprintf (stderr, "Failed to pop current node: %m\n");
+         ret = EXIT_FAILURE;
+      }
+      goto cleanup;
+   }
+
    // The default, with no arguments, is to print out the help message.
    // If we got to this point we have a command but it is unrecognised.
    fprintf (stderr, "Unrecognised command [%s]\n", command);

@@ -9,7 +9,9 @@
 
 #include <unistd.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 #include <fcntl.h>
+#include <dirent.h>
 
 #include "frm.h"
 #include "ds_str.h"
@@ -52,6 +54,46 @@ static void popdir (char **olddir)
 
    free (*olddir);
    *olddir = NULL;
+}
+
+static bool removedir (const char *target)
+{
+   if (!target || !target[0] || target[0]=='/' || target[0] == '.') {
+      FRM_ERROR ("Error: invalid directory removal name [%s]\n", target);
+      return false;
+   }
+   DIR *dirp = opendir (target);
+   if (!dirp) {
+      FRM_ERROR ("Error: failed to read directory [%s]: %m\n", target);
+      return false;
+   }
+   struct dirent *de;
+   while ((de = readdir (dirp))) {
+      if (de->d_name[0] == '.')
+         continue;
+      if (de->d_type == DT_DIR) {
+         char *olddir = pushdir (de->d_name);
+         if (!olddir) {
+            FRM_ERROR ("Error: Failed to switch to [%s]: %m\n", de->d_name);
+            closedir (dirp);
+            return false;
+         }
+         removedir (de->d_name);
+         popdir (&olddir);
+      } else {
+         if ((unlink (de->d_name)) != 0) {
+            FRM_ERROR ("Error: unlink [%s]: %m\n", de->d_name);
+            closedir (dirp);
+            return false;
+         }
+      }
+   }
+   closedir (dirp);
+   if ((rmdir (target)) != 0) {
+      FRM_ERROR ("Error: Failed to rmdir() [%s]: %m\n", target);
+      return false;
+   }
+   return true;
 }
 
 
@@ -699,4 +741,66 @@ bool frm_switch (frm_t *frm, const char *target)
    free (pwd);
    return true;
 }
+
+bool frm_pop (frm_t *frm)
+{
+   if (!frm) {
+      FRM_ERROR ("Error: null object passed for frm_t\n");
+      return false;
+   }
+
+   char *olddir = getcwd (NULL, 0);
+   if (!olddir) {
+      FRM_ERROR ("Error: failed to retrieve current working directory: %m\n");
+      return false;
+   }
+
+   if (!(frm_up (frm))) {
+      FRM_ERROR ("Error: failed to switch to parent node: %m\n");
+      free (olddir);
+      return false;
+   }
+
+   char *relpath = ds_str_strsubst (olddir, frm->dbpath, "", NULL);
+   if (!(relpath)) {
+      FRM_ERROR ("OOM error: fixup relpath failure\n");
+      free (olddir);
+      return false;
+   }
+
+   if (!(frm_delete (frm, relpath))) {
+      FRM_ERROR ("Error: failed to remove path [%s]: %m\n", relpath);
+      free (olddir);
+      free (relpath);
+      return false;
+   }
+
+   free (olddir);
+   free (relpath);
+   return true;
+}
+
+bool frm_delete (frm_t *frm, const char *target)
+{
+   if (!frm) {
+      FRM_ERROR ("Error: null object passed for frm_t\n");
+      return false;
+   }
+
+   char *olddir = pushdir (frm->dbpath);
+   if (!olddir) {
+      FRM_ERROR ("Error: failed to switch directory: %m\n");
+      return false;
+   }
+
+   if (!(removedir (target))) {
+      FRM_ERROR ("Error: failed to remove directory[%s]: %m\n", target);
+      popdir (&olddir);
+      return false;
+   }
+
+   popdir (&olddir);
+   return true;
+}
+
 
