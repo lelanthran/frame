@@ -5,6 +5,7 @@
 #include <stdarg.h>
 #include <time.h>
 #include <inttypes.h>
+#include <string.h>
 
 #include <unistd.h>
 #include <sys/stat.h>
@@ -24,7 +25,7 @@ static const char *get_unix_time (char dst[47])
    return dst;
 }
 
-static char *push_cd (const char *newdir)
+static char *pushdir (const char *newdir)
 {
    char *ret = getcwd (NULL, 0);
    if (!ret) {
@@ -116,16 +117,17 @@ static char *readfile (const char *name)
       return NULL;
    }
 
+   fclose (inf);
    ret[len] = 0;
    return ret;
 }
 
-static bool history_append (const char *dbpath, const char *path)
+static char *history_read (const char *dbpath, size_t count)
 {
-   char *pwd = push_cd (dbpath);
+   char *pwd = pushdir (dbpath);
    if (!pwd) {
-      FRM_ERROR ("Failed to push current working directory\n");
-      return false;
+      FRM_ERROR ("Failed to switch dir [%s]: %m\n", dbpath);
+      return NULL;
    }
 
    char *history = readfile ("history");
@@ -135,11 +137,43 @@ static bool history_append (const char *dbpath, const char *path)
       if (!history) {
          FRM_ERROR ("OOM error allocating empty history\n");
          popdir (&pwd);
-         return false;
+         return NULL;
       }
    }
 
-   // TODO: Truncate history
+   if (count == (size_t)-1) {
+      popdir (&pwd);
+      return history;
+   }
+
+   char *tmp = history;
+   char *eol = NULL;
+   for (size_t i=0; i<count; i++) {
+      eol = strchr (tmp, '\n');
+      if (!eol)
+         break;
+      tmp = eol;
+   }
+   if (eol)
+      *eol = 0;
+
+   popdir (&pwd);
+   return history;
+}
+
+static bool history_append (const char *dbpath, const char *path)
+{
+   char *pwd = pushdir (dbpath);
+   if (!pwd) {
+      FRM_ERROR ("Failed to push current working directory\n");
+      return false;
+   }
+
+   char *history = history_read (dbpath, (size_t)-1);
+   if (!history) {
+      popdir (&pwd);
+      return false;
+   }
 
    if (!(writefile ("history",
                path, "\n",
@@ -156,50 +190,9 @@ static bool history_append (const char *dbpath, const char *path)
    return true;
 }
 
-struct frm_nodeinfo_t {
-   char *name;
-   char *payload;
-   char *info;
-};
-
-frm_nodeinfo_t *node_read (const char *path, va_list ap)
-{
-   char *pwd = push_cd (path);
-   if (!pwd) {
-      FRM_ERROR ("Failed to switch current working directory to [%s]\n", path);
-      return NULL;
-   }
-
-   const char *next = va_arg (ap, const char *);
-   if (next == NULL) {
-      frm_nodeinfo_t *ret = calloc (1, sizeof *ret);
-      if (!ret) {
-         FRM_ERROR ("OOM error: allocating node_t\n");
-         popdir (&pwd);
-         return NULL;
-      }
-      ret->name = ds_str_dup (path);
-      ret->info = readfile ("info");
-      ret->payload = readfile ("payload");
-
-      if (!ret->name || !ret->info || !ret->payload) {
-         FRM_ERROR ("Some files for the node were not read\n");
-         popdir (&pwd);
-         free (ret);
-         return NULL;
-      }
-
-      return ret;
-   }
-
-   popdir (&pwd);
-   return node_read (next, ap);
-}
-
-
 static bool node_create (const char *path, const char *name, const char *msg)
 {
-   char *pwd = push_cd (path);
+   char *pwd = pushdir (path);
    if (!pwd) {
       FRM_ERROR ("Failed to store current working directory\n");
       return false;
@@ -212,7 +205,7 @@ static bool node_create (const char *path, const char *name, const char *msg)
       return false;
    }
 
-   char *newdir = push_cd (name);
+   char *newdir = pushdir (name);
    if (!newdir) {
       FRM_ERROR ("Failed to switch directory [%s]\n", name);
       popdir (&pwd);
@@ -242,7 +235,43 @@ static bool node_create (const char *path, const char *name, const char *msg)
 /* ********************************************************** */
 /* ********************************************************** */
 
-bool frm_create (const char *dbpath)
+struct frm_t {
+   char *dbpath;
+   char *olddir;
+};
+
+static void frm_free (frm_t *frm)
+{
+   if (!frm)
+      return;
+
+   free (frm->dbpath);
+   free (frm->olddir);
+   free (frm);
+}
+
+static frm_t *frm_alloc (const char *dbpath, const char *olddir)
+{
+   frm_t *ret = calloc (1, sizeof *ret);
+   if (!ret) {
+      FRM_ERROR ("OOM error allocating frm_t");
+      return NULL;
+   }
+
+   ret->dbpath = ds_str_dup (dbpath);
+   ret->olddir = ds_str_dup (olddir);
+
+   if (!ret->dbpath || !ret->olddir) {
+      FRM_ERROR ("Failed to allocate fields [dbpath:%p], [olddir:%p]\n",
+               ret->dbpath, ret->olddir);
+      frm_free (ret);
+      ret = NULL;
+   }
+   return ret;
+}
+
+
+frm_t *frm_create (const char *dbpath)
 {
    static const mode_t mode = 0777;
    if ((mkdir (dbpath, mode))!=0) {
@@ -255,7 +284,7 @@ bool frm_create (const char *dbpath)
       return false;
    }
 
-   char *pwd = push_cd (dbpath);
+   char *pwd = pushdir (dbpath);
    if (!pwd) {
       FRM_ERROR ("Failed to store current working directory\n");
       return false;
@@ -272,14 +301,18 @@ bool frm_create (const char *dbpath)
 
 cleanup:
    popdir (&pwd);
-   return error;
+   if (error) {
+      return NULL;
+   }
+   return frm_init (dbpath);
 }
 
-bool frm_init (const char *dbpath)
+frm_t *frm_init (const char *dbpath)
 {
    bool error = true;
+   frm_t *ret = NULL;
 
-   char *pwd = push_cd (dbpath);
+   char *pwd = pushdir (dbpath);
    if (!pwd) {
       FRM_ERROR ("Failed to switch directory to [%s]: %m\n", dbpath);
       goto cleanup;
@@ -303,47 +336,143 @@ bool frm_init (const char *dbpath)
       }
    }
 
-   char *newpath = push_cd (node);
-   if (!node) {
+   char *newpath = pushdir (node);
+   if (!newpath) {
       FRM_ERROR ("Failed to switch to node [%s]\n", node);
+      goto cleanup;
+   }
+
+   if (!(ret = frm_alloc (dbpath, pwd))) {
+      FRM_ERROR ("OOM error allocating frm_t\n");
       goto cleanup;
    }
 
    error = false;
 cleanup:
+   free (pwd);
+   free (history);
+   free (node);
+   free (newpath);
    if (error) {
-      frm_close (pwd);
+      frm_close (ret);
+      pwd = NULL;
    }
 
-   return !error;
-}
-
-frm_nodeinfo_t *frm_node_read (const char *dbpath, const char *path, ...)
-{
-   char *pwd = push_cd (dbpath);
-   if (!pwd) {
-      FRM_ERROR ("Failed to store existing working directory\n");
-      return NULL;
-   }
-
-   frm_nodeinfo_t *ret = NULL;
-
-   va_list ap;
-   va_start (ap, path);
-   ret = node_read (path, ap);
-   va_end (ap);
-   popdir (&pwd);
    return ret;
 }
 
-void frm_node_free (frm_nodeinfo_t *ni)
+void frm_close (frm_t *frm)
 {
-   if (!ni)
-      return;
+   popdir (&frm->olddir);
+   free (frm->dbpath);
+   free (frm);
+}
 
-   free (ni->payload);
-   free (ni->info);
-   free (ni->name);
-   free (ni);
+char *frm_history (frm_t *frm, size_t count)
+{
+   if (!frm) {
+      FRM_ERROR ("Found null object for frm_t\n");
+      return ds_str_dup ("");
+   }
+
+   return history_read(frm->dbpath, count);
+}
+
+char *frm_current (frm_t *frm)
+{
+   if (!frm) {
+      FRM_ERROR ("Error, null object passed for frm_t\n");
+      return ds_str_dup ("");
+   }
+   char *tmp = getcwd (NULL, 0);
+   if (!tmp) {
+      FRM_ERROR ("Failed to get the current working directory\n");
+      tmp = ds_str_dup ("");
+   }
+
+   char *ret = ds_str_strsubst(tmp, frm->dbpath, "", NULL);
+   if (!ret) {
+      FRM_ERROR ("OOM error allocating current path\n");
+      ret = ds_str_dup ("");
+   }
+
+   free (tmp);
+   return ret;
+}
+
+char *frm_payload (frm_t *frm)
+{
+   if (!frm) {
+      FRM_ERROR ("Error, null object passed for frm_t\n");
+      return ds_str_dup ("");
+   }
+   char *ret = readfile ("payload");
+   if (!ret) {
+      FRM_ERROR ("Failed to read [payload]: %m\n");
+      return ds_str_dup ("");
+   }
+
+   return ret;
+}
+
+struct info_t {
+   uint64_t mtime;
+};
+
+static read_info (struct info_t *dst, char *data)
+{
+   char *name = NULL;
+   char *sptr = NULL;
+   char *tok = strtok_r (data, "\n", &sptr);
+   do {
+      free (name);
+      if (!(name = ds_str_dup (tok))) {
+         FRM_ERROR ("OOM error allocating info fields\n");
+         return;
+      }
+      char *value = strchr (name, ':');
+      if (value) {
+         *value++ = 0;
+      }
+
+      if ((strcmp (name, "mtime"))==0) {
+         if ((sscanf (value, "%" PRIu64, &dst->mtime))!=1) {
+            FRM_ERROR ("Could not parse date value [%s]\n", value);
+         }
+      }
+   } while ((tok = strtok_r (NULL, "\n", &sptr)));
+   free (name);
+}
+
+uint64_t frm_date_epoch (frm_t *frm)
+{
+   if (!frm) {
+      FRM_ERROR ("Error, null object passed for frm_t\n");
+      return (uint64_t)-1;
+   }
+   char *tmp = readfile ("info");
+   if (!tmp) {
+      FRM_ERROR ("Failed to read [info]: %m\n");
+      return (uint64_t)-1;
+   }
+   struct info_t info;
+   memset (&info , 0, sizeof info);
+   read_info (&info, tmp);
+   free (tmp);
+   return info.mtime;
+}
+
+char *frm_date_str (frm_t *frm)
+{
+   uint64_t epoch = frm_date_epoch (frm);
+   if (epoch == (uint64_t)-1) {
+      FRM_ERROR ("Failed to retrieve mtime\n");
+      return ds_str_dup ("");
+   }
+   char *tmp = ctime ((time_t *)&epoch);
+   char *eol = strchr (tmp, '\n');
+   if (eol)
+      *eol = 0;
+   return ds_str_dup (tmp);
 }
 

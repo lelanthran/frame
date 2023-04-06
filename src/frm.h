@@ -7,18 +7,22 @@
    fprintf (stderr, __VA_ARGS__);\
 } while (0)
 
-typedef struct frm_nodeinfo_t frm_nodeinfo_t;
+typedef struct frm_t frm_t;
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-   bool frm_create (const char *dbpath);
-   bool frm_init (const char *dbpath);
-   void frm_close (char *saved_path);
+   frm_t *frm_create (const char *dbpath);
+   frm_t *frm_init (const char *dbpath);
+   void frm_close (frm_t *frm);
 
-   frm_nodeinfo_t *frm_node_read (const char *dbpath, const char *path, ...);
-   void frm_node_free (frm_nodeinfo_t *ni);
+   char *frm_history (frm_t *frm, size_t count);
+   char *frm_current (frm_t *frm);
+   char *frm_payload (frm_t *frm);
+   uint64_t frm_date_epoch (frm_t *frm);
+   char *frm_date_str (frm_t *frm);
 
 #ifdef __cplusplus
 };

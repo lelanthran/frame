@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <stdint.h>
 
 #include "ds_str.h"
 #include "frm.h"
@@ -128,6 +129,7 @@ int main (int argc, char **argv)
    char *help = cline_option_get ("help");
    char *dbpath = cline_option_get ("dbpath");
    char *message = cline_option_get ("message");
+   char *frm = NULL;
 
    if (!dbpath) {
       // TODO: Windows compatibility
@@ -156,23 +158,48 @@ int main (int argc, char **argv)
       goto cleanup;
    }
 
-   if (!(frm_init (dbpath))) {
+   if (!(frm = frm_init (dbpath))) {
       fprintf (stderr, "Failed to load db from [%s]\n", dbpath);
       goto cleanup;
    }
 
-   if ((strcmp (command, "status"))==0) {
-
+   if ((strcmp (command, "history"))==0) {
+      char *history = frm_history (frm, 10);
+      char *sptr = NULL;
+      char *tok = strtok_r (history, "\n", &sptr);
+      size_t i=0;
+      printf ("Frame history\n");
+      char indicator = '*';
+      do {
+         printf ("%c  %5zu: %s\n", indicator, i, tok);
+         indicator = ' ';
+      } while ((tok = strtok_r (NULL, "\n", &sptr)));
+      printf ("\n");
+      free (history);
    }
 
-   printf ("Command:       [%s]\n", command);
-   printf ("help:          [%s]\n", help);
-   printf ("dbpath:        [%s]\n", dbpath);
-   printf ("message:       [%s]\n", message);
+   if ((strcmp (command, "status"))==0) {
+      char *current = frm_current (frm);
+      char *payload = frm_payload (frm);
+      char *mtime = frm_date_str (frm);
+
+      printf ("Current frame\n   %s\n", current);
+      printf ("\nNotes (%s)\n", mtime);
+      char *sptr = NULL;
+      char *tok = strtok_r (payload, "\n", &sptr);
+      do {
+         printf ("   %s\n", tok);
+      } while ((tok = strtok_r (NULL, "\n", &sptr)));
+      printf ("\n");
+      free (current);
+      free (mtime);
+      free (payload);
+   }
 
    ret = EXIT_SUCCESS;
 
 cleanup:
+   frm_close (frm);
    free (command);
    free (help);
    free (dbpath);
