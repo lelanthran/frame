@@ -297,6 +297,32 @@ int main (int argc, char **argv)
       goto cleanup;
    }
 
+   if ((strcmp (command, "replace"))==0) {
+      char *message = cline_option_get ("message");
+      if (!message) {
+         message = run_editor ();
+      }
+      if (!(frm_payload_replace (frm, message))) {
+         fprintf (stderr, "Failed to replace message of current node: %m\n");
+         ret = EXIT_FAILURE;
+      }
+      free (message);
+      goto cleanup;
+   }
+
+   if ((strcmp (command, "append"))==0) {
+      char *message = cline_option_get ("message");
+      if (!message) {
+         message = run_editor ();
+      }
+      if (!(frm_payload_append (frm, message))) {
+         fprintf (stderr, "Failed to append message to current node: %m\n");
+         ret = EXIT_FAILURE;
+      }
+      free (message);
+      goto cleanup;
+   }
+
    // The default, with no arguments, is to print out the help message.
    // If we got to this point we have a command but it is unrecognised.
    fprintf (stderr, "Unrecognised command [%s]\n", command);

@@ -18,10 +18,9 @@
 /* ********************************************************** */
 /* ********************************************************** */
 
-static const char *get_unix_time (char dst[47])
+static const char *uint64_string (char dst[47], uint64_t value)
 {
-   uint64_t now = time (NULL);
-   snprintf (dst, 46, "%" PRIu64, now);
+   snprintf (dst, 46, "%" PRIu64, value);
    return dst;
 }
 
@@ -148,7 +147,9 @@ static bool node_create (const char *path, const char *name, const char *msg)
 
 
    char tstring[47];
-   if (!(frm_writefile ("info", "mtime: ", get_unix_time(tstring), "\n", NULL))) {
+   if (!(frm_writefile ("info",
+               "mtime: ", uint64_string(tstring, (uint64_t)time(NULL)), "\n",
+               NULL))) {
       FRM_ERROR ("Failed to create info file [%s/%s/info]: %m\n", path, name);
       return false;
    }
@@ -318,6 +319,7 @@ frm_t *frm_init (const char *dbpath)
       goto cleanup;
    }
 
+   // TODO: replace this with frm_history
    char *history = frm_readfile ("history");
    char *node = NULL;
    if (!history) {
@@ -338,7 +340,7 @@ frm_t *frm_init (const char *dbpath)
 
    char *newpath = pushdir (node);
    if (!newpath) {
-      FRM_ERROR ("Failed to switch to node [%s]\n", node);
+      FRM_ERROR ("Failed to switch to node [%s]: %m\n", node);
       goto cleanup;
    }
 
@@ -422,8 +424,21 @@ struct info_t {
    uint64_t mtime;
 };
 
-static void read_info (struct info_t *dst, char *data)
+static bool read_info (frm_t *frm, struct info_t *dst, char *fname)
 {
+   if (!frm) {
+      FRM_ERROR ("Error, null object passed for frm_t\n");
+      return false;
+   }
+
+   char *data = frm_readfile(fname);
+   if (!data) {
+      FRM_ERROR ("Failed to read [%s]: %m\n", fname);
+      return false;
+   }
+
+   memset (dst, 0, sizeof *dst);
+
    char *name = NULL;
    char *sptr = NULL;
    char *tok = strtok_r (data, "\n", &sptr);
@@ -431,7 +446,8 @@ static void read_info (struct info_t *dst, char *data)
       free (name);
       if (!(name = ds_str_dup (tok))) {
          FRM_ERROR ("OOM error allocating info fields\n");
-         return;
+         free (data);
+         return false;
       }
       char *value = strchr (name, ':');
       if (value) {
@@ -445,23 +461,54 @@ static void read_info (struct info_t *dst, char *data)
       }
    } while ((tok = strtok_r (NULL, "\n", &sptr)));
    free (name);
+   free (data);
+   return true;
 }
 
-uint64_t frm_date_epoch (frm_t *frm)
+static bool write_info (frm_t *frm, const struct info_t *info, const char *fname)
 {
    if (!frm) {
       FRM_ERROR ("Error, null object passed for frm_t\n");
-      return (uint64_t)-1;
+      return false;
    }
-   char *tmp = frm_readfile ("info");
-   if (!tmp) {
+
+   char tstring[47];
+   if (!(frm_writefile (fname,
+               "mtime:", uint64_string (tstring, (uint64_t)time(NULL)), "\n",
+               NULL))) {
+      FRM_ERROR ("Failed to write info: %m\n");
+      return false;
+   }
+
+   return true;
+}
+
+static bool update_info_mtime (frm_t *frm, const char *fname)
+{
+   struct info_t info;
+   if (!(read_info (frm, &info, "info"))) {
+      FRM_ERROR ("Failed to read info file: %m\n");
+      return false;
+   }
+
+   info.mtime = time (NULL);
+   if (!(write_info (frm, &info, "info"))) {
+      FRM_ERROR ("Failed to update info file: %m\n");
+      return false;
+   }
+
+   return true;
+}
+
+
+uint64_t frm_date_epoch (frm_t *frm)
+{
+   struct info_t info;
+   if (!(read_info (frm, &info, "info"))) {
       FRM_ERROR ("Failed to read [info]: %m\n");
       return (uint64_t)-1;
    }
-   struct info_t info;
-   memset (&info , 0, sizeof info);
-   read_info (&info, tmp);
-   free (tmp);
+
    return info.mtime;
 }
 
@@ -504,18 +551,69 @@ bool frm_push (frm_t *frm, const char *name, const char *message)
    }
 
    char tstring[47];
-   if (!(frm_writefile ("info", "mtime: ", get_unix_time(tstring), "\n", NULL))) {
+   if (!(frm_writefile ("info",
+               "mtime: ", uint64_string(tstring, (uint64_t)time(NULL)), "\n",
+               NULL))) {
       FRM_ERROR ("Failed to create info file [%s/info]: %m\n", name);
       return false;
    }
 
    // TODO: Update the history
-   if (!(history_append(frm->dbpath, name))) {
+   char *pwd = getcwd (NULL, 0);
+   if (!(history_append(frm->dbpath, pwd))) {
       FRM_ERROR ("Failed to update history\n");
+      free (pwd);
       return false;
    }
 
    free (olddir);
+   free (pwd);
    return true;
 }
 
+bool frm_payload_replace (frm_t *frm, const char *message)
+{
+   if (!frm) {
+      FRM_ERROR ("Error, null object passed for frm_t\n");
+      return false;
+   }
+
+   if (!(frm_writefile ("payload", message, NULL))) {
+      FRM_ERROR ("Failed to write [payload]: %m\n");
+      return false;
+   }
+
+   if (!(update_info_mtime (frm, "info"))) {
+      FRM_ERROR ("Failed to update info file with mtime: %m\n");
+      return false;
+   }
+
+   return true;
+}
+
+bool frm_payload_append (frm_t *frm, const char *message)
+{
+   if (!frm) {
+      FRM_ERROR ("Error, null object passed for frm_t\n");
+      return false;
+   }
+
+   char *current = frm_readfile ("payload");
+   if (!current) {
+      FRM_ERROR ("Warning: failed to read [payload]: %m\n");
+   }
+
+   bool ret = true;
+   if (!(frm_writefile ("payload", current, "\n", message, NULL))) {
+      FRM_ERROR ("Error writing [payload]: %m\n");
+      ret = false;
+   }
+   free (current);
+
+   if (ret && !(update_info_mtime (frm, "info"))) {
+      FRM_ERROR ("Failed to update info file with mtime: %m\n");
+      ret = false;
+   }
+
+   return ret;
+}
