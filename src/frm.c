@@ -110,7 +110,7 @@ static char *readfile (const char *name)
    }
 
    size_t nbytes = fread (ret, 1, len, inf);
-   if (nbytes != len) {
+   if (nbytes != (size_t)len) {
       FRM_ERROR ("Read {%zu of %li] bytes in [%s]: %m\n", nbytes, len, name);
       fclose (inf);
       free (ret);
@@ -419,7 +419,7 @@ struct info_t {
    uint64_t mtime;
 };
 
-static read_info (struct info_t *dst, char *data)
+static void read_info (struct info_t *dst, char *data)
 {
    char *name = NULL;
    char *sptr = NULL;

@@ -129,7 +129,7 @@ int main (int argc, char **argv)
    char *help = cline_option_get ("help");
    char *dbpath = cline_option_get ("dbpath");
    char *message = cline_option_get ("message");
-   char *frm = NULL;
+   frm_t *frm = NULL;
 
    if (!dbpath) {
       // TODO: Windows compatibility
@@ -148,7 +148,7 @@ int main (int argc, char **argv)
    // Check for each command in turn. Could be done in an array, but I don't care
    // enough to do it.
    if ((strcmp (command, "init"))==0) {
-      if (frm_create (dbpath)!=true) {
+      if ((frm = frm_create (dbpath))) {
          printf ("Initialised framedb at [%s]\n", dbpath);
          ret = EXIT_SUCCESS;
       } else {
