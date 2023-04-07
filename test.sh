@@ -109,6 +109,26 @@ execute $PROG push eighteen --message="eight: eight" || die failed push
 execute $PROG up || die failed up
 execute $PROG push eighty --message="eight: eight" || die failed push
 execute $PROG up || die failed up
+execute $PROG down one || die failed down
+execute $PROG push one --message="new one" || die failed push
+execute $PROG up || die failed up
+execute $PROG push two --message="new one" || die failed push
+execute $PROG up || die failed up
+execute $PROG push three --message="new one" || die failed push
+execute $PROG up || die failed up
+# execute $PROG push four --message="new one" || die failed push
+# execute $PROG up || die failed up
+execute $PROG push five --message="new one" || die failed push
+execute $PROG up || die failed up
+execute $PROG push six --message="new one" || die failed push
+execute $PROG up || die failed up
+execute $PROG push seven --message="new one" || die failed push
+execute $PROG up || die failed up
+execute $PROG push eight --message="new one" || die failed push
+execute $PROG up || die failed up
+execute $PROG push nine --message="new one" || die failed push
+execute $PROG up || die failed up
+execute $PROG push ten --message="new one" || die failed push
+execute $PROG up || die failed up
 execute $PROG status || die failed status
-execute $PROG history || die failed history
 

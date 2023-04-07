@@ -147,14 +147,6 @@ static char *run_editor (void)
          return NULL;
       }
       close (fd);
-      char *shcmd = ds_str_cat (editor, " ", fname, NULL);
-      printf ("Waiting for [%s] to return\n", shcmd);
-      int exitcode = system (shcmd);
-      free (shcmd);
-      if (exitcode != 0) {
-         FRM_ERROR ("Editor aborted, aborting: %m\n");
-         return NULL;
-      }
       if (!(frm_writefile (fname,
                   "\n",
                   "Replace this content with your message.",
@@ -164,7 +156,21 @@ static char *run_editor (void)
          FRM_ERROR ("Failed to edit temporary file [%s]: %m\n", fname);
          return NULL;
       }
+      char *shcmd = ds_str_cat (editor, " ", fname, NULL);
+      printf ("Waiting for [%s] to return\n", shcmd);
+      int exitcode = system (shcmd);
+      free (shcmd);
+      if (exitcode != 0) {
+         FRM_ERROR ("Editor aborted, aborting: %m\n");
+         if ((unlink (fname))!=0) {
+            FRM_ERROR ("Error: Failed to remove tmpfile [%s]: %m\n", fname);
+         }
+         return NULL;
+      }
       message = frm_readfile (fname);
+      if ((unlink (fname))!=0) {
+         FRM_ERROR ("Error: Failed to remove tmpfile [%s]\n", fname);
+      }
       if (!message) {
          FRM_ERROR ("Failed to read editor output, aborting\n");
          return NULL;
@@ -328,6 +334,22 @@ int main (int argc, char **argv)
          fprintf (stderr, "Failed to move a node up the tree\n");
          ret = EXIT_FAILURE;
       }
+      goto cleanup;
+   }
+
+   if ((strcmp (command, "down"))==0) {
+      char *target = cline_command_get(1);
+      if (!target || !target[0]) {
+         fprintf (stderr, "Must specify name of child node to switch to\n");
+         free (target);
+         ret = EXIT_FAILURE;
+         goto cleanup;
+      }
+      if (!(frm_down (frm, target))) {
+         fprintf (stderr, "Failed to switch to node [%s]\n", target);
+         ret = EXIT_FAILURE;
+      }
+      free (target);
       goto cleanup;
    }
 

@@ -748,6 +748,29 @@ bool frm_up (frm_t *frm)
    return true;
 }
 
+bool frm_down (frm_t *frm, const char *target)
+{
+   if (!frm) {
+      FRM_ERROR ("Error: null object passed for frm_t\n");
+      return false;
+   }
+
+   if ((chdir (target))!=0) {
+      FRM_ERROR ("Failed to switch to target [%s]\n", target);
+      return false;
+   }
+
+   char *pwd = get_path (frm);
+   if (!(history_append (frm->dbpath, pwd))) {
+      FRM_ERROR ("Failed to set the working node to [root]\n");
+      free (pwd);
+      return false;
+   }
+
+   free (pwd);
+   return true;
+}
+
 bool frm_switch (frm_t *frm, const char *target)
 {
    if (!frm) {
