@@ -4,7 +4,7 @@ export DBPATH=/tmp/frame/
 export PROG=./debug/bin/x86_64-linux-gnu/frame.elf
 
 if [ ! -z "$VG" ]; then
-   export VG="valgrind --leak-check=full --show-leak-kinds=all "
+   export VG="valgrind --leak-check=full --show-leak-kinds=all --error-exitcode=1"
 fi
 
 die () {
@@ -31,59 +31,84 @@ execute () {
    echo -ne "${RED}Executing${NC} ${GREEN}$STMT_NUM:${NC} "
    echo -e "${BLUE}$@${NC}"
    if [ ! -z "$VG" ]; then
-      valgrind --leak-check=full --show-leak-kinds=all $@
+      $VG $@ --dbpath=$DBPATH
       export RET=$?
       export STMT_NUM=$(($STMT_NUM + 1))
       return $RET
-      return $?
    fi
 
    if [ "$DEBUG" -eq "$STMT_NUM" ]; then
-      gdb --args $@
+      gdb --args $@ --dbpath=$DBPATH
       export RET=$?
       export STMT_NUM=$(($STMT_NUM + 1))
       return $RET
    fi
 
    export STMT_NUM=$(($STMT_NUM + 1))
-   $@
+   $@ --dbpath=$DBPATH
 }
 
 rm -rf $DBPATH
-execute $PROG --dbpath=$DBPATH init || die failed to init
-execute $PROG --dbpath=$DBPATH status || die failed status
-execute $PROG --dbpath=$DBPATH history || die failed history
+execute $PROG init || die failed to init
+execute $PROG status || die failed status
+execute $PROG history || die failed history
 
-execute $PROG --dbpath=$DBPATH replace --message="Root: replacement" || die failed replace
-execute $PROG --dbpath=$DBPATH status || die failed status
-execute $PROG --dbpath=$DBPATH history || die failed history
+execute $PROG replace --message="Root: replacement" || die failed replace
+execute $PROG status || die failed status
+execute $PROG history || die failed history
 
-execute $PROG --dbpath=$DBPATH push one --message="One: message one" || die failed push
-execute $PROG --dbpath=$DBPATH status || die failed status
-execute $PROG --dbpath=$DBPATH history || die failed history
+execute $PROG push one --message="One: message one" || die failed push
+execute $PROG status || die failed status
+execute $PROG history || die failed history
 
-execute $PROG --dbpath=$DBPATH append --message="\nMessage: 1\n" || die failed append
-execute $PROG --dbpath=$DBPATH status || die failed status
-execute $PROG --dbpath=$DBPATH history || die failed history
+execute $PROG append --message="\nMessage: 1\n" || die failed append
+execute $PROG status || die failed status
+execute $PROG history || die failed history
 
-execute $PROG --dbpath=$DBPATH up || die failed uptree
-execute $PROG --dbpath=$DBPATH status || die failed status
-execute $PROG --dbpath=$DBPATH history || die failed history
+execute $PROG up || die failed uptree
+execute $PROG status || die failed status
+execute $PROG history || die failed history
 
-execute $PROG --dbpath=$DBPATH push two --message="Two: message two" || die failed push
-execute $PROG --dbpath=$DBPATH status || die failed status
-execute $PROG --dbpath=$DBPATH history || die failed history
+execute $PROG push two --message="Two: message two" || die failed push
+execute $PROG status || die failed status
+execute $PROG history || die failed history
 
-execute $PROG --dbpath=$DBPATH switch root/one || die failed switch
-execute $PROG --dbpath=$DBPATH status || die failed status
-execute $PROG --dbpath=$DBPATH history || die failed history
+execute $PROG switch root/one || die failed switch
+execute $PROG status || die failed status
+execute $PROG history || die failed history
 
-execute $PROG --dbpath=$DBPATH push three --message="three: three" || die failed push
-execute $PROG --dbpath=$DBPATH status || die failed status
-execute $PROG --dbpath=$DBPATH history || die failed history
+execute $PROG push three --message="three: three" || die failed push
+execute $PROG status || die failed status
+execute $PROG history || die failed history
 
-execute $PROG --dbpath=$DBPATH pop  || die failed pop
-execute $PROG --dbpath=$DBPATH status || die failed status
-execute $PROG --dbpath=$DBPATH history || die failed history
+execute $PROG pop  || die failed pop
+execute $PROG status || die failed status
+execute $PROG history || die failed history
 
+execute $PROG push four --message="four: four" || die failed push
+execute $PROG status || die failed status
+execute $PROG history || die failed history
+
+execute $PROG delete root/two  || die failed delete
+execute $PROG status || die failed status
+execute $PROG history || die failed history
+
+execute $PROG switch root || die failed switch
+execute $PROG status || die failed status
+execute $PROG history || die failed history
+
+execute $PROG push five --message="five: five" || die failed push
+execute $PROG up || die failed up
+execute $PROG push six --message="six: six" || die failed push
+execute $PROG up || die failed up
+execute $PROG push seven --message="seven: seven" || die failed push
+execute $PROG up || die failed up
+execute $PROG push eight --message="eight: eight" || die failed push
+execute $PROG up || die failed up
+execute $PROG push eighteen --message="eight: eight" || die failed push
+execute $PROG up || die failed up
+execute $PROG push eighty --message="eight: eight" || die failed push
+execute $PROG up || die failed up
+execute $PROG status || die failed status
+execute $PROG history || die failed history
 

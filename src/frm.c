@@ -16,6 +16,11 @@
 #include "frm.h"
 #include "ds_str.h"
 
+struct frm_t {
+   char *dbpath;
+   char *olddir;
+};
+
 /* ********************************************************** */
 /* ********************************************************** */
 /* ********************************************************** */
@@ -62,7 +67,14 @@ static bool removedir (const char *target)
       FRM_ERROR ("Error: invalid directory removal name [%s]\n", target);
       return false;
    }
-   DIR *dirp = opendir (target);
+
+   char *olddir = pushdir (target);
+   if (!olddir) {
+      FRM_ERROR ("Error: failed to switch to [%s]\n", target);
+      return false;
+   }
+
+   DIR *dirp = opendir (".");
    if (!dirp) {
       FRM_ERROR ("Error: failed to read directory [%s]: %m\n", target);
       return false;
@@ -76,6 +88,7 @@ static bool removedir (const char *target)
          if (!olddir) {
             FRM_ERROR ("Error: Failed to switch to [%s]: %m\n", de->d_name);
             closedir (dirp);
+            popdir (&olddir);
             return false;
          }
          removedir (de->d_name);
@@ -84,16 +97,48 @@ static bool removedir (const char *target)
          if ((unlink (de->d_name)) != 0) {
             FRM_ERROR ("Error: unlink [%s]: %m\n", de->d_name);
             closedir (dirp);
+            popdir (&olddir);
             return false;
          }
       }
    }
    closedir (dirp);
+   popdir (&olddir);
+
    if ((rmdir (target)) != 0) {
       FRM_ERROR ("Error: Failed to rmdir() [%s]: %m\n", target);
       return false;
    }
    return true;
+}
+
+static char *get_path (frm_t *frm) {
+   if (!frm) {
+      FRM_ERROR ("Error: null object passed for frm_t\n");
+      return false;
+   }
+
+   char *pwd = getcwd (NULL, 0);
+   if (!pwd) {
+      FRM_ERROR ("Error: failed to retrieve path: %m\n");
+      return NULL;
+   }
+
+   // Fixup the path, if it is an absolute path.
+   size_t nbytes = strlen (frm->dbpath);
+   if (nbytes > strlen (pwd)) {
+      FRM_ERROR ("Error: internal corruption detected\n");
+      free (pwd);
+      return NULL;
+   }
+
+   char *path = ds_str_dup (&pwd[nbytes + 1]);
+   if (!path) {
+      FRM_ERROR ("OOM error: allocating path\n");
+   }
+
+   free (pwd);
+   return path;
 }
 
 
@@ -137,6 +182,11 @@ static char *history_read (const char *dbpath, size_t count)
 
 static bool history_append (const char *dbpath, const char *path)
 {
+   if (!dbpath || !path) {
+      FRM_ERROR ("Error: cannot append history with null paths\n");
+      return false;
+   }
+
    char *pwd = pushdir (dbpath);
    if (!pwd) {
       FRM_ERROR ("Failed to push current working directory\n");
@@ -147,12 +197,6 @@ static bool history_append (const char *dbpath, const char *path)
    if (!history) {
       popdir (&pwd);
       return false;
-   }
-
-   // Fixup the path, if it is an absolute path.
-   size_t nbytes = strlen (dbpath);
-   if (nbytes < strlen (path) && (memcmp (dbpath, path, nbytes))==0) {
-      path = &path[nbytes + 1];
    }
 
    if (!(frm_writefile ("history",
@@ -216,11 +260,6 @@ static bool node_create (const char *path, const char *name, const char *msg)
 /* ********************************************************** */
 /* ********************************************************** */
 /* ********************************************************** */
-
-struct frm_t {
-   char *dbpath;
-   char *olddir;
-};
 
 static void frm_free (frm_t *frm)
 {
@@ -610,15 +649,15 @@ bool frm_push (frm_t *frm, const char *name, const char *message)
       return false;
    }
 
-   char *pwd = getcwd (NULL, 0);
-   if (!(history_append(frm->dbpath, pwd))) {
+   char *path = get_path (frm);
+   if (!(history_append(frm->dbpath, path))) {
       FRM_ERROR ("Failed to update history\n");
-      free (pwd);
+      free (path);
       return false;
    }
 
    free (olddir);
-   free (pwd);
+   free (path);
    return true;
 }
 
@@ -695,14 +734,8 @@ bool frm_up (frm_t *frm)
       return false;
    }
 
-   free (pwd);
-   pwd = getcwd (NULL, 0);
-   if (!pwd) {
-      FRM_ERROR ("Error: could not retrieve the current working directory: %m\n");
-      return false;
-   }
-
-   if (!(history_append (frm->dbpath, pwd))) {
+   char *path = get_path (frm);
+   if (!(history_append (frm->dbpath, path))) {
       FRM_ERROR ("Failed to set the working node to [root]\n");
       free (olddir);
       free (pwd);
@@ -710,6 +743,7 @@ bool frm_up (frm_t *frm)
    }
 
    free (pwd);
+   free (path);
    free (olddir);
    return true;
 }
@@ -731,12 +765,7 @@ bool frm_switch (frm_t *frm, const char *target)
       return false;
    }
 
-   char *pwd = getcwd (NULL, 0);
-   if (!pwd) {
-      FRM_ERROR ("Error: could not retrieve the current working directory: %m\n");
-      return false;
-   }
-
+   char *pwd = get_path (frm);
    if (!(history_append (frm->dbpath, pwd))) {
       FRM_ERROR ("Failed to set the working node to [root]\n");
       free (pwd);
@@ -754,34 +783,25 @@ bool frm_pop (frm_t *frm)
       return false;
    }
 
-   char *olddir = getcwd (NULL, 0);
-   if (!olddir) {
+   char *oldpath = get_path (frm);
+   if (!oldpath) {
       FRM_ERROR ("Error: failed to retrieve current working directory: %m\n");
       return false;
    }
 
    if (!(frm_up (frm))) {
       FRM_ERROR ("Error: failed to switch to parent node: %m\n");
-      free (olddir);
+      free (oldpath);
       return false;
    }
 
-   char *relpath = ds_str_strsubst (olddir, frm->dbpath, "", NULL);
-   if (!(relpath)) {
-      FRM_ERROR ("OOM error: fixup relpath failure\n");
-      free (olddir);
+   if (!(frm_delete (frm, oldpath))) {
+      FRM_ERROR ("Error: failed to remove path [%s]: %m\n", oldpath);
+      free (oldpath);
       return false;
    }
 
-   if (!(frm_delete (frm, relpath))) {
-      FRM_ERROR ("Error: failed to remove path [%s]: %m\n", relpath);
-      free (olddir);
-      free (relpath);
-      return false;
-   }
-
-   free (olddir);
-   free (relpath);
+   free (oldpath);
    return true;
 }
 
@@ -808,4 +828,14 @@ bool frm_delete (frm_t *frm, const char *target)
    return true;
 }
 
+char *frm_match (frm_t *frm, const char *sterm)
+{
+   (void)sterm;
+   if (!frm) {
+      FRM_ERROR ("Error: null object passed for frm_t\n");
+      return false;
+   }
+
+   return NULL;
+}
 

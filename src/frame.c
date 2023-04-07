@@ -18,22 +18,22 @@
  * may be present, with options once again appearing anywhere.
  */
 
-// All options, separated by 0xfe
+// All options, separated by 0x1e
 static char *g_options = NULL;
 static void cline_parse_options (int argc, char **argv)
 {
    for (int i=1; i<argc; i++) {
       if (argv[i][0] == '-' && argv[i][1] == '-') {
          char *option = &argv[i][2];
-         ds_str_append (&g_options, "\xfe", option, NULL);
+         ds_str_append (&g_options, "\x1e", option, NULL);
       }
    }
-   ds_str_append (&g_options, "\xfe", NULL);
+   ds_str_append (&g_options, "\x1e", NULL);
 }
 
 static char *cline_option_get (const char *name)
 {
-   char *sterm = ds_str_cat ("\xfe", name, NULL);
+   char *sterm = ds_str_cat ("\x1e", name, NULL);
    if (!sterm) {
       fprintf (stderr, "OOM error creating option search term\n");
       return NULL;
@@ -55,9 +55,9 @@ static char *cline_option_get (const char *name)
 
    // Option found, value found
    position++;
-   char *end = strchr (position, '\xfe');
+   char *end = strchr (position, '\x1e');
    if (!end) {
-      fprintf (stderr, "Internal error, no option delimiter xfe found\n");
+      fprintf (stderr, "Internal error, no option delimiter \\x1e found\n");
       free (sterm);
       return NULL;
    }
@@ -76,23 +76,23 @@ static char *cline_option_get (const char *name)
 }
 
 
-// All commands, separated by 0xfe
+// All commands, separated by 0x1e
 static char *g_commands = NULL;
 static void cline_parse_commands (int argc, char **argv)
 {
    for (int i=1; i<argc; i++) {
       if (argv[i][0] != '-' && argv[i][1] != '-') {
-         ds_str_append (&g_commands, argv[i], "\xfe", NULL);
+         ds_str_append (&g_commands, argv[i], "\x1e", NULL);
       }
    }
-   ds_str_append (&g_commands, "\xfe", NULL);
+   ds_str_append (&g_commands, "\x1e", NULL);
 }
 
 static char *cline_command_get (size_t index)
 {
    char *cmd = g_commands;
    for (size_t i=0; i<index; i++) {
-      cmd = strchr (cmd, '\xfe');
+      cmd = strchr (cmd, '\x1e');
       if (!cmd)
          break;
    }
@@ -101,12 +101,12 @@ static char *cline_command_get (size_t index)
       return NULL;
    }
 
-   if (*cmd == '\xfe')
+   if (*cmd == '\x1e')
       cmd++;
 
-   char *end = strchr (cmd, '\xfe');
+   char *end = strchr (cmd, '\x1e');
    if (!end) {
-      fprintf (stderr, "Internal error, no command delimiter xfe found\n");
+      fprintf (stderr, "Internal error, no command delimiter \\x1e found\n");
       return NULL;
    }
 
@@ -352,6 +352,50 @@ int main (int argc, char **argv)
          fprintf (stderr, "Failed to pop current node: %m\n");
          ret = EXIT_FAILURE;
       }
+      goto cleanup;
+   }
+
+   if ((strcmp (command, "delete"))==0) {
+      char *target = cline_command_get (1);
+      if (!target || !target[0]) {
+         fprintf (stderr, "Must specify a target node to delete\n");
+         ret = EXIT_FAILURE;
+      }
+
+      if (!(frm_delete (frm, target))) {
+         fprintf (stderr, "Failed to delete current node: %m\n");
+         ret = EXIT_FAILURE;
+      }
+      free (target);
+      goto cleanup;
+   }
+
+   if ((strcmp (command, "match"))==0) {
+      char *sterm = cline_command_get (1);
+      if (!sterm || !sterm[0]) {
+         fprintf (stderr, "No search term specified, returning everything\n");
+         free (sterm);
+         if (!(sterm = ds_str_dup (""))) {
+            fprintf (stderr, "OOM error allocating search term\n");
+            ret = EXIT_FAILURE;
+            goto cleanup;
+         }
+      }
+
+      char *results = frm_match (frm, sterm);
+      if (!results) {
+         fprintf (stderr, "Internal error searching framedb\n");
+         ret = EXIT_FAILURE;
+      } else {
+         char *sptr = NULL;
+         char *tok = strtok_r (results, "\x1e", &sptr);
+         do {
+            printf ("%s\n", tok);
+         } while ((tok = strtok_r (NULL, "\x1e", &sptr)));
+      }
+
+      free (results);
+      free (sterm);
       goto cleanup;
    }
 
