@@ -122,15 +122,14 @@ static char *history_read (const char *dbpath, size_t count)
    }
 
    char *tmp = history;
-   char *eol = NULL;
    for (size_t i=0; i<count; i++) {
-      eol = strchr (tmp, '\n');
-      if (!eol)
+      tmp = strchr (tmp, '\n');
+      if (!tmp)
          break;
-      tmp = eol;
+      tmp++;
    }
-   if (eol)
-      *eol = 0;
+   if (tmp)
+      *tmp = 0;
 
    popdir (&pwd);
    return history;
@@ -152,7 +151,7 @@ static bool history_append (const char *dbpath, const char *path)
 
    if (!(frm_writefile ("history",
                path, "\n",
-               history, "\n",
+               history,
                NULL))) {
       FRM_ERROR ("Failed to write file [%s/working_node]: %m\n", dbpath);
       free (history);

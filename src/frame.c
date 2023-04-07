@@ -242,7 +242,7 @@ int main (int argc, char **argv)
       printf ("Frame history\n");
       char indicator = '*';
       do {
-         printf ("%c  %5zu: %s\n", indicator, i, tok);
+         printf ("%c  %5zu: %s\n", indicator, i++, tok);
          indicator = ' ';
       } while ((tok = strtok_r (NULL, "\n", &sptr)));
       printf ("\n");
