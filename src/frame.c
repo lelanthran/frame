@@ -393,6 +393,22 @@ int main (int argc, char **argv)
       goto cleanup;
    }
 
+   if ((strcmp (command, "list"))==0) {
+      char **results = frm_list (frm);
+      if (!results) {
+         fprintf (stderr, "Internal error during listing\n");
+         ret = EXIT_FAILURE;
+         goto cleanup;
+      }
+      for (size_t i=0; results[i]; i++) {
+         printf ("   %s\n", results[i]);
+         free (results[i]);
+      }
+
+      free (results);
+      goto cleanup;
+   }
+
    if ((strcmp (command, "match"))==0) {
       char *sterm = cline_command_get (1);
       if (!sterm || !sterm[0]) {
