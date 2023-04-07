@@ -197,6 +197,7 @@ int main (int argc, char **argv)
    char *help = cline_option_get ("help");
    char *dbpath = cline_option_get ("dbpath");
    char *message = cline_option_get ("message");
+   char *from_root = cline_option_get ("from-root");
    frm_t *frm = NULL;
 
    if (!command || !command[0]) {
@@ -404,7 +405,13 @@ int main (int argc, char **argv)
          }
       }
 
-      char *results = frm_match (frm, sterm);
+      char *results = NULL;
+      if (!from_root) {
+         results = frm_match (frm, sterm);
+      } else {
+         results = frm_match_from_root (frm, sterm);
+      }
+
       if (!results) {
          fprintf (stderr, "Internal error searching framedb\n");
          ret = EXIT_FAILURE;
@@ -432,6 +439,7 @@ cleanup:
    free (help);
    free (dbpath);
    free (message);
+   free (from_root);
    free (g_options);
    free (g_commands);
    return ret;

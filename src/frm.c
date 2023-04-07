@@ -851,14 +851,104 @@ bool frm_delete (frm_t *frm, const char *target)
    return true;
 }
 
-char *frm_match (frm_t *frm, const char *sterm)
+static bool match_de (const char *dir, const char *pattern, char **dst)
 {
+   bool error = true;
+   DIR *dirp = opendir (dir);
+   if (!dirp) {
+      FRM_ERROR ("Error: failed to open dir[%s]: %m\n", dir);
+      goto cleanup;
+   }
+   struct dirent *de = NULL;
+
+   while ((de = readdir (dirp))) {
+      if (de->d_name[0] == '.')
+         continue;
+      if ((strstr (de->d_name, pattern))!=NULL) {
+         // TODO: rewrite this
+         // Fucking quadratic algo here :-/ Will need to rewrite this if
+         // performance ever becomes an issue
+         if (!(ds_str_append (dst, dir, "/", de->d_name, "\x1e", NULL))) {
+            FRM_ERROR ("OOM error collecting match results\n");
+            goto cleanup;
+         }
+      }
+
+      if (de->d_type == DT_DIR) {
+         char *downdir = ds_str_cat (dir, "/", de->d_name, NULL);
+         if (!(downdir)) {
+            FRM_ERROR ("OOM error allocating downdir\n");
+            goto cleanup;
+         }
+         if (!(match_de (downdir, pattern, dst))) {
+            FRM_ERROR ("Error: recursive matcher failed [%s]\n", downdir);
+            goto cleanup;
+         }
+         free (downdir);
+      }
+   }
+
+   error = false;
+cleanup:
+   closedir (dirp);
+   return !error;
+}
+
+static char *match (frm_t *frm, const char *sterm, const char *from)
+{
+   char *olddir = pushdir (from);
+   if (!olddir) {
+      FRM_ERROR ("Error: directory change failure[%s]: %m\n", from);
+      return NULL;
+   }
+
    (void)sterm;
    if (!frm) {
       FRM_ERROR ("Error: null object passed for frm_t\n");
       return false;
    }
 
-   return NULL;
+   char *results = ds_str_dup ("\x1e");
+   if (!results) {
+      FRM_ERROR ("OOM error allocating initial match results string\n");
+      return NULL;
+   }
+
+   if (!(match_de (from, sterm, &results))) {
+      FRM_ERROR ("Error: matching error (see previous errors)\n");
+      free (results);
+      results = NULL;
+   }
+
+   popdir (&olddir);
+   // TODO: More quadratic fuckery. Must be replaced if performance is
+   // ever an issue.
+   char *fromdir = ds_str_cat (from, "/", NULL);
+   if (!fromdir) {
+      FRM_ERROR ("OOM error allocating fromdir in results\n");
+      free (results);
+      return NULL;
+   }
+
+   char *tmp = ds_str_strsubst(results, fromdir, "", NULL);
+   free (fromdir);
+
+   if (!tmp) {
+      FRM_ERROR ("OOM error fixing up match results\n");
+      free (results);
+      return NULL;
+   }
+   free (results);
+   return tmp;
+}
+
+char *frm_match (frm_t *frm, const char *sterm)
+{
+   return match (frm, sterm, "./");
+}
+
+char *frm_match_from_root (frm_t *frm, const char *sterm)
+{
+   return match (frm, sterm, frm->dbpath);
 }
 

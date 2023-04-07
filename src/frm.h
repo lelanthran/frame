@@ -39,6 +39,7 @@ extern "C" {
    bool frm_pop (frm_t *frm);
 
    char *frm_match (frm_t *frm, const char *sterm);
+   char *frm_match_from_root (frm_t *frm, const char *sterm);
 
 #ifdef __cplusplus
 };

@@ -132,3 +132,13 @@ execute $PROG push ten --message="new one" || die failed push
 execute $PROG up || die failed up
 execute $PROG status || die failed status
 
+# Current node is root/one
+execute $PROG match --from-root "e" || die failed match
+execute $PROG match --from-root "ei" || die failed match
+execute $PROG match --from-root "eigh" || die failed match
+
+execute $PROG match "e" || die failed match
+execute $PROG match "ei" || die failed match
+execute $PROG match "eigh" || die failed match
+
+execute $PROG match --from-root "one/ei" || die failed match
