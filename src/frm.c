@@ -203,7 +203,7 @@ static bool history_append (const char *dbpath, const char *path)
                path, "\n",
                history,
                NULL))) {
-      FRM_ERROR ("Failed to write file [%s/working_node]: %m\n", dbpath);
+      FRM_ERROR ("Failed to write file [%s/history]: %m\n", dbpath);
       free (history);
       popdir (&pwd);
       return false;
@@ -212,6 +212,131 @@ static bool history_append (const char *dbpath, const char *path)
    free (history);
    popdir (&pwd);
    return true;
+}
+
+static bool index_add (const char *dbpath, const char *entry)
+{
+   if (!dbpath || !entry || !entry[0]) {
+      FRM_ERROR ("Error: null parameters passed to index_add: [%s:%s]\n",
+            dbpath, entry);
+      return false;
+   }
+
+   char *olddir = pushdir (dbpath);
+   if (!olddir) {
+      FRM_ERROR ("Error: failed to switch directory [%s]: %m\n", dbpath);
+      return false;
+   }
+
+   char *index = frm_readfile ("index");
+   if (!index) {
+      FRM_ERROR ("Error: failed to read index: %m\n");
+      popdir (&olddir);
+      return false;
+   }
+
+   if (!(frm_writefile("index", entry, "\n", index, NULL))) {
+      FRM_ERROR ("Error: failed to write index: %m\n");
+      popdir (&olddir);
+      free (index);
+      return false;
+   }
+
+   FRM_ERROR ("Added [%s] to index\n", entry);
+
+   free (index);
+   popdir (&olddir);
+   return true;
+}
+
+static bool index_remove (const char *dbpath, const char *entry)
+{
+   bool error = true;
+   char *olddir = NULL;
+   FILE *infile = NULL, *outfile = NULL;
+   char *line = NULL;
+   static const size_t line_len = 1024 * 1024;
+   char fname[] = "frame-tmpfile-XXXXXX";
+   int fd = -1;
+   size_t nitems = 0;
+
+   if (!dbpath || !entry || !entry[0]) {
+      FRM_ERROR ("Error: null parameters passed to index_add: [%s:%s]\n",
+            dbpath, entry);
+      goto cleanup;
+   }
+
+   olddir = pushdir (dbpath);
+   if (!olddir) {
+      FRM_ERROR ("Error: failed to switch directory [%s]: %m\n", dbpath);
+      goto cleanup;
+   }
+
+   fd = mkstemp (fname);
+   if (fd < 0) {
+      FRM_ERROR ("Failed to create temporary file: %m\n");
+      return NULL;
+   }
+   close (fd);
+
+   if (!(infile = fopen ("index", "r"))) {
+      FRM_ERROR ("Error: failed to open index for reading: %m\n");
+      goto cleanup;
+   }
+
+   if (!(outfile = fopen (fname, "w"))) {
+      FRM_ERROR ("Error: failed to open [%s] for writing: %m\n", fname);
+      goto cleanup;
+   }
+
+   if (!(line = malloc (line_len))) {
+      FRM_ERROR ("OOM error allocating line for index\n");
+      goto cleanup;
+   }
+
+   while ((line = fgets (line, line_len - 1, infile))) {
+      char *tmp = strchr (line, '\n');
+      if (tmp)
+         *tmp = 0;
+      if ((strcmp (line, entry))==0) {
+         nitems++;
+         continue;
+      }
+      fprintf (outfile, "%s\n", line);
+   }
+
+   if (!nitems) {
+      FRM_ERROR ("Warning: [%s] not found in index\n", entry);
+   }
+
+   fclose (infile); infile = NULL;
+   fclose (outfile); outfile = NULL;
+
+   if ((rename (fname, "index"))!=0) {
+      FRM_ERROR ("Error: failed to update index from [%s]: %m\n", fname);
+      goto cleanup;
+   }
+
+   error = false;
+
+cleanup:
+   if (fd >= 0) {
+      close (fd);
+   }
+
+   remove (fname); // Don't care about the return value for this.
+
+   if (infile)
+      fclose (infile);
+
+   if (outfile)
+      fclose (outfile);
+
+   popdir (&olddir);
+
+   free (line);
+
+   return !error;
 }
 
 static bool node_create (const char *path, const char *name, const char *msg)
@@ -250,6 +375,10 @@ static bool node_create (const char *path, const char *name, const char *msg)
       popdir (&newdir);
       popdir (&pwd);
       return false;
+   }
+
+   if (!(frm_writefile ("index", "", NULL))) {
+      FRM_ERROR ("Warning: failed to update index\n");
    }
 
    popdir (&newdir);
@@ -395,6 +524,11 @@ frm_t *frm_create (const char *dbpath)
       return NULL;
    }
 
+   if (!(frm_writefile("index", "", NULL))) {
+      FRM_ERROR ("Error: failed to write index: %m\n");
+      popdir (&pwd);
+      return NULL;
+   }
    popdir (&pwd);
    return frm_init (dbpath);
 }
@@ -656,6 +790,10 @@ bool frm_push (frm_t *frm, const char *name, const char *message)
       return false;
    }
 
+   if (!(index_add (frm->dbpath, path))) {
+      FRM_ERROR ("Warning: failed to update index\n");
+   }
+
    free (olddir);
    free (path);
    return true;
@@ -845,6 +983,10 @@ bool frm_delete (frm_t *frm, const char *target)
       FRM_ERROR ("Error: failed to remove directory[%s]: %m\n", target);
       popdir (&olddir);
       return false;
+   }
+
+   if (!(index_remove (frm->dbpath, target))) {
+      FRM_ERROR ("Warning: failed to remove [%s] from index\n", target);
    }
 
    popdir (&olddir);
