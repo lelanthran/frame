@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export DBPATH=/tmp/frame
+export DBPATH=/tmp/frame/
 export PROG=./debug/bin/x86_64-linux-gnu/frame.elf
 
 if [ ! -z "$VG" ]; then
@@ -26,7 +26,6 @@ export STMT_NUM=0
 if [ -z "$DEBUG" ]; then
    export DEBUG=-1
 fi
-
 
 execute () {
    echo -ne "${RED}Executing${NC} ${GREEN}$STMT_NUM:${NC} "

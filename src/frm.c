@@ -149,6 +149,12 @@ static bool history_append (const char *dbpath, const char *path)
       return false;
    }
 
+   // Fixup the path, if it is an absolute path.
+   size_t nbytes = strlen (dbpath);
+   if (nbytes < strlen (path) && (memcmp (dbpath, path, nbytes))==0) {
+      path = &path[nbytes + 1];
+   }
+
    if (!(frm_writefile ("history",
                path, "\n",
                history,
