@@ -461,6 +461,41 @@ int main (int argc, char **argv)
       goto cleanup;
    }
 
+   if ((strcmp (command, "edit"))==0) {
+      const char *editor = getenv ("EDITOR");
+      if (!editor || !editor[0]) {
+         fprintf (stderr, "No editor specified in $EDITOR\n");
+         ret = EXIT_FAILURE;
+         goto cleanup;
+      }
+      char *fname = frm_payload_fname (frm);
+      if (!fname) {
+         fprintf (stderr, "Failed to retrieve filename of current node: %m\n");
+         ret = EXIT_FAILURE;
+         goto cleanup;
+      }
+
+      char *shcmd = ds_str_cat (editor, " ", fname, NULL);
+      if (!shcmd) {
+         fprintf (stderr, "OOM error allocating shell command for editor [%s]\n",
+               editor);
+         free (fname);
+         ret = EXIT_FAILURE;
+         goto cleanup;
+      }
+
+      ret = EXIT_SUCCESS;
+      if ((system (shcmd))!=0) {
+         fprintf (stderr, "Failed to execute shell command [%s]: %m\n", shcmd);
+         ret = EXIT_FAILURE;
+      }
+
+      free (fname);
+      free (shcmd);
+      current (frm);
+      goto cleanup;
+   }
+
    if ((strcmp (command, "append"))==0) {
       char *message = cline_option_get ("message");
       if (!message) {

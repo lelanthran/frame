@@ -944,6 +944,28 @@ bool frm_payload_append (frm_t *frm, const char *message)
    return ret;
 }
 
+char *frm_payload_fname (frm_t *frm)
+{
+   if (!frm) {
+      FRM_ERROR ("Error, null object passed for frm_t\n");
+      return false;
+   }
+
+   char *pwd = getcwd (NULL, 0);
+   if (!pwd) {
+      FRM_ERROR ("Error: failed to get current working directory: %m\n");
+      return NULL;
+   }
+
+   char *fname = ds_str_cat (pwd, "/payload", NULL);
+   if (!fname) {
+      FRM_ERROR ("OOM error allocating filename of payload file\n");
+   }
+
+   free (pwd);
+   return fname;
+}
+
 bool frm_up (frm_t *frm)
 {
    if (!frm) {
