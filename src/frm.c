@@ -294,7 +294,7 @@ static bool index_remove (const char *dbpath, const char *entry)
       goto cleanup;
    }
 
-   while ((line = fgets (line, line_len - 1, infile))) {
+   while ((fgets (line, line_len - 1, infile))) {
       char *tmp = strchr (line, '\n');
       if (tmp)
          *tmp = 0;
@@ -1085,8 +1085,8 @@ static char *match (frm_t *frm, const char *sterm, const char *from)
 
 static int sort_entries (const void *lhs, const void *rhs)
 {
-   const char **lstr = lhs;
-   const char **rstr = rhs;
+   const char * const *lstr = lhs;
+   const char * const *rstr = rhs;
 
    return strcmp (*lstr, *rstr);
 }
@@ -1125,7 +1125,7 @@ char **frm_list (frm_t *frm)
       goto cleanup;
    }
 
-   while ((line = fgets (line, line_len - 1, inf))) {
+   while ((fgets (line, line_len - 1, inf))) {
       char *eol = strchr (line, '\n');
       if (eol)
          *eol = 0;

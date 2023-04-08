@@ -288,6 +288,12 @@ int main (int argc, char **argv)
       if (!message) {
          message = run_editor ();
       }
+      if (!message) {
+         fprintf (stderr, "No edit message, aborting\n");
+         free (name);
+         ret = EXIT_FAILURE;
+         goto cleanup;
+      }
 
       if (!(frm_push (frm, name, message))) {
          fprintf (stderr, "Failed to create new frame\n");
@@ -309,6 +315,12 @@ int main (int argc, char **argv)
       if (!message) {
          message = run_editor ();
       }
+      if (!message) {
+         fprintf (stderr, "No edit message, aborting\n");
+         ret = EXIT_FAILURE;
+         goto cleanup;
+      }
+
       if (!(frm_payload_replace (frm, message))) {
          fprintf (stderr, "Failed to replace message of current node: %m\n");
          ret = EXIT_FAILURE;
@@ -322,6 +334,12 @@ int main (int argc, char **argv)
       if (!message) {
          message = run_editor ();
       }
+      if (!message) {
+         fprintf (stderr, "No edit message, aborting\n");
+         ret = EXIT_FAILURE;
+         goto cleanup;
+      }
+
       if (!(frm_payload_append (frm, message))) {
          fprintf (stderr, "Failed to append message to current node: %m\n");
          ret = EXIT_FAILURE;
