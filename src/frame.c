@@ -1,3 +1,12 @@
+
+/* ************************************************************************** *
+ * Frame  (©2023 Lelanthran Manickum)                                         *
+ *                                                                            *
+ * This program comes with ABSOLUTELY NO WARRANTY. This is free software      *
+ * and you are welcome to redistribute it under certain conditions;  see      *
+ * the LICENSE file for details.                                              *
+ * ****************************************************************************/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -182,6 +191,12 @@ static char *run_editor (void)
 static void print_helpmsg (void)
 {
    static const char *msg[] = {
+"     Frame  (©2023 Lelanthran Manickum)",
+"",
+"     This program comes with ABSOLUTELY NO WARRANTY. This is free software",
+"     and you are welcome to redistribute it under certain conditions;  see",
+"     the LICENSE file for details.",
+"",
 "frame [options] <command> [options] <subcommand>",
 "",
 "  Options are of the form '--name', '--name=' and '--name=value'. The first",
@@ -212,11 +227,11 @@ static void print_helpmsg (void)
 "  --from-root          Specify that the match command must search for matches",
 "                       from the root node. If this option is not present then",
 "                       matches are, by default, made only from the current node",
-"                       onwards (down the tree)",
+"                       onwards (down the tree).",
 "",
-"  --invert             Perform an invert search when matching using a search",
+"  --invert             Perform an inverted search when matching using a search",
 "                       term. By default the match command finds all nodes that",
-"                       match the search term provided. Using this flags cause",
+"                       match the search term provided. Using this flag causes",
 "                       the match command to find all nodes that *DON'T* match",
 "                       the search term.",
 "",
@@ -224,7 +239,7 @@ static void print_helpmsg (void)
 "Commands:",
 "",
 "help",
-"  Print this message and exit",
+"  Print this message and exit.",
 "",
 "create",
 "  Create a new frame database. If --dbpath is specified then it is used as the",
@@ -279,9 +294,9 @@ static void print_helpmsg (void)
 NULL,
    };
    for (size_t i=0; msg[i]; i++) {
-      fprintf (stderr, "%s\n", msg[i]);
+      printf ("%s\n", msg[i]);
    }
-   fprintf (stderr, "\n");
+   printf ("\n");
 }
 
 static void status (frm_t *frm)
