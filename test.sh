@@ -141,5 +141,7 @@ execute $PROG match --from-root "eigh" || die failed match
 execute $PROG match "e" || die failed match
 execute $PROG match "ei" || die failed match
 execute $PROG match "eigh" || die failed match
+execute $PROG match "eigh" --inverse || die failed match
+execute $PROG match "one/eigh" && die expected failed match
 
 execute $PROG match --from-root "one/ei" || die failed match

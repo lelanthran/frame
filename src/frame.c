@@ -226,6 +226,7 @@ int main (int argc, char **argv)
    char *dbpath = cline_option_get ("dbpath");
    char *message = cline_option_get ("message");
    char *from_root = cline_option_get ("from-root");
+   char *inverse = cline_option_get ("inverse");
    frm_t *frm = NULL;
 
    if (!command || !command[0]) {
@@ -441,7 +442,6 @@ int main (int argc, char **argv)
          printf ("   %s\n", results[i]);
          free (results[i]);
       }
-
       free (results);
       goto cleanup;
    }
@@ -458,25 +458,29 @@ int main (int argc, char **argv)
          }
       }
 
-      char *results = NULL;
+      char **results = NULL;
+      uint32_t flags = 0;
+      if (inverse) {
+         flags |= FRM_MATCH_INVERSE;
+      }
+
       if (!from_root) {
-         results = frm_match (frm, sterm);
+         results = frm_match (frm, sterm, flags);
       } else {
-         results = frm_match_from_root (frm, sterm);
+         results = frm_match_from_root (frm, sterm, flags);
       }
 
       if (!results) {
          fprintf (stderr, "Internal error searching framedb\n");
          ret = EXIT_FAILURE;
       } else {
-         char *sptr = NULL;
-         char *tok = strtok_r (results, "\x1e", &sptr);
-         do {
-            printf ("%s\n", tok);
-         } while ((tok = strtok_r (NULL, "\x1e", &sptr)));
+         for (size_t i=0; results[i]; i++) {
+            printf ("   %s\n", results[i]);
+            free (results[i]);
+         }
+         free (results);
       }
 
-      free (results);
       free (sterm);
       goto cleanup;
    }
@@ -493,6 +497,8 @@ cleanup:
    free (dbpath);
    free (message);
    free (from_root);
+   free (inverse);
+
    free (g_options);
    free (g_commands);
    return ret;

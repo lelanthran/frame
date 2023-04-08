@@ -706,7 +706,9 @@ char *frm_current (frm_t *frm)
       tmp = ds_str_dup ("");
    }
 
-   char *ret = ds_str_strsubst(tmp, frm->dbpath, "", NULL);
+   char *pattern = ds_str_cat (frm->dbpath, "/", NULL);
+   char *ret = ds_str_strsubst(tmp, pattern, "", NULL);
+   free (pattern);
    if (!ret) {
       FRM_ERROR ("OOM error allocating current path\n");
       ret = ds_str_dup ("");
@@ -1087,97 +1089,6 @@ bool frm_delete (frm_t *frm, const char *target)
    return true;
 }
 
-static bool match_de (const char *dir, const char *pattern, char **dst)
-{
-   bool error = true;
-   DIR *dirp = opendir (dir);
-   if (!dirp) {
-      FRM_ERROR ("Error: failed to open dir[%s]: %m\n", dir);
-      goto cleanup;
-   }
-   struct dirent *de = NULL;
-
-   while ((de = readdir (dirp))) {
-      if (de->d_name[0] == '.')
-         continue;
-      if ((strstr (de->d_name, pattern))!=NULL) {
-         // TODO: rewrite this
-         // Fucking quadratic algo here :-/ Will need to rewrite this if
-         // performance ever becomes an issue
-         if (!(ds_str_append (dst, dir, "/", de->d_name, "\x1e", NULL))) {
-            FRM_ERROR ("OOM error collecting match results\n");
-            goto cleanup;
-         }
-      }
-
-      if (de->d_type == DT_DIR) {
-         char *downdir = ds_str_cat (dir, "/", de->d_name, NULL);
-         if (!(downdir)) {
-            FRM_ERROR ("OOM error allocating downdir\n");
-            goto cleanup;
-         }
-         if (!(match_de (downdir, pattern, dst))) {
-            FRM_ERROR ("Error: recursive matcher failed [%s]\n", downdir);
-            goto cleanup;
-         }
-         free (downdir);
-      }
-   }
-
-   error = false;
-cleanup:
-   closedir (dirp);
-   return !error;
-}
-
-static char *match (frm_t *frm, const char *sterm, const char *from)
-{
-   char *olddir = pushdir (from);
-   if (!olddir) {
-      FRM_ERROR ("Error: directory change failure[%s]: %m\n", from);
-      return NULL;
-   }
-
-   (void)sterm;
-   if (!frm) {
-      FRM_ERROR ("Error: null object passed for frm_t\n");
-      return false;
-   }
-
-   char *results = ds_str_dup ("\x1e");
-   if (!results) {
-      FRM_ERROR ("OOM error allocating initial match results string\n");
-      return NULL;
-   }
-
-   if (!(match_de (from, sterm, &results))) {
-      FRM_ERROR ("Error: matching error (see previous errors)\n");
-      free (results);
-      results = NULL;
-   }
-
-   popdir (&olddir);
-   // TODO: More quadratic fuckery. Must be replaced if performance is
-   // ever an issue.
-   char *fromdir = ds_str_cat (from, "/", NULL);
-   if (!fromdir) {
-      FRM_ERROR ("OOM error allocating fromdir in results\n");
-      free (results);
-      return NULL;
-   }
-
-   char *tmp = ds_str_strsubst(results, fromdir, "", NULL);
-   free (fromdir);
-
-   if (!tmp) {
-      FRM_ERROR ("OOM error fixing up match results\n");
-      free (results);
-      return NULL;
-   }
-   free (results);
-   return tmp;
-}
-
 char **frm_list (frm_t *frm)
 {
    if (!frm) {
@@ -1188,13 +1099,88 @@ char **frm_list (frm_t *frm)
    return index_read (frm->dbpath);
 }
 
-char *frm_match (frm_t *frm, const char *sterm)
+static char **match (frm_t *frm, const char *sterm,
+      uint32_t flags, const char *from)
 {
-   return match (frm, sterm, "./");
+   if (!frm) {
+      FRM_ERROR ("Error: null object passed for frm_t\n");
+      return NULL;
+   }
+
+   char **index = index_read(frm->dbpath);
+   if (!index) {
+      FRM_ERROR ("Error: failed to read index\n");
+      return NULL;
+   }
+
+   bool error = true;
+   char **results = NULL;
+   size_t results_len = 0;
+   char *actual_sterm = ds_str_cat (from, "/", sterm, NULL);
+
+   if (!actual_sterm) {
+      FRM_ERROR ("OOM error allocating match search term\n");
+      goto cleanup;
+   }
+
+   for (size_t i=0; index[i]; i++) {
+      bool found = strstr (index[i], actual_sterm)!=NULL;
+      if (flags & FRM_MATCH_INVERSE) {
+         found = !found;
+      }
+
+      if (found) {
+         size_t newsize = results_len + 1;
+         char **tmp = realloc (results, (sizeof *tmp) * (newsize + 1));
+         if (!tmp) {
+            FRM_ERROR ("OOM error allocating match results\n");
+            goto cleanup;
+         }
+         tmp[newsize] = NULL;
+         if (!(tmp[results_len] = ds_str_dup (index[i]))) {
+            FRM_ERROR ("OOM error allocating match item %zu\n", i);
+            goto cleanup;
+         }
+
+         results = tmp;
+         results_len++;
+      }
+   }
+
+   error = false;
+cleanup:
+   for (size_t i=0; index && index[i]; i++) {
+      free (index[i]);
+   }
+   free (index);
+
+   if (error) {
+      for (size_t i=0; results && results[i]; i++) {
+         free (results[i]);
+      }
+      free (results);
+      results = 0;
+   }
+   free (actual_sterm);
+
+   return results;
 }
 
-char *frm_match_from_root (frm_t *frm, const char *sterm)
+char **frm_match (frm_t *frm, const char *sterm, uint32_t flags)
 {
-   return match (frm, sterm, frm->dbpath);
+   char *current = frm_current (frm);
+   if (!current) {
+      FRM_ERROR ("Failed to retrieve the current node\n");
+      return NULL;
+   }
+
+   char **results = match (frm, sterm, flags, current);
+   free (current);
+   return results;
+}
+
+char **frm_match_from_root (frm_t *frm, const char *sterm, uint32_t flags)
+{
+   return match (frm, sterm, flags, "root");
 }
 

@@ -7,8 +7,9 @@
    fprintf (stderr, __VA_ARGS__);\
 } while (0)
 
-typedef struct frm_t frm_t;
+#define FRM_MATCH_INVERSE        (0x01 << 0)
 
+typedef struct frm_t frm_t;
 
 #ifdef __cplusplus
 extern "C" {
@@ -39,8 +40,8 @@ extern "C" {
    bool frm_pop (frm_t *frm);
 
    char **frm_list (frm_t *frm);
-   char *frm_match (frm_t *frm, const char *sterm);
-   char *frm_match_from_root (frm_t *frm, const char *sterm);
+   char **frm_match (frm_t *frm, const char *sterm, uint32_t flags);
+   char **frm_match_from_root (frm_t *frm, const char *sterm, uint32_t flags);
 
 #ifdef __cplusplus
 };
