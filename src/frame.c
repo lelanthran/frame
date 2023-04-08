@@ -191,7 +191,7 @@ static char *run_editor (void)
 static void print_helpmsg (void)
 {
    static const char *msg[] = {
-"     Frame  (©2023 Lelanthran Manickum)",
+"     Frame  (© 2023 Lelanthran Manickum)",
 "",
 "     This program comes with ABSOLUTELY NO WARRANTY. This is free software",
 "     and you are welcome to redistribute it under certain conditions;  see",
@@ -349,6 +349,8 @@ int main (int argc, char **argv)
       ret = EXIT_FAILURE;
       goto cleanup;
    }
+
+   printf ("Frame %s, (© 2023 Lelanthran Manickum)\n", frame_version);
 
    if (!dbpath) {
       // TODO: Windows compatibility
