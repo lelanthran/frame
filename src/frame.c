@@ -283,7 +283,7 @@ static void print_helpmsg (void)
 "  Deletes the node named by <path>. The current node is not changed.",
 "",
 "list",
-"  Lists all nodes in the datbase.",
+"  Lists all descendents of the current node.",
 "",
 "match <sterm> [--from-root] [--invert]",
 "  Lists the nodes that match the search term <sterm>, starting at the current",
@@ -350,7 +350,11 @@ int main (int argc, char **argv)
       goto cleanup;
    }
 
-   printf ("Frame %s, (© 2023 Lelanthran Manickum)\n", frame_version);
+   // TODO: have a more nuanced determination of when the copyright
+   // notice should be printed.
+   if ((strcmp (command, "current"))!=0) {
+      printf ("Frame %s, (© 2023 Lelanthran Manickum)\n", frame_version);
+   }
 
    if (!dbpath) {
       // TODO: Windows compatibility
@@ -405,6 +409,11 @@ int main (int argc, char **argv)
 
    if ((strcmp (command, "status"))==0) {
       status (frm);
+      goto cleanup;
+   }
+
+   if ((strcmp (command, "current"))==0) {
+      current (frm);
       goto cleanup;
    }
 

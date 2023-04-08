@@ -251,8 +251,6 @@ static bool index_add (const char *dbpath, const char *entry)
       return false;
    }
 
-   FRM_ERROR ("Added [%s] to index\n", entry);
-
    free (index);
    popdir (&olddir);
    return true;
@@ -1121,16 +1119,6 @@ bool frm_delete (frm_t *frm, const char *target)
    return true;
 }
 
-char **frm_list (frm_t *frm)
-{
-   if (!frm) {
-      FRM_ERROR ("Error: null object passed for frm_t\n");
-      return NULL;
-   }
-
-   return index_read (frm->dbpath);
-}
-
 static char **match (frm_t *frm, const char *sterm,
       uint32_t flags, const char *from)
 {
@@ -1148,15 +1136,14 @@ static char **match (frm_t *frm, const char *sterm,
    bool error = true;
    char **results = NULL;
    size_t results_len = 0;
-   char *actual_sterm = ds_str_cat (from, "/", sterm, NULL);
-
-   if (!actual_sterm) {
-      FRM_ERROR ("OOM error allocating match search term\n");
-      goto cleanup;
-   }
 
    for (size_t i=0; index[i]; i++) {
-      bool found = strstr (index[i], actual_sterm)!=NULL;
+      bool found = strstr (index[i], from)!=NULL;
+      if (!found) {
+         continue;
+      }
+
+      found = strstr (index[i], sterm)!=NULL;
       if (flags & FRM_MATCH_INVERT) {
          found = !found;
       }
@@ -1193,9 +1180,26 @@ cleanup:
       free (results);
       results = 0;
    }
-   free (actual_sterm);
 
    return results;
+}
+
+char **frm_list (frm_t *frm)
+{
+   if (!frm) {
+      FRM_ERROR ("Error: null object passed for frm_t\n");
+      return NULL;
+   }
+
+   char *current = frm_current (frm);
+   if (!current) {
+      FRM_ERROR ("Error: unable to determine current node: %m\n");
+      return NULL;
+   }
+
+   char **ret = match (frm, "", 0, current);
+   free (current);
+   return ret;
 }
 
 char **frm_match (frm_t *frm, const char *sterm, uint32_t flags)
