@@ -7,7 +7,7 @@
    fprintf (stderr, __VA_ARGS__);\
 } while (0)
 
-#define FRM_MATCH_INVERSE        (0x01 << 0)
+#define FRM_MATCH_INVERT        (0x01 << 0)
 
 typedef struct frm_t frm_t;
 

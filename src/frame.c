@@ -181,7 +181,107 @@ static char *run_editor (void)
 
 static void print_helpmsg (void)
 {
-   fprintf (stderr, "TODO: The help message\n");
+   static const char *msg[] = {
+"frame [options] <command> [options] <subcommand>",
+"",
+"  Options are of the form '--name', '--name=' and '--name=value'. The first",
+"two forms are  for boolean options which are either set or unset and do not",
+"require any value. The third form is for options that require a value.",
+"",
+"  Commands and subcommands are of the form 'command'. Some commands require",
+"specific options and/or mandatory subcommands. Commands that require either",
+"options or subcommands will be decribed below.",
+"",
+"  Commands must be one of help, create, history, status, push, replace,",
+"append, up, down, switch, pop, delete, list or match.",
+"",
+"Options:",
+"",
+"  --help               Print this page and exit.",
+"",
+"  --dbpath=<path>      Specify the location of the database path. Defaults to",
+"                       '$HOME/.framedb' unless overridden by this option.",
+"",
+"  --message=<string>   Provides the message for any command that requires a",
+"                       message (such as 'push', 'replace', etc). If this option",
+"                       is not present and the command requires a message, then",
+"                       the editor specified with $EDITOR is used. If $EDITOR",
+"                       is empty, then a prompt for a message is issued on the",
+"                       standard input.",
+"",
+"  --from-root          Specify that the match command must search for matches",
+"                       from the root node. If this option is not present then",
+"                       matches are, by default, made only from the current node",
+"                       onwards (down the tree)",
+"",
+"  --invert             Perform an invert search when matching using a search",
+"                       term. By default the match command finds all nodes that",
+"                       match the search term provided. Using this flags cause",
+"                       the match command to find all nodes that *DON'T* match",
+"                       the search term.",
+"",
+"",
+"Commands:",
+"",
+"help",
+"  Print this message and exit",
+"",
+"create",
+"  Create a new frame database. If --dbpath is specified then it is used as the",
+"  location of the new database. If it is not then $HOME/.framdb is used instead.",
+"",
+"history",
+"  Display the history of all nodes visited.",
+"",
+"status",
+"  Display the status of the current node.",
+"",
+"push",
+"  Create a new node as the child of the current node. If a message is specified",
+"  with '--message=<string>' then it will be used as the contents of the new",
+"  node. If no message is specified with '--message=<string>' then $EDITOR will",
+"  be started to allow the user to enter a message. If $EDITOR is not set, the",
+"  user will be prompted for a message.",
+"",
+"replace",
+"  Overwrite the content of the current node with the provided message. See ",
+"  option '--message=<string>'.",
+"",
+"append",
+"  Appends the provided message (see option '--message' and command 'push') to",
+"  the current node.",
+"",
+"up",
+"  Changes the current node to the parent of the current node.",
+"",
+"down <name>",
+"  Changes the current node to the child node named by 'name'.",
+"",
+"switch <path>",
+"  Changes the current node to the non-child node named by <path>.",
+"",
+"pop",
+"  Deletes the current node and set the current node to the parent of the",
+"  deleted node.",
+"",
+"delete <path>",
+"  Deletes the node named by <path>. The current node is not changed.",
+"",
+"list",
+"  Lists all nodes in the datbase.",
+"",
+"match <sterm> [--from-root] [--invert]",
+"  Lists the nodes that match the search term <sterm>, starting at the current",
+"  node. If '--from-root' is specified then the search is performed from the",
+"  root node and not the current node. If --invert is specified, then the search",
+"  is performed for all those nodes *NOT MATCHING* the search term <sterm>.",
+"",
+NULL,
+   };
+   for (size_t i=0; msg[i]; i++) {
+      fprintf (stderr, "%s\n", msg[i]);
+   }
+   fprintf (stderr, "\n");
 }
 
 static void status (frm_t *frm)
@@ -226,10 +326,10 @@ int main (int argc, char **argv)
    char *dbpath = cline_option_get ("dbpath");
    char *message = cline_option_get ("message");
    char *from_root = cline_option_get ("from-root");
-   char *inverse = cline_option_get ("inverse");
+   char *invert = cline_option_get ("invert");
    frm_t *frm = NULL;
 
-   if (!command || !command[0]) {
+   if (!command || !command[0] || (strcmp (command, "help")==0) || help) {
       print_helpmsg ();
       ret = EXIT_FAILURE;
       goto cleanup;
@@ -253,12 +353,12 @@ int main (int argc, char **argv)
 
    // Check for each command in turn. Could be done in an array, but I don't care
    // enough to do it.
-   if ((strcmp (command, "init"))==0) {
+   if ((strcmp (command, "create"))==0) {
       if ((frm = frm_create (dbpath))) {
-         printf ("Initialised framedb at [%s]\n", dbpath);
+         printf ("Created framedb at [%s]\n", dbpath);
          ret = EXIT_SUCCESS;
       } else {
-         fprintf (stderr, "Failed to initialise framedb at [%s]: %m\n", dbpath);
+         fprintf (stderr, "Failed to create framedb at [%s]: %m\n", dbpath);
          ret = EXIT_FAILURE;
       }
       goto cleanup;
@@ -460,8 +560,8 @@ int main (int argc, char **argv)
 
       char **results = NULL;
       uint32_t flags = 0;
-      if (inverse) {
-         flags |= FRM_MATCH_INVERSE;
+      if (invert) {
+         flags |= FRM_MATCH_INVERT;
       }
 
       if (!from_root) {
@@ -497,7 +597,7 @@ cleanup:
    free (dbpath);
    free (message);
    free (from_root);
-   free (inverse);
+   free (invert);
 
    free (g_options);
    free (g_commands);

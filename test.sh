@@ -49,7 +49,7 @@ execute () {
 }
 
 rm -rf $DBPATH
-execute $PROG init || die failed to init
+execute $PROG create || die failed to create
 execute $PROG status || die failed status
 execute $PROG history || die failed history
 

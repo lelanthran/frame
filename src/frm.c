@@ -623,6 +623,7 @@ frm_t *frm_init (const char *dbpath)
 {
    bool error = true;
    frm_t *ret = NULL;
+   char *history = NULL, *node = NULL, *newpath = NULL;
 
    char *pwd = pushdir (dbpath);
    if (!pwd) {
@@ -631,8 +632,8 @@ frm_t *frm_init (const char *dbpath)
    }
 
    // TODO: replace this with frm_history
-   char *history = frm_readfile ("history");
-   char *node = NULL;
+   history = frm_readfile ("history");
+   node = NULL;
    if (!history) {
       FRM_ERROR ("Warning: no history found, defaulting to root node\n");
       node = "root";
@@ -649,7 +650,7 @@ frm_t *frm_init (const char *dbpath)
       }
    }
 
-   char *newpath = pushdir (node);
+   newpath = pushdir (node);
    if (!newpath) {
       FRM_ERROR ("Failed to switch to node [%s]: %m\n", node);
       goto cleanup;
@@ -1125,7 +1126,7 @@ static char **match (frm_t *frm, const char *sterm,
 
    for (size_t i=0; index[i]; i++) {
       bool found = strstr (index[i], actual_sterm)!=NULL;
-      if (flags & FRM_MATCH_INVERSE) {
+      if (flags & FRM_MATCH_INVERT) {
          found = !found;
       }
 
