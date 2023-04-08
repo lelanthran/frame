@@ -133,7 +133,6 @@ execute $PROG up || die failed up
 execute $PROG status || die failed status
 execute $PROG list || die failed list
 
-exit 0
 # Current node is root/one
 execute $PROG match --from-root "e" || die failed match
 execute $PROG match --from-root "ei" || die failed match

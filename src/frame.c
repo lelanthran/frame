@@ -184,6 +184,34 @@ static void print_helpmsg (void)
    fprintf (stderr, "TODO: The help message\n");
 }
 
+static void status (frm_t *frm)
+{
+   char *current = frm_current (frm);
+   char *payload = frm_payload (frm);
+   char *mtime = frm_date_str (frm);
+
+   printf ("Current frame\n   %s\n", current);
+   printf ("\nNotes (%s)\n", mtime);
+   char *sptr = NULL;
+   char *tok = strtok_r (payload, "\n", &sptr);
+   do {
+      printf ("   %s\n", tok);
+   } while ((tok = strtok_r (NULL, "\n", &sptr)));
+   printf ("\n");
+   free (current);
+   free (mtime);
+   free (payload);
+}
+
+static void current (frm_t *frm)
+{
+   char *current = frm_current (frm);
+   char *mtime = frm_date_str (frm);
+
+   printf ("%s: %s\n", current, mtime);
+   free (current);
+   free (mtime);
+}
 
 int main (int argc, char **argv)
 {
@@ -258,21 +286,7 @@ int main (int argc, char **argv)
    }
 
    if ((strcmp (command, "status"))==0) {
-      char *current = frm_current (frm);
-      char *payload = frm_payload (frm);
-      char *mtime = frm_date_str (frm);
-
-      printf ("Current frame\n   %s\n", current);
-      printf ("\nNotes (%s)\n", mtime);
-      char *sptr = NULL;
-      char *tok = strtok_r (payload, "\n", &sptr);
-      do {
-         printf ("   %s\n", tok);
-      } while ((tok = strtok_r (NULL, "\n", &sptr)));
-      printf ("\n");
-      free (current);
-      free (mtime);
-      free (payload);
+      status (frm);
       goto cleanup;
    }
 
@@ -353,6 +367,7 @@ int main (int argc, char **argv)
          fprintf (stderr, "Failed to move a node up the tree\n");
          ret = EXIT_FAILURE;
       }
+      current (frm);
       goto cleanup;
    }
 
@@ -369,6 +384,7 @@ int main (int argc, char **argv)
          ret = EXIT_FAILURE;
       }
       free (target);
+      current (frm);
       goto cleanup;
    }
 
@@ -385,6 +401,7 @@ int main (int argc, char **argv)
          ret = EXIT_FAILURE;
       }
       free (target);
+      current (frm);
       goto cleanup;
    }
 
@@ -393,6 +410,7 @@ int main (int argc, char **argv)
          fprintf (stderr, "Failed to pop current node: %m\n");
          ret = EXIT_FAILURE;
       }
+      current (frm);
       goto cleanup;
    }
 
@@ -408,6 +426,7 @@ int main (int argc, char **argv)
          ret = EXIT_FAILURE;
       }
       free (target);
+      current (frm);
       goto cleanup;
    }
 

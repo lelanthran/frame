@@ -338,6 +338,93 @@ cleanup:
    return !error;
 }
 
+static int sort_entries (const void *lhs, const void *rhs)
+{
+   const char * const *lstr = lhs;
+   const char * const *rstr = rhs;
+
+   return strcmp (*lstr, *rstr);
+}
+
+static char **index_read (const char *dbpath)
+{
+   bool error = true;
+
+   char **lines = NULL;
+   size_t nlines = 0;
+   size_t nbytes = 0;
+
+   char *line = NULL;
+   static const size_t line_len = 1024 * 1024;
+   FILE *inf = NULL;
+
+   char *olddir = NULL;
+
+   if (!dbpath) {
+      FRM_ERROR ("Error: dbpath is null\n");
+      goto cleanup;
+   }
+
+   if (!(olddir = pushdir (dbpath))) {
+      FRM_ERROR ("Error: failed to switch directory: %m\n");
+      goto cleanup;
+   }
+
+   if (!(inf = fopen ("index", "r"))) {
+      FRM_ERROR ("Error: failed to open index for reading: %m\n");
+      goto cleanup;
+   }
+
+   if (!(line = malloc (line_len))) {
+      FRM_ERROR ("OOM error allocating line for reading index\n");
+      goto cleanup;
+   }
+
+   while ((fgets (line, line_len - 1, inf))) {
+      char *eol = strchr (line, '\n');
+      if (eol)
+         *eol = 0;
+
+      size_t newsize = nlines + 1;
+      char **tmp = realloc (lines, (sizeof *tmp) * (newsize + 1));
+      if (!tmp) {
+         FRM_ERROR ("OOM error allocating storage for index\n");
+         goto cleanup;
+      }
+      tmp[nlines+1] = NULL;
+      if (!(tmp[nlines] = ds_str_dup (line))) {
+         FRM_ERROR ("OOM error allocating index entry\n");
+         free (tmp);
+         goto cleanup;
+      }
+      nbytes += strlen (line) + 2;
+      nlines = newsize;
+      lines = tmp;
+   }
+
+   qsort (lines, nlines, sizeof *lines, sort_entries);
+
+   error = false;
+
+cleanup:
+   popdir (&olddir);
+
+   if (error) {
+      for (size_t i=0; i<nlines; i++) {
+         free (lines[i]);
+      }
+      free (lines);
+      lines = NULL;
+   }
+
+   if (inf) {
+      fclose (inf);
+   }
+
+   free (line);
+   return lines;
+}
+
 static bool node_create (const char *path, const char *name, const char *msg)
 {
    char *pwd = pushdir (path);
@@ -858,11 +945,19 @@ bool frm_up (frm_t *frm)
       return false;
    }
 
-   if ((strcmp (frm->dbpath, pwd))==0) {
+   char *tmp = ds_str_cat (frm->dbpath, "/root", NULL);
+   if (!tmp) {
+      FRM_ERROR ("OOM error allocating temporary pattern\n");
+      return false;
+   }
+
+   if ((strcmp (tmp, pwd))==0) {
       FRM_ERROR ("Error: cannot go up a level beyond dbpath [%s]\n", frm->dbpath);
+      free (tmp);
       free (pwd);
       return false;
    }
+   free (tmp);
 
    char *olddir = pushdir ("..");
    if (!olddir) {
@@ -1083,91 +1178,14 @@ static char *match (frm_t *frm, const char *sterm, const char *from)
    return tmp;
 }
 
-static int sort_entries (const void *lhs, const void *rhs)
-{
-   const char * const *lstr = lhs;
-   const char * const *rstr = rhs;
-
-   return strcmp (*lstr, *rstr);
-}
-
 char **frm_list (frm_t *frm)
 {
-   bool error = true;
-
-   char **lines = NULL;
-   size_t nlines = 0;
-   size_t nbytes = 0;
-
-   char *line = NULL;
-   static const size_t line_len = 1024 * 1024;
-   FILE *inf = NULL;
-
-   char *olddir = NULL;
-
    if (!frm) {
       FRM_ERROR ("Error: null object passed for frm_t\n");
-      goto cleanup;
+      return NULL;
    }
 
-   if (!(olddir = pushdir (frm->dbpath))) {
-      FRM_ERROR ("Error: failed to switch directory: %m\n");
-      goto cleanup;
-   }
-
-   if (!(inf = fopen ("index", "r"))) {
-      FRM_ERROR ("Error: failed to open index for reading: %m\n");
-      goto cleanup;
-   }
-
-   if (!(line = malloc (line_len))) {
-      FRM_ERROR ("OOM error allocating line for reading index\n");
-      goto cleanup;
-   }
-
-   while ((fgets (line, line_len - 1, inf))) {
-      char *eol = strchr (line, '\n');
-      if (eol)
-         *eol = 0;
-
-      size_t newsize = nlines + 1;
-      char **tmp = realloc (lines, (sizeof *tmp) * (newsize + 1));
-      if (!tmp) {
-         FRM_ERROR ("OOM error allocating storage for index\n");
-         goto cleanup;
-      }
-      tmp[nlines+1] = NULL;
-      if (!(tmp[nlines] = ds_str_dup (line))) {
-         FRM_ERROR ("OOM error allocating index entry\n");
-         free (tmp);
-         goto cleanup;
-      }
-      nbytes += strlen (line) + 2;
-      nlines = newsize;
-      lines = tmp;
-   }
-
-   qsort (lines, nlines, sizeof *lines, sort_entries);
-
-   error = false;
-
-cleanup:
-   popdir (&olddir);
-
-   if (error) {
-      for (size_t i=0; i<nlines; i++) {
-         free (lines[i]);
-      }
-      free (lines);
-      lines = NULL;
-   }
-
-   if (inf) {
-      fclose (inf);
-   }
-
-   free (line);
-   return lines;
+   return index_read (frm->dbpath);
 }
 
 char *frm_match (frm_t *frm, const char *sterm)
