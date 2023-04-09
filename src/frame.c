@@ -484,7 +484,7 @@ int main (int argc, char **argv)
          goto cleanup;
       }
 
-      char *shcmd = ds_str_cat (editor, " ", fname, NULL);
+      char *shcmd = ds_str_cat (editor, " '", fname, "'", NULL);
       if (!shcmd) {
          fprintf (stderr, "OOM error allocating shell command for editor [%s]\n",
                editor);
