@@ -1,0 +1,41 @@
+# Source this file to have frame autocompletions in bash
+
+_frame_completions() {
+   # Backup old nullglob setting
+   local shoptbakup="`shopt -p nullglob`"
+   shopt -s nullglob
+
+   CMDS="help create history back status push replace append up down switch pop delete list match"
+
+   local cur opts i opt
+   local IFS=$'\n'
+   cur="${COMP_WORDS[COMP_CWORD]}"
+
+   case "$cur" in
+      switch|replace|down|delete)
+         frame list --quiet | while read LINE; do
+            opts+=($LINE)
+         done
+         ;;
+
+      "")
+         # opts=("help" "create" "history" "back" "status" "push" "replace" "append" "up" "down" "switch" "pop" "delete" "list" "match")
+         export FRAMEopts=("")
+         for X in $CMDS; do
+            # TODO: How do a append $X as an element to the array opts?
+            FRAMEopts=(${opts[@]} "$X")
+         done
+         opts=$FRAMEopts
+         ;;
+
+      # TODO: how to filter $opts through whatever remains in *)
+   esac
+
+   COMPREPLY=($( compgen -W "${opts[*]}" -- "$cur" ) )
+   # Restore nullglob setting
+   eval "$shoptbakup" 2>/dev/null
+
+   return 0
+}
+
+complete -F _frame_completions frame
