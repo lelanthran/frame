@@ -1166,6 +1166,13 @@ static char **match (frm_t *frm, const char *sterm,
       }
    }
 
+   // If we reached this point then no errors occurred but no matches were
+   // found either. Must return an empty list.
+   if (!(results = calloc (1, sizeof *results))) {
+      FRM_ERROR ("OOM error allocating empty list\n");
+      goto cleanup;
+   }
+
    error = false;
 cleanup:
    for (size_t i=0; index && index[i]; i++) {
@@ -1197,8 +1204,16 @@ char **frm_list (frm_t *frm)
       return NULL;
    }
 
-   char **ret = match (frm, "", 0, current);
+   char *prefixed_current = ds_str_cat (current, "/", NULL);
+   if (!prefixed_current) {
+      FRM_ERROR ("OOM error allocating temporary string for current node\n");
+      free (current);
+      return NULL;
+   }
    free (current);
+
+   char **ret = match (frm, "", 0, prefixed_current);
+   free (prefixed_current);
    return ret;
 }
 

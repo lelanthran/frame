@@ -235,6 +235,8 @@ static void print_helpmsg (void)
 "                       the match command to find all nodes that *DON'T* match",
 "                       the search term.",
 "",
+"  --quiet              Suppress all non-functional stdout messages, such as",
+"                       the copyright notice.",
 "",
 "Commands:",
 "",
@@ -342,6 +344,7 @@ int main (int argc, char **argv)
    char *message = cline_option_get ("message");
    char *from_root = cline_option_get ("from-root");
    char *invert = cline_option_get ("invert");
+   char *quiet = cline_option_get ("quiet");
    frm_t *frm = NULL;
 
    if (!command || !command[0] || (strcmp (command, "help")==0) || help) {
@@ -352,7 +355,7 @@ int main (int argc, char **argv)
 
    // TODO: have a more nuanced determination of when the copyright
    // notice should be printed.
-   if ((strcmp (command, "current"))!=0) {
+   if (quiet==NULL) {
       printf ("Frame %s, (© 2023 Lelanthran Manickum)\n", frame_version);
    }
 
