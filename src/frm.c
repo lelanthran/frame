@@ -1063,6 +1063,60 @@ bool frm_switch (frm_t *frm, const char *target)
    return true;
 }
 
+bool frm_back (frm_t *frm, size_t index)
+{
+   if (!frm) {
+      FRM_ERROR ("Error: null object passed for frm_t\n");
+      return false;
+   }
+
+   bool error = true;
+   FILE *infile = NULL;
+   char *line = NULL;
+   char *olddir = NULL;
+   static const size_t line_len = 1024 * 1024 * 10;
+
+   if (!(olddir = pushdir (frm->dbpath))) {
+      FRM_ERROR ("Failed to switch to dbpath directory [%s]: %m\n", frm->dbpath);
+      goto cleanup;
+   }
+
+   if (!(infile = fopen ("history", "r"))) {
+      FRM_ERROR ("Failed to open [history] for reading: %m\n");
+      goto cleanup;
+   }
+
+   if (!(line = malloc (line_len))) {
+      FRM_ERROR ("OOM error allocating line for reading history\n");
+   }
+
+   size_t nline = 0;
+   line[0] = 0;
+   while ((fgets (line, line_len - 1, infile))) {
+      char *tmp = strchr (line, '\n');
+      if (tmp)
+         *tmp = 0;
+      if (nline++ >= index)
+         break;
+   }
+
+   if (!line[0]) {
+      FRM_ERROR ("History file appears to be empty, aborting switch.\n");
+      goto cleanup;
+   }
+
+   frm_switch (frm, line);
+
+   error = false;
+cleanup:
+   free (line);
+   free (olddir);
+   if (infile)
+      fclose (infile);
+
+   return !error;
+}
+
 bool frm_pop (frm_t *frm)
 {
    if (!frm) {
@@ -1166,9 +1220,9 @@ static char **match (frm_t *frm, const char *sterm,
       }
    }
 
-   // If we reached this point then no errors occurred but no matches were
-   // found either. Must return an empty list.
-   if (!(results = calloc (1, sizeof *results))) {
+   // If we reached this point with NULL results then no errors occurred but
+   // no matches were found either. Must return an empty list.
+   if (!results && !(results = calloc (1, sizeof *results))) {
       FRM_ERROR ("OOM error allocating empty list\n");
       goto cleanup;
    }

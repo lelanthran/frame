@@ -247,8 +247,17 @@ static void print_helpmsg (void)
 "  Create a new frame database. If --dbpath is specified then it is used as the",
 "  location of the new database. If it is not then $HOME/.framdb is used instead.",
 "",
-"history",
-"  Display the history of all nodes visited.",
+"history [count]",
+"  Display the history of all nodes visited, with a number that can be used",
+"  in the 'back' command (see 'back' below). The [count] value specifies how",
+"  many items to display. If [count] is omitted it defaults to 10. To list",
+"  all items in the history (which may be very large) use '0' as the count.",
+"",
+"back [number]",
+"  Jump to the nth item in the history, as specified by [number]. If [number]",
+"  is omitted then '1' is used. The 'history' command helpfully lists a number",
+"  next to each element that can be used to determine what number in the",
+"  history to jump to. Specifying '0' is pointless.",
 "",
 "status",
 "  Display the status of the current node.",
@@ -395,7 +404,27 @@ int main (int argc, char **argv)
    }
 
    if ((strcmp (command, "history"))==0) {
-      char *history = frm_history (frm, 10);
+      char *subcmd = cline_command_get (1);
+      size_t count = 10;
+      if (subcmd && subcmd[0]) {
+         if (((sscanf (subcmd, "%zu", &count)))!=1) {
+            if (!quiet) {
+               fprintf (stderr, "Specified count of [%s] is invalid\n", subcmd);
+               fprintf (stderr, "Using default of 10 for history count\n");
+            }
+            count = 10;
+         }
+      } else {
+         if (!quiet) {
+            fprintf (stderr, "No count specified, listing last 10 items\n");
+         }
+      }
+      free (subcmd);
+
+      if (count == 0)
+         count = (size_t)-1;
+
+      char *history = frm_history (frm, count);
       char *sptr = NULL;
       char *tok = strtok_r (history, "\n", &sptr);
       size_t i=0;
@@ -570,6 +599,34 @@ int main (int argc, char **argv)
       goto cleanup;
    }
 
+   if ((strcmp (command, "back"))==0) {
+      char *subcommand = cline_command_get (1);
+      if (!subcommand || !subcommand[0]) {
+         subcommand = ds_str_dup ("1");
+         if (!subcommand) {
+            fprintf (stderr, "OOM error allocating default parameter for 'back'\n");
+            ret = EXIT_FAILURE;
+            goto cleanup;
+         }
+      }
+
+      size_t index = 0;
+      if ((sscanf (subcommand, "%zu", &index))!=1) {
+         fprintf (stderr, "Invalid number: [%s]\n", subcommand);
+         free (subcommand);
+         ret = EXIT_FAILURE;
+         goto cleanup;
+      }
+
+      if (!(frm_back (frm, index))) {
+         fprintf (stderr, "Failed to switch to history item %zu\n", index);
+         ret = EXIT_FAILURE;
+      }
+      free (subcommand);
+      goto cleanup;
+   }
+
+
    if ((strcmp (command, "pop"))==0) {
       if (!(frm_pop (frm))) {
          fprintf (stderr, "Failed to pop current node: %m\n");
@@ -613,7 +670,9 @@ int main (int argc, char **argv)
    if ((strcmp (command, "match"))==0) {
       char *sterm = cline_command_get (1);
       if (!sterm || !sterm[0]) {
-         fprintf (stderr, "No search term specified, returning everything\n");
+         if (!quiet) {
+            fprintf (stderr, "No search term specified, returning everything\n");
+         }
          free (sterm);
          if (!(sterm = ds_str_dup (""))) {
             fprintf (stderr, "OOM error allocating search term\n");
@@ -662,6 +721,7 @@ cleanup:
    free (message);
    free (from_root);
    free (invert);
+   free (quiet);
 
    free (g_options);
    free (g_commands);

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 export DBPATH=/tmp/frame/
-export PROG=./debug/bin/x86_64-linux-gnu/frame.elf
+export PROG="./debug/bin/x86_64-linux-gnu/frame.elf --quiet"
 
 if [ ! -z "$VG" ]; then
    export VG="valgrind --leak-check=full --show-leak-kinds=all --error-exitcode=1"
@@ -77,6 +77,14 @@ execute $PROG switch root/one || die failed switch
 execute $PROG status || die failed status
 execute $PROG history || die failed history
 
+execute $PROG back 1 || die failed back
+execute $PROG status || die failed status
+execute $PROG history || die failed history
+
+execute $PROG back 1 || die failed back
+execute $PROG status || die failed status
+execute $PROG history || die failed history
+
 execute $PROG push three --message="three: three" || die failed push
 execute $PROG status || die failed status
 execute $PROG history || die failed history
@@ -96,6 +104,7 @@ execute $PROG history || die failed history
 execute $PROG switch root || die failed switch
 execute $PROG status || die failed status
 execute $PROG history || die failed history
+
 
 execute $PROG push five --message="five: five" || die failed push
 execute $PROG up || die failed up
@@ -143,6 +152,9 @@ execute $PROG match "ei" || die failed match
 execute $PROG match "eigh" || die failed match
 execute $PROG match "eigh" --invert || die failed match
 execute $PROG status || die failed status
-execute $PROG match "one/egh" && die expected failed match
+execute $PROG match "one/egh" > t
+if [ `wc -l t | cut -f 1 -d \   ` -ne 1 ]; then
+   die expected failed match
+fi
 
 execute $PROG match --from-root "one/ei" || die failed match

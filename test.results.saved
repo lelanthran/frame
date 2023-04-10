@@ -1,121 +1,100 @@
-[31mExecuting[0m [32m0:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf create[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
+[31mExecuting[0m [32m0:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet create[0m
 Created framedb at [/tmp/frame/]
-[31mExecuting[0m [32m1:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf status[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
+[31mExecuting[0m [32m1:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet status[0m
 Current frame
    root
 
-Notes (Sun Apr  9 00:16:35 2023)
+Notes (Mon Apr 10 23:21:41 2023)
    ENTER YOUR NOTES HERE
 
-[31mExecuting[0m [32m2:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf history[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
+[31mExecuting[0m [32m2:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet history[0m
 Frame history
 *      0: root
 
-[31mExecuting[0m [32m3:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf replace --message=Root: replacement[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
-[31mExecuting[0m [32m4:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf status[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
+[31mExecuting[0m [32m3:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet replace --message=Root: replacement[0m
+[31mExecuting[0m [32m4:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet status[0m
 Current frame
    root
 
-Notes (Sun Apr  9 00:16:35 2023)
+Notes (Mon Apr 10 23:21:41 2023)
    Root:
 
-[31mExecuting[0m [32m5:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf history[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
+[31mExecuting[0m [32m5:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet history[0m
 Frame history
 *      0: root
 
-[31mExecuting[0m [32m6:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf push one --message=One: message one[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
+[31mExecuting[0m [32m6:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet push one --message=One: message one[0m
 Created new frame [root/one]
-[31mExecuting[0m [32m7:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf status[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
+[31mExecuting[0m [32m7:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet status[0m
 Current frame
    root/one
 
-Notes (Sun Apr  9 00:16:35 2023)
+Notes (Mon Apr 10 23:21:41 2023)
    One:
 
-[31mExecuting[0m [32m8:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf history[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
+[31mExecuting[0m [32m8:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet history[0m
 Frame history
 *      0: root/one
        1: root
 
-[31mExecuting[0m [32m9:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf append --message=
+[31mExecuting[0m [32m9:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet append --message=
 Message: 1
 [0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
-[31mExecuting[0m [32m10:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf status[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
+[31mExecuting[0m [32m10:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet status[0m
 Current frame
    root/one
 
-Notes (Sun Apr  9 00:16:35 2023)
+Notes (Mon Apr 10 23:21:41 2023)
    One:
    \nMessage:
 
-[31mExecuting[0m [32m11:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf history[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
+[31mExecuting[0m [32m11:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet history[0m
 Frame history
 *      0: root/one
        1: root
 
-[31mExecuting[0m [32m12:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf up[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
-root: Sun Apr  9 00:16:35 2023
-[31mExecuting[0m [32m13:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf status[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
+[31mExecuting[0m [32m12:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet up[0m
+root: Mon Apr 10 23:21:41 2023
+[31mExecuting[0m [32m13:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet status[0m
 Current frame
    root
 
-Notes (Sun Apr  9 00:16:35 2023)
+Notes (Mon Apr 10 23:21:41 2023)
    Root:
 
-[31mExecuting[0m [32m14:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf history[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
+[31mExecuting[0m [32m14:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet history[0m
 Frame history
 *      0: root
        1: root/one
        2: root
 
-[31mExecuting[0m [32m15:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf push two --message=Two: message two[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
+[31mExecuting[0m [32m15:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet push two --message=Two: message two[0m
 Created new frame [root/two]
-[31mExecuting[0m [32m16:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf status[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
+[31mExecuting[0m [32m16:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet status[0m
 Current frame
    root/two
 
-Notes (Sun Apr  9 00:16:35 2023)
+Notes (Mon Apr 10 23:21:41 2023)
    Two:
 
-[31mExecuting[0m [32m17:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf history[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
+[31mExecuting[0m [32m17:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet history[0m
 Frame history
 *      0: root/two
        1: root
        2: root/one
        3: root
 
-[31mExecuting[0m [32m18:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf switch root/one[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
-root/one: Sun Apr  9 00:16:35 2023
-[31mExecuting[0m [32m19:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf status[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
+[31mExecuting[0m [32m18:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet switch root/one[0m
+root/one: Mon Apr 10 23:21:41 2023
+[31mExecuting[0m [32m19:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet status[0m
 Current frame
    root/one
 
-Notes (Sun Apr  9 00:16:35 2023)
+Notes (Mon Apr 10 23:21:41 2023)
    One:
    \nMessage:
 
-[31mExecuting[0m [32m20:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf history[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
+[31mExecuting[0m [32m20:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet history[0m
 Frame history
 *      0: root/one
        1: root/two
@@ -123,109 +102,138 @@ Frame history
        3: root/one
        4: root
 
-[31mExecuting[0m [32m21:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf push three --message=three: three[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
-Created new frame [root/one/three]
-[31mExecuting[0m [32m22:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf status[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
+[31mExecuting[0m [32m21:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet back 1[0m
+[31mExecuting[0m [32m22:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet status[0m
 Current frame
-   root/one/three
+   root/two
 
-Notes (Sun Apr  9 00:16:35 2023)
-   three:
+Notes (Mon Apr 10 23:21:41 2023)
+   Two:
 
-[31mExecuting[0m [32m23:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf history[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
+[31mExecuting[0m [32m23:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet history[0m
 Frame history
-*      0: root/one/three
+*      0: root/two
        1: root/one
        2: root/two
        3: root
        4: root/one
        5: root
 
-[31mExecuting[0m [32m24:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf pop[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
-root/one: Sun Apr  9 00:16:35 2023
-[31mExecuting[0m [32m25:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf status[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
+[31mExecuting[0m [32m24:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet back 1[0m
+[31mExecuting[0m [32m25:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet status[0m
 Current frame
    root/one
 
-Notes (Sun Apr  9 00:16:35 2023)
+Notes (Mon Apr 10 23:21:41 2023)
    One:
    \nMessage:
 
-[31mExecuting[0m [32m26:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf history[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
+[31mExecuting[0m [32m26:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet history[0m
 Frame history
 *      0: root/one
-       1: root/one/three
+       1: root/two
        2: root/one
        3: root/two
        4: root
        5: root/one
        6: root
 
-[31mExecuting[0m [32m27:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf push four --message=four: four[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
+[31mExecuting[0m [32m27:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet push three --message=three: three[0m
+Created new frame [root/one/three]
+[31mExecuting[0m [32m28:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet status[0m
+Current frame
+   root/one/three
+
+Notes (Mon Apr 10 23:21:41 2023)
+   three:
+
+[31mExecuting[0m [32m29:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet history[0m
+Frame history
+*      0: root/one/three
+       1: root/one
+       2: root/two
+       3: root/one
+       4: root/two
+       5: root
+       6: root/one
+       7: root
+
+[31mExecuting[0m [32m30:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet pop[0m
+root/one: Mon Apr 10 23:21:41 2023
+[31mExecuting[0m [32m31:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet status[0m
+Current frame
+   root/one
+
+Notes (Mon Apr 10 23:21:41 2023)
+   One:
+   \nMessage:
+
+[31mExecuting[0m [32m32:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet history[0m
+Frame history
+*      0: root/one
+       1: root/one/three
+       2: root/one
+       3: root/two
+       4: root/one
+       5: root/two
+       6: root
+       7: root/one
+       8: root
+
+[31mExecuting[0m [32m33:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet push four --message=four: four[0m
 Created new frame [root/one/four]
-[31mExecuting[0m [32m28:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf status[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
+[31mExecuting[0m [32m34:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet status[0m
 Current frame
    root/one/four
 
-Notes (Sun Apr  9 00:16:35 2023)
+Notes (Mon Apr 10 23:21:41 2023)
    four:
 
-[31mExecuting[0m [32m29:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf history[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
+[31mExecuting[0m [32m35:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet history[0m
 Frame history
 *      0: root/one/four
        1: root/one
        2: root/one/three
        3: root/one
        4: root/two
-       5: root
-       6: root/one
+       5: root/one
+       6: root/two
        7: root
+       8: root/one
+       9: root
 
-[31mExecuting[0m [32m30:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf delete root/two[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
-root/one/four: Sun Apr  9 00:16:35 2023
-[31mExecuting[0m [32m31:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf status[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
+[31mExecuting[0m [32m36:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet delete root/two[0m
+root/one/four: Mon Apr 10 23:21:41 2023
+[31mExecuting[0m [32m37:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet status[0m
 Current frame
    root/one/four
 
-Notes (Sun Apr  9 00:16:35 2023)
+Notes (Mon Apr 10 23:21:41 2023)
    four:
 
-[31mExecuting[0m [32m32:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf history[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
+[31mExecuting[0m [32m38:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet history[0m
 Frame history
 *      0: root/one/four
        1: root/one
        2: root/one/three
        3: root/one
        4: root/two
-       5: root
-       6: root/one
+       5: root/one
+       6: root/two
        7: root
+       8: root/one
+       9: root
 
-[31mExecuting[0m [32m33:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf switch root[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
-root: Sun Apr  9 00:16:35 2023
-[31mExecuting[0m [32m34:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf status[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
+[31mExecuting[0m [32m39:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet switch root[0m
+root: Mon Apr 10 23:21:41 2023
+[31mExecuting[0m [32m40:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet status[0m
 Current frame
    root
 
-Notes (Sun Apr  9 00:16:35 2023)
+Notes (Mon Apr 10 23:21:41 2023)
    Root:
 
-[31mExecuting[0m [32m35:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf history[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
+[31mExecuting[0m [32m41:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet history[0m
 Frame history
 *      0: root
        1: root/one/four
@@ -233,115 +241,82 @@ Frame history
        3: root/one/three
        4: root/one
        5: root/two
-       6: root
-       7: root/one
+       6: root/one
+       7: root/two
        8: root
+       9: root/one
 
-[31mExecuting[0m [32m36:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf push five --message=five: five[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
+[31mExecuting[0m [32m42:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet push five --message=five: five[0m
 Created new frame [root/five]
-[31mExecuting[0m [32m37:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf up[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
-root: Sun Apr  9 00:16:35 2023
-[31mExecuting[0m [32m38:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf push six --message=six: six[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
+[31mExecuting[0m [32m43:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet up[0m
+root: Mon Apr 10 23:21:41 2023
+[31mExecuting[0m [32m44:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet push six --message=six: six[0m
 Created new frame [root/six]
-[31mExecuting[0m [32m39:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf up[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
-root: Sun Apr  9 00:16:35 2023
-[31mExecuting[0m [32m40:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf push seven --message=seven: seven[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
+[31mExecuting[0m [32m45:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet up[0m
+root: Mon Apr 10 23:21:41 2023
+[31mExecuting[0m [32m46:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet push seven --message=seven: seven[0m
 Created new frame [root/seven]
-[31mExecuting[0m [32m41:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf up[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
-root: Sun Apr  9 00:16:35 2023
-[31mExecuting[0m [32m42:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf push eight --message=eight: eight[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
+[31mExecuting[0m [32m47:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet up[0m
+root: Mon Apr 10 23:21:41 2023
+[31mExecuting[0m [32m48:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet push eight --message=eight: eight[0m
 Created new frame [root/eight]
-[31mExecuting[0m [32m43:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf up[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
-root: Sun Apr  9 00:16:35 2023
-[31mExecuting[0m [32m44:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf push eighteen --message=eight: eight[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
+[31mExecuting[0m [32m49:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet up[0m
+root: Mon Apr 10 23:21:41 2023
+[31mExecuting[0m [32m50:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet push eighteen --message=eight: eight[0m
 Created new frame [root/eighteen]
-[31mExecuting[0m [32m45:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf up[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
-root: Sun Apr  9 00:16:35 2023
-[31mExecuting[0m [32m46:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf push eighty --message=eight: eight[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
+[31mExecuting[0m [32m51:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet up[0m
+root: Mon Apr 10 23:21:41 2023
+[31mExecuting[0m [32m52:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet push eighty --message=eight: eight[0m
 Created new frame [root/eighty]
-[31mExecuting[0m [32m47:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf up[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
-root: Sun Apr  9 00:16:35 2023
-[31mExecuting[0m [32m48:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf down one[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
-root/one: Sun Apr  9 00:16:35 2023
-[31mExecuting[0m [32m49:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf push one --message=new one[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
+[31mExecuting[0m [32m53:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet up[0m
+root: Mon Apr 10 23:21:41 2023
+[31mExecuting[0m [32m54:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet down one[0m
+root/one: Mon Apr 10 23:21:41 2023
+[31mExecuting[0m [32m55:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet push one --message=new one[0m
 Created new frame [root/one/one]
-[31mExecuting[0m [32m50:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf up[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
-root/one: Sun Apr  9 00:16:35 2023
-[31mExecuting[0m [32m51:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf push two --message=new one[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
+[31mExecuting[0m [32m56:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet up[0m
+root/one: Mon Apr 10 23:21:41 2023
+[31mExecuting[0m [32m57:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet push two --message=new one[0m
 Created new frame [root/one/two]
-[31mExecuting[0m [32m52:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf up[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
-root/one: Sun Apr  9 00:16:35 2023
-[31mExecuting[0m [32m53:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf push three --message=new one[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
+[31mExecuting[0m [32m58:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet up[0m
+root/one: Mon Apr 10 23:21:41 2023
+[31mExecuting[0m [32m59:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet push three --message=new one[0m
 Created new frame [root/one/three]
-[31mExecuting[0m [32m54:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf up[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
-root/one: Sun Apr  9 00:16:35 2023
-[31mExecuting[0m [32m55:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf push five --message=new one[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
+[31mExecuting[0m [32m60:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet up[0m
+root/one: Mon Apr 10 23:21:41 2023
+[31mExecuting[0m [32m61:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet push five --message=new one[0m
 Created new frame [root/one/five]
-[31mExecuting[0m [32m56:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf up[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
-root/one: Sun Apr  9 00:16:35 2023
-[31mExecuting[0m [32m57:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf push six --message=new one[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
+[31mExecuting[0m [32m62:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet up[0m
+root/one: Mon Apr 10 23:21:41 2023
+[31mExecuting[0m [32m63:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet push six --message=new one[0m
 Created new frame [root/one/six]
-[31mExecuting[0m [32m58:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf up[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
-root/one: Sun Apr  9 00:16:35 2023
-[31mExecuting[0m [32m59:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf push seven --message=new one[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
+[31mExecuting[0m [32m64:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet up[0m
+root/one: Mon Apr 10 23:21:41 2023
+[31mExecuting[0m [32m65:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet push seven --message=new one[0m
 Created new frame [root/one/seven]
-[31mExecuting[0m [32m60:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf up[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
-root/one: Sun Apr  9 00:16:35 2023
-[31mExecuting[0m [32m61:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf push eight --message=new one[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
+[31mExecuting[0m [32m66:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet up[0m
+root/one: Mon Apr 10 23:21:41 2023
+[31mExecuting[0m [32m67:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet push eight --message=new one[0m
 Created new frame [root/one/eight]
-[31mExecuting[0m [32m62:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf up[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
-root/one: Sun Apr  9 00:16:35 2023
-[31mExecuting[0m [32m63:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf push nine --message=new one[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
+[31mExecuting[0m [32m68:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet up[0m
+root/one: Mon Apr 10 23:21:41 2023
+[31mExecuting[0m [32m69:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet push nine --message=new one[0m
 Created new frame [root/one/nine]
-[31mExecuting[0m [32m64:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf up[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
-root/one: Sun Apr  9 00:16:35 2023
-[31mExecuting[0m [32m65:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf push ten --message=new one[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
+[31mExecuting[0m [32m70:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet up[0m
+root/one: Mon Apr 10 23:21:41 2023
+[31mExecuting[0m [32m71:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet push ten --message=new one[0m
 Created new frame [root/one/ten]
-[31mExecuting[0m [32m66:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf up[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
-root/one: Sun Apr  9 00:16:35 2023
-[31mExecuting[0m [32m67:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf status[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
+[31mExecuting[0m [32m72:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet up[0m
+root/one: Mon Apr 10 23:21:41 2023
+[31mExecuting[0m [32m73:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet status[0m
 Current frame
    root/one
 
-Notes (Sun Apr  9 00:16:35 2023)
+Notes (Mon Apr 10 23:21:41 2023)
    One:
    \nMessage:
 
-[31mExecuting[0m [32m68:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf list[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
-   root/one
+[31mExecuting[0m [32m74:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet list[0m
    root/one/eight
    root/one/five
    root/one/four
@@ -352,8 +327,7 @@ Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
    root/one/ten
    root/one/three
    root/one/two
-[31mExecuting[0m [32m69:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf match --from-root e[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
+[31mExecuting[0m [32m75:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet match --from-root e[0m
    root/eight
    root/eighteen
    root/eighty
@@ -370,20 +344,17 @@ Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
    root/one/three
    root/one/two
    root/seven
-[31mExecuting[0m [32m70:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf match --from-root ei[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
+[31mExecuting[0m [32m76:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet match --from-root ei[0m
    root/eight
    root/eighteen
    root/eighty
    root/one/eight
-[31mExecuting[0m [32m71:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf match --from-root eigh[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
+[31mExecuting[0m [32m77:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet match --from-root eigh[0m
    root/eight
    root/eighteen
    root/eighty
    root/one/eight
-[31mExecuting[0m [32m72:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf match e[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
+[31mExecuting[0m [32m78:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet match e[0m
    root/one
    root/one/eight
    root/one/five
@@ -395,14 +366,11 @@ Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
    root/one/ten
    root/one/three
    root/one/two
-[31mExecuting[0m [32m73:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf match ei[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
+[31mExecuting[0m [32m79:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet match ei[0m
    root/one/eight
-[31mExecuting[0m [32m74:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf match eigh[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
+[31mExecuting[0m [32m80:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet match eigh[0m
    root/one/eight
-[31mExecuting[0m [32m75:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf match eigh --invert[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
+[31mExecuting[0m [32m81:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet match eigh --invert[0m
    root/one
    root/one/five
    root/one/four
@@ -413,17 +381,13 @@ Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
    root/one/ten
    root/one/three
    root/one/two
-[31mExecuting[0m [32m76:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf status[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
+[31mExecuting[0m [32m82:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet status[0m
 Current frame
    root/one
 
-Notes (Sun Apr  9 00:16:35 2023)
+Notes (Mon Apr 10 23:21:41 2023)
    One:
    \nMessage:
 
-[31mExecuting[0m [32m77:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf match one/egh[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
-[31mExecuting[0m [32m78:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf match --from-root one/ei[0m
-Frame 0.1.1-dev, (© 2023 Lelanthran Manickum)
+[31mExecuting[0m [32m84:[0m [34m./debug/bin/x86_64-linux-gnu/frame.elf --quiet match --from-root one/ei[0m
    root/one/eight

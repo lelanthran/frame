@@ -46,6 +46,7 @@ extern "C" {
    bool frm_up (frm_t *frm);
    bool frm_down (frm_t *frm, const char *target);
    bool frm_switch (frm_t *frm, const char *target);
+   bool frm_back (frm_t *frm, size_t index);
    bool frm_delete (frm_t *frm, const char *target);
    bool frm_pop (frm_t *frm);
 
