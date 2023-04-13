@@ -6,4 +6,5 @@ Features
 3. Adds --quiet mode for calling scripts.
 4. Adds 'back' command for navigating through history.
 5. Updates history to take count argument.
+6. Prints out payload after every node change.
 
