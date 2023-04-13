@@ -131,7 +131,7 @@ static char *cline_command_get (size_t index)
 }
 
 static char edlin[1024 * 1024];
-static char *run_editor (void)
+static char *run_editor (const char *default_file_contents)
 {
    char *message = NULL;
    char *editor = getenv ("EDITOR");
@@ -156,7 +156,13 @@ static char *run_editor (void)
          return NULL;
       }
       close (fd);
+      if (!default_file_contents) {
+         default_file_contents = "Enter a description of this node here";
+      }
+
       if (!(frm_writefile (fname,
+                  "PATH: ", default_file_contents,
+                  "\n",
                   "\n",
                   "Replace this content with your message.",
                   "\n",
@@ -459,7 +465,14 @@ int main (int argc, char **argv)
       }
       char *message = cline_option_get ("message");
       if (!message) {
-         message = run_editor ();
+         char *current = frm_current (frm);
+         if (!current) {
+            fprintf (stderr, "Warning: Failed to get the current path\n");
+         }
+         char *fpath = ds_str_cat (current, "/", name, NULL);
+         message = run_editor (fpath);
+         free (fpath);
+         free (current);
       }
       if (!message) {
          fprintf (stderr, "No edit message, aborting\n");
@@ -486,7 +499,7 @@ int main (int argc, char **argv)
    if ((strcmp (command, "replace"))==0) {
       char *message = cline_option_get ("message");
       if (!message) {
-         message = run_editor ();
+         message = run_editor (NULL);
       }
       if (!message) {
          fprintf (stderr, "No edit message, aborting\n");
@@ -540,7 +553,7 @@ int main (int argc, char **argv)
    if ((strcmp (command, "append"))==0) {
       char *message = cline_option_get ("message");
       if (!message) {
-         message = run_editor ();
+         message = run_editor (NULL);
       }
       if (!message) {
          fprintf (stderr, "No edit message, aborting\n");
