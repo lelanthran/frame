@@ -606,7 +606,9 @@ int main (int argc, char **argv)
       }
       if (!(frm_switch (frm, target))) {
          fprintf (stderr, "Failed to switch to node [%s]\n", target);
+         free (target);
          ret = EXIT_FAILURE;
+         goto cleanup;
       }
       free (target);
       status (frm);

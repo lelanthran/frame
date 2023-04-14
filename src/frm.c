@@ -224,6 +224,48 @@ static bool history_append (const char *dbpath, const char *path)
    return true;
 }
 
+static char *history_find (const char *dbpath, const char *prefix)
+{
+   if (!dbpath || !prefix) {
+      FRM_ERROR ("Error: cannot search history with null paths\n");
+      return NULL;
+   }
+
+   char *pwd = pushdir (dbpath);
+   if (!pwd) {
+      FRM_ERROR ("Failed to push current working directory\n");
+      return NULL;
+   }
+
+   char *history = history_read (dbpath, (size_t)-1);
+   if (!history) {
+      popdir (&pwd);
+      return NULL;
+   }
+
+   char *sptr = NULL, *tok = NULL;
+   tok = strtok_r (history, "\n", &sptr);
+   do {
+      char *found = strstr (tok, prefix);
+      if (found == tok) {
+         // If we can switch to it, it exists and we return it,
+         // otherwise we just keep on trying.
+         char *olddir = pushdir (tok);
+         if (olddir) {
+            popdir (&olddir);
+            popdir (&pwd);
+            char *ret = ds_str_dup (tok);
+            free (history);
+            return ret;
+         }
+      }
+   } while ((tok = strtok_r (NULL, "\n", &sptr)));
+
+   free (history);
+   popdir (&pwd);
+   return NULL;
+}
+
 static bool index_add (const char *dbpath, const char *entry)
 {
    if (!dbpath || !entry || !entry[0]) {
@@ -1038,28 +1080,49 @@ bool frm_down (frm_t *frm, const char *target)
 
 bool frm_switch (frm_t *frm, const char *target)
 {
-   if (!frm) {
-      FRM_ERROR ("Error: null object passed for frm_t\n");
+   if (!frm || !target || !target[0]) {
+      FRM_ERROR ("Error: null objects passed for frm_switching\n");
       return false;
+   }
+
+   char *suffixed = target[strlen(target)-1]=='/'
+      ? ds_str_dup (target)
+      : ds_str_cat (target, "/", NULL);
+   if (!suffixed) {
+      FRM_ERROR ("OOM error allocating suffixed string\n");
+      return false;
+   }
+
+   char *actual = history_find (frm->dbpath, suffixed);
+   free (suffixed);
+   if (!actual) {
+      if (!(actual = ds_str_dup (target))) {
+         FRM_ERROR ("OOM error allocating target to switch to [%s]\n", target);
+         return false;
+      }
    }
 
    if ((chdir (frm->dbpath))!=0) {
       FRM_ERROR ("Failed to switch to dbpath [%s]\n", frm->dbpath);
+      free (actual);
       return false;
    }
 
-   if ((chdir (target))!=0) {
-      FRM_ERROR ("Failed to switch to target [%s]\n", target);
+   if ((chdir (actual))!=0) {
+      FRM_ERROR ("Failed to switch to target [%s]\n", actual);
+      free (actual);
       return false;
    }
 
    char *pwd = get_path (frm);
    if (!(history_append (frm->dbpath, pwd))) {
       FRM_ERROR ("Failed to set the working node to [root]\n");
+      free (actual);
       free (pwd);
       return false;
    }
 
+   free (actual);
    free (pwd);
    return true;
 }

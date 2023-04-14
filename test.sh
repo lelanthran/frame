@@ -48,6 +48,12 @@ execute () {
    $@ --dbpath=$DBPATH
 }
 
+die () {
+   echo testcommand failure: $@
+   execute $PROG status
+   exit -1
+}
+
 rm -rf $DBPATH
 execute $PROG create || die failed to create
 execute $PROG status || die failed status
