@@ -1007,6 +1007,34 @@ char *frm_payload_fname (frm_t *frm)
    return fname;
 }
 
+bool frm_top (frm_t *frm)
+{
+   if (!frm) {
+      FRM_ERROR ("Error: null object passed for frm_t\n");
+      return false;
+   }
+
+   char *target = ds_str_cat (frm->dbpath, "/root", NULL);
+   if (!target) {
+      FRM_ERROR ("OOM error allocating path for root node\n");
+      return false;
+   }
+
+   if ((chdir (target))!=0) {
+      FRM_ERROR ("Error: failed to switchdir to [%s/root]: %m\n", target);
+      free (target);
+      return false;
+   }
+
+   free (target);
+   if (!(history_append (frm->dbpath, "root"))) {
+      FRM_ERROR ("Error: failed to record history\n");
+      return false;
+   }
+
+   return true;
+}
+
 bool frm_up (frm_t *frm)
 {
    if (!frm) {

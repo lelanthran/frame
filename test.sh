@@ -79,7 +79,8 @@ execute $PROG push two --message="Two: message two" || die failed push
 execute $PROG status || die failed status
 execute $PROG history || die failed history
 
-execute $PROG switch root/one || die failed switch
+execute $PROG top || die failed top
+execute $ROG down one || die failed down one
 execute $PROG status || die failed status
 execute $PROG history || die failed history
 
@@ -107,7 +108,7 @@ execute $PROG delete root/two  || die failed delete
 execute $PROG status || die failed status
 execute $PROG history || die failed history
 
-execute $PROG switch root || die failed switch
+execute $PROG top || die failed top
 execute $PROG status || die failed status
 execute $PROG history || die failed history
 

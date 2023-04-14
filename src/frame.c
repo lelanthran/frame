@@ -283,6 +283,9 @@ static void print_helpmsg (void)
 "  Appends the provided message (see option '--message' and command 'push') to",
 "  the current node.",
 "",
+"top",
+"  Changes the current node to root node (i.e. top of the tree).",
+"",
 "up",
 "  Changes the current node to the parent of the current node.",
 "",
@@ -567,6 +570,15 @@ int main (int argc, char **argv)
       }
       free (message);
       current (frm);
+      goto cleanup;
+   }
+
+   if ((strcmp (command, "top"))==0) {
+      if (!(frm_top (frm))) {
+         fprintf (stderr, "Failed to switch to top of tree\n");
+         ret = EXIT_FAILURE;
+      }
+      status (frm);
       goto cleanup;
    }
 

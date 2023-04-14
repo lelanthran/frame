@@ -43,6 +43,7 @@ extern "C" {
    bool frm_payload_append (frm_t *frm, const char *message);
    char *frm_payload_fname (frm_t *frm);
 
+   bool frm_top (frm_t *frm);
    bool frm_up (frm_t *frm);
    bool frm_down (frm_t *frm, const char *target);
    bool frm_switch (frm_t *frm, const char *target);

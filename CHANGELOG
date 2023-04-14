@@ -1,11 +1,14 @@
 v0.1.1 - ???
 
 Features
-1. Adds edit command.
-2. Listing defaults to current node descendents only.
-3. Adds --quiet mode for calling scripts.
-4. Adds 'back' command for navigating through history.
-5. Updates history to take count argument.
-6. Prints out payload after every node change.
-7. Default message in EDITOR contains the pathname being created.
-8. Adds optional target for "list" command.
+1.  Adds edit command.
+2.  Listing defaults to current node descendents only.
+3.  Adds --quiet mode for calling scripts.
+4.  Adds 'back' command for navigating through history.
+5.  Updates history to take count argument.
+6.  Prints out payload after every node change.
+7.  Default message in EDITOR contains the pathname being created.
+8.  Adds optional target for "list" command.
+9.  Switching works smartly, by "remembering" the most recent subnode in the node
+    being switched to.
+10. New "top" command to quickly go to the root of the tree.
