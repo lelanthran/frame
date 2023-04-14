@@ -15,6 +15,7 @@
 #include <time.h>
 #include <inttypes.h>
 #include <string.h>
+#include <errno.h>
 
 #include <unistd.h>
 #include <sys/stat.h>
@@ -1245,11 +1246,44 @@ cleanup:
    return results;
 }
 
-char **frm_list (frm_t *frm)
+char **frm_list (frm_t *frm, const char *from)
 {
    if (!frm) {
       FRM_ERROR ("Error: null object passed for frm_t\n");
       return NULL;
+   }
+
+   // Attempt to switch to 'from' as a relative path. If that fails
+   // attempt to switch to 'from' as an absolute nodename (absolute
+   // relative to frm->dbpath).
+   if (!from || !from[0]) {
+      from = "./";
+   }
+   char *olddir = pushdir (from);
+   if (!olddir) {
+      FRM_ERROR ("Warning: using relative path [%s] failed, trying absolute path\n",
+            from);
+      char *tmp = ds_str_cat (frm->dbpath, "/", from, NULL);
+      if (!tmp) {
+         FRM_ERROR ("OOM error allocating absolute path for nodename [%s/%s]\n",
+               frm->dbpath, from);
+         return NULL;
+      }
+      char *first_errmsg = ds_str_dup (strerror (errno));
+      if (!first_errmsg) {
+         FRM_ERROR ("OOM error allocating error message string: %i\n", errno);
+         return NULL;
+      }
+
+      olddir = pushdir (tmp);
+      free (tmp);
+      if (!olddir) {
+         FRM_ERROR ("Neither [%s] nor [%s/%s] could be used: [%s][%m]\n",
+               from, frm->dbpath, from, first_errmsg);
+         free (first_errmsg);
+         return NULL;
+      }
+      free (first_errmsg);
    }
 
    char *current = frm_current (frm);
@@ -1262,12 +1296,14 @@ char **frm_list (frm_t *frm)
    if (!prefixed_current) {
       FRM_ERROR ("OOM error allocating temporary string for current node\n");
       free (current);
+      popdir (&olddir);
       return NULL;
    }
    free (current);
 
    char **ret = match (frm, "", 0, prefixed_current);
    free (prefixed_current);
+   popdir (&olddir);
    return ret;
 }
 

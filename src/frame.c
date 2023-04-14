@@ -668,7 +668,11 @@ int main (int argc, char **argv)
    }
 
    if ((strcmp (command, "list"))==0) {
-      char **results = frm_list (frm);
+      char *from = cline_command_get(1);
+
+      char **results = frm_list (frm, from[0] ? from : NULL);
+      free (from);
+
       if (!results) {
          fprintf (stderr, "Internal error during listing\n");
          ret = EXIT_FAILURE;

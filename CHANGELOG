@@ -8,3 +8,4 @@ Features
 5. Updates history to take count argument.
 6. Prints out payload after every node change.
 7. Default message in EDITOR contains the pathname being created.
+8. Adds optional target for "list" command.
