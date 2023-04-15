@@ -10,15 +10,25 @@ _frame_completions() {
    local args
    local fpath="`frame current --quiet | cut -f 1 -d :`"
 
-   COMPREPLY=("1" "2" "3")
+   declare -a COMPREPLY
 
    pushd $PWD &> /dev/null
 
    case "${prev}" in
       down)
          cd "$HOME/.framedb/$fpath"
-         args="`for X in */; do printf "%q\n" "$X" | sed 's/ /|/g'; done`"
-         COMPREPLY=( $(compgen -W "${args}" ${cur} | sed 's/|/\\ /g') )
+         args="`for X in $cur*/; do printf "%s\n" "$X" | sed 's/ /|/g'; done`"
+         local INDEX=0;
+         echo "cur = [$cur]" > /tmp/t
+         for X in `compgen -W "${args}" ${cur}`
+         do
+            COMPREPLY[$INDEX]=`echo -ne $X | sed 's/|/ /g'`
+            echo $INDEX: ${COMPREPLY[$INDEX]} >> /tmp/t
+            printf "in loop: %q\n" "${COMPREPLY[@]}" >> /tmp/t
+            INDEX=$(($INDEX+1))
+         done
+         printf "out loop 1: %q\n" "${COMPREPLY[@]}" >> /tmp/t
+         printf "out loop 2: %q\n" "${COMPREPLY[*]}" >> /tmp/t
          ;;
       *)
          ;;
