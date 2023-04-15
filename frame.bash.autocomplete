@@ -1,25 +1,31 @@
 # Source this file to have frame autocompletions in bash
 
 _frame_completions() {
-  local cur="${COMP_WORDS[COMP_CWORD]}"
-  local prev="${COMP_WORDS[COMP_CWORD-1]}"
-  local opts="--help"
+   local cmd="$1"  # Always 'frame'
+   local cur="$2"  # Current completion, can be blank
+   local prev="$3" # Previous word, can be 'frame'
 
-  case "${prev}" in
-    switch)
-      local args="$(frame current | tr '\n' '\0')"
-      COMPREPLY=( $(compgen -d -S '' -z "${args}" -- ${cur}) )
-      ;;
-    current)
-      local args="$(frame current | tr '\n' '\0')"
-      COMPREPLY=( $(compgen -d -S '' -z "${args}" -- ${cur}) )
-      ;;
-    *)
-      COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
-      ;;
+   local opts="--help"
+   local commands=("status" "switch" "current" "down")
+   local args
+   local fpath="`frame current --quiet | cut -f 1 -d :`"
+
+   COMPREPLY=("1" "2" "3")
+
+   pushd $PWD &> /dev/null
+
+   case "${prev}" in
+      down)
+         cd "$HOME/.framedb/$fpath"
+         args="`for X in */; do printf "%q\n" "$X" | sed 's/ /|/g'; done`"
+         COMPREPLY=( $(compgen -W "${args}" ${cur} | sed 's/|/\\ /g') )
+         ;;
+      *)
+         ;;
    esac
 
+   popd &> /dev/null
    return 0;
 }
 
-complete -F _frame_autocomplete frame
+complete -F _frame_completions frame
