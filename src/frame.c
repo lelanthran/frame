@@ -578,7 +578,9 @@ int main (int argc, char **argv)
          fprintf (stderr, "Failed to switch to top of tree\n");
          ret = EXIT_FAILURE;
       }
-      status (frm);
+      if (ret == EXIT_SUCCESS) {
+         status (frm);
+      }
       goto cleanup;
    }
 
@@ -587,7 +589,9 @@ int main (int argc, char **argv)
          fprintf (stderr, "Failed to move a node up the tree\n");
          ret = EXIT_FAILURE;
       }
-      status (frm);
+      if (ret == EXIT_SUCCESS) {
+         status (frm);
+      }
       goto cleanup;
    }
 
@@ -604,7 +608,9 @@ int main (int argc, char **argv)
          ret = EXIT_FAILURE;
       }
       free (target);
-      status (frm);
+      if (ret == EXIT_SUCCESS) {
+         status (frm);
+      }
       goto cleanup;
    }
 
@@ -623,7 +629,9 @@ int main (int argc, char **argv)
          goto cleanup;
       }
       free (target);
-      status (frm);
+      if (ret == EXIT_SUCCESS) {
+         status (frm);
+      }
       goto cleanup;
    }
 
@@ -651,7 +659,9 @@ int main (int argc, char **argv)
          ret = EXIT_FAILURE;
       }
       free (subcommand);
-      status (frm);
+      if (ret == EXIT_SUCCESS) {
+         status (frm);
+      }
       goto cleanup;
    }
 
@@ -661,7 +671,9 @@ int main (int argc, char **argv)
          fprintf (stderr, "Failed to pop current node: %m\n");
          ret = EXIT_FAILURE;
       }
-      status (frm);
+      if (ret == EXIT_SUCCESS) {
+         status (frm);
+      }
       goto cleanup;
    }
 
@@ -677,7 +689,9 @@ int main (int argc, char **argv)
          ret = EXIT_FAILURE;
       }
       free (target);
-      status (frm);
+      if (ret == EXIT_SUCCESS) {
+         status (frm);
+      }
       goto cleanup;
    }
 

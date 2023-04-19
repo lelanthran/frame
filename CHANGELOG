@@ -1,4 +1,4 @@
-v0.1.1 - ???
+v0.1.1 - Wed 19 Apr 2023 18:00:27 SAST
 
 Features
 1.  Adds edit command.
@@ -12,3 +12,4 @@ Features
 9.  Switching works smartly, by "remembering" the most recent subnode in the node
     being switched to.
 10. New "top" command to quickly go to the root of the tree.
+11. Frame pop command does not allow popping if subframe exists.

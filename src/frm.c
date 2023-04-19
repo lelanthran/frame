@@ -125,6 +125,7 @@ static bool removedir (const char *target)
 static char *get_path (frm_t *frm) {
    if (!frm) {
       FRM_ERROR ("Error: null object passed for frm_t\n");
+      errno = ENOENT;
       return false;
    }
 
@@ -528,8 +529,10 @@ static bool node_create (const char *path, const char *name, const char *msg)
 
 static void frm_free (frm_t *frm)
 {
-   if (!frm)
+   if (!frm) {
+      errno = ENOENT;
       return;
+   }
 
    free (frm->dbpath);
    free (frm->olddir);
@@ -727,8 +730,10 @@ cleanup:
 
 void frm_close (frm_t *frm)
 {
-   if (!frm)
+   if (!frm) {
+      errno = ENOENT;
       return;
+   }
 
    popdir (&frm->olddir);
    free (frm->dbpath);
@@ -739,6 +744,7 @@ char *frm_history (frm_t *frm, size_t count)
 {
    if (!frm) {
       FRM_ERROR ("Found null object for frm_t\n");
+      errno = ENOENT;
       return ds_str_dup ("");
    }
 
@@ -749,6 +755,7 @@ char *frm_current (frm_t *frm)
 {
    if (!frm) {
       FRM_ERROR ("Error, null object passed for frm_t\n");
+      errno = ENOENT;
       return ds_str_dup ("");
    }
    char *tmp = getcwd (NULL, 0);
@@ -773,6 +780,7 @@ char *frm_payload (frm_t *frm)
 {
    if (!frm) {
       FRM_ERROR ("Error, null object passed for frm_t\n");
+      errno = ENOENT;
       return ds_str_dup ("");
    }
    char *ret = frm_readfile ("payload");
@@ -792,6 +800,7 @@ static bool read_info (frm_t *frm, struct info_t *dst, const char *fname)
 {
    if (!frm) {
       FRM_ERROR ("Error, null object passed for frm_t\n");
+      errno = ENOENT;
       return false;
    }
 
@@ -833,6 +842,7 @@ static bool write_info (frm_t *frm, const struct info_t *info, const char *fname
 {
    if (!frm) {
       FRM_ERROR ("Error, null object passed for frm_t\n");
+      errno = ENOENT;
       return false;
    }
 
@@ -894,6 +904,7 @@ bool frm_push (frm_t *frm, const char *name, const char *message)
 {
    if (!frm) {
       FRM_ERROR ("Error, null object passed for frm_t\n");
+      errno = ENOENT;
       return false;
    }
 
@@ -942,6 +953,7 @@ bool frm_payload_replace (frm_t *frm, const char *message)
 {
    if (!frm) {
       FRM_ERROR ("Error, null object passed for frm_t\n");
+      errno = ENOENT;
       return false;
    }
 
@@ -962,6 +974,7 @@ bool frm_payload_append (frm_t *frm, const char *message)
 {
    if (!frm) {
       FRM_ERROR ("Error, null object passed for frm_t\n");
+      errno = ENOENT;
       return false;
    }
 
@@ -989,6 +1002,7 @@ char *frm_payload_fname (frm_t *frm)
 {
    if (!frm) {
       FRM_ERROR ("Error, null object passed for frm_t\n");
+      errno = ENOENT;
       return false;
    }
 
@@ -1011,6 +1025,7 @@ bool frm_top (frm_t *frm)
 {
    if (!frm) {
       FRM_ERROR ("Error: null object passed for frm_t\n");
+      errno = ENOENT;
       return false;
    }
 
@@ -1039,6 +1054,7 @@ bool frm_up (frm_t *frm)
 {
    if (!frm) {
       FRM_ERROR ("Error: null object passed for frm_t\n");
+      errno = ENOENT;
       return false;
    }
 
@@ -1087,6 +1103,7 @@ bool frm_down (frm_t *frm, const char *target)
 {
    if (!frm) {
       FRM_ERROR ("Error: null object passed for frm_t\n");
+      errno = ENOENT;
       return false;
    }
 
@@ -1159,6 +1176,7 @@ bool frm_back (frm_t *frm, size_t index)
 {
    if (!frm) {
       FRM_ERROR ("Error: null object passed for frm_t\n");
+      errno = ENOENT;
       return false;
    }
 
@@ -1213,8 +1231,24 @@ bool frm_pop (frm_t *frm)
 {
    if (!frm) {
       FRM_ERROR ("Error: null object passed for frm_t\n");
+      errno = ENOENT;
       return false;
    }
+
+   char **subframes = frm_list (frm, NULL);
+   size_t nsubframes = 0;
+   for (size_t i=0; subframes && subframes[i]; i++) {
+      nsubframes++;
+      free (subframes[i]);
+   }
+   free (subframes);
+
+   if (nsubframes!=0) {
+      FRM_ERROR ("Error: cannot pop a frame that has children\n");
+      errno = ENOTEMPTY;
+      return false;
+   }
+
 
    char *oldpath = get_path (frm);
    if (!oldpath) {
@@ -1242,6 +1276,7 @@ bool frm_delete (frm_t *frm, const char *target)
 {
    if (!frm) {
       FRM_ERROR ("Error: null object passed for frm_t\n");
+      errno = ENOENT;
       return false;
    }
 
@@ -1270,6 +1305,7 @@ static char **match (frm_t *frm, const char *sterm,
 {
    if (!frm) {
       FRM_ERROR ("Error: null object passed for frm_t\n");
+      errno = ENOENT;
       return NULL;
    }
 
@@ -1341,6 +1377,7 @@ char **frm_list (frm_t *frm, const char *from)
 {
    if (!frm) {
       FRM_ERROR ("Error: null object passed for frm_t\n");
+      errno = ENOENT;
       return NULL;
    }
 
