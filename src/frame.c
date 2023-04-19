@@ -131,7 +131,7 @@ static char *cline_command_get (size_t index)
 }
 
 static char edlin[1024 * 1024];
-static char *run_editor (void)
+static char *run_editor (const char *default_file_contents)
 {
    char *message = NULL;
    char *editor = getenv ("EDITOR");
@@ -156,7 +156,13 @@ static char *run_editor (void)
          return NULL;
       }
       close (fd);
+      if (!default_file_contents) {
+         default_file_contents = "Enter a description of this node here";
+      }
+
       if (!(frm_writefile (fname,
+                  "PATH: ", default_file_contents,
+                  "\n",
                   "\n",
                   "Replace this content with your message.",
                   "\n",
@@ -191,7 +197,7 @@ static char *run_editor (void)
 static void print_helpmsg (void)
 {
    static const char *msg[] = {
-"     Frame  (©2023 Lelanthran Manickum)",
+"     Frame  (© 2023 Lelanthran Manickum)",
 "",
 "     This program comes with ABSOLUTELY NO WARRANTY. This is free software",
 "     and you are welcome to redistribute it under certain conditions;  see",
@@ -235,6 +241,8 @@ static void print_helpmsg (void)
 "                       the match command to find all nodes that *DON'T* match",
 "                       the search term.",
 "",
+"  --quiet              Suppress all non-functional stdout messages, such as",
+"                       the copyright notice.",
 "",
 "Commands:",
 "",
@@ -245,8 +253,17 @@ static void print_helpmsg (void)
 "  Create a new frame database. If --dbpath is specified then it is used as the",
 "  location of the new database. If it is not then $HOME/.framdb is used instead.",
 "",
-"history",
-"  Display the history of all nodes visited.",
+"history [count]",
+"  Display the history of all nodes visited, with a number that can be used",
+"  in the 'back' command (see 'back' below). The [count] value specifies how",
+"  many items to display. If [count] is omitted it defaults to 10. To list",
+"  all items in the history (which may be very large) use '0' as the count.",
+"",
+"back [number]",
+"  Jump to the nth item in the history, as specified by [number]. If [number]",
+"  is omitted then '1' is used. The 'history' command helpfully lists a number",
+"  next to each element that can be used to determine what number in the",
+"  history to jump to. Specifying '0' is pointless.",
 "",
 "status",
 "  Display the status of the current node.",
@@ -266,6 +283,9 @@ static void print_helpmsg (void)
 "  Appends the provided message (see option '--message' and command 'push') to",
 "  the current node.",
 "",
+"top",
+"  Changes the current node to root node (i.e. top of the tree).",
+"",
 "up",
 "  Changes the current node to the parent of the current node.",
 "",
@@ -283,7 +303,7 @@ static void print_helpmsg (void)
 "  Deletes the node named by <path>. The current node is not changed.",
 "",
 "list",
-"  Lists all nodes in the datbase.",
+"  Lists all descendents of the current node.",
 "",
 "match <sterm> [--from-root] [--invert]",
 "  Lists the nodes that match the search term <sterm>, starting at the current",
@@ -342,12 +362,19 @@ int main (int argc, char **argv)
    char *message = cline_option_get ("message");
    char *from_root = cline_option_get ("from-root");
    char *invert = cline_option_get ("invert");
+   char *quiet = cline_option_get ("quiet");
    frm_t *frm = NULL;
 
    if (!command || !command[0] || (strcmp (command, "help")==0) || help) {
       print_helpmsg ();
       ret = EXIT_FAILURE;
       goto cleanup;
+   }
+
+   // TODO: have a more nuanced determination of when the copyright
+   // notice should be printed.
+   if (quiet==NULL) {
+      printf ("Frame %s, (© 2023 Lelanthran Manickum)\n", frame_version);
    }
 
    if (!dbpath) {
@@ -386,7 +413,27 @@ int main (int argc, char **argv)
    }
 
    if ((strcmp (command, "history"))==0) {
-      char *history = frm_history (frm, 10);
+      char *subcmd = cline_command_get (1);
+      size_t count = 10;
+      if (subcmd && subcmd[0]) {
+         if (((sscanf (subcmd, "%zu", &count)))!=1) {
+            if (!quiet) {
+               fprintf (stderr, "Specified count of [%s] is invalid\n", subcmd);
+               fprintf (stderr, "Using default of 10 for history count\n");
+            }
+            count = 10;
+         }
+      } else {
+         if (!quiet) {
+            fprintf (stderr, "No count specified, listing last 10 items\n");
+         }
+      }
+      free (subcmd);
+
+      if (count == 0)
+         count = (size_t)-1;
+
+      char *history = frm_history (frm, count);
       char *sptr = NULL;
       char *tok = strtok_r (history, "\n", &sptr);
       size_t i=0;
@@ -406,6 +453,11 @@ int main (int argc, char **argv)
       goto cleanup;
    }
 
+   if ((strcmp (command, "current"))==0) {
+      current (frm);
+      goto cleanup;
+   }
+
    if ((strcmp (command, "push"))==0) {
       char *name = cline_command_get(1);
       if (!name || !name[0]) {
@@ -416,7 +468,14 @@ int main (int argc, char **argv)
       }
       char *message = cline_option_get ("message");
       if (!message) {
-         message = run_editor ();
+         char *current = frm_current (frm);
+         if (!current) {
+            fprintf (stderr, "Warning: Failed to get the current path\n");
+         }
+         char *fpath = ds_str_cat (current, "/", name, NULL);
+         message = run_editor (fpath);
+         free (fpath);
+         free (current);
       }
       if (!message) {
          fprintf (stderr, "No edit message, aborting\n");
@@ -443,7 +502,7 @@ int main (int argc, char **argv)
    if ((strcmp (command, "replace"))==0) {
       char *message = cline_option_get ("message");
       if (!message) {
-         message = run_editor ();
+         message = run_editor (NULL);
       }
       if (!message) {
          fprintf (stderr, "No edit message, aborting\n");
@@ -459,10 +518,45 @@ int main (int argc, char **argv)
       goto cleanup;
    }
 
+   if ((strcmp (command, "edit"))==0) {
+      const char *editor = getenv ("EDITOR");
+      if (!editor || !editor[0]) {
+         fprintf (stderr, "No editor specified in $EDITOR\n");
+         ret = EXIT_FAILURE;
+         goto cleanup;
+      }
+      char *fname = frm_payload_fname (frm);
+      if (!fname) {
+         fprintf (stderr, "Failed to retrieve filename of current node: %m\n");
+         ret = EXIT_FAILURE;
+         goto cleanup;
+      }
+
+      char *shcmd = ds_str_cat (editor, " '", fname, "'", NULL);
+      if (!shcmd) {
+         fprintf (stderr, "OOM error allocating shell command for editor [%s]\n",
+               editor);
+         free (fname);
+         ret = EXIT_FAILURE;
+         goto cleanup;
+      }
+
+      ret = EXIT_SUCCESS;
+      if ((system (shcmd))!=0) {
+         fprintf (stderr, "Failed to execute shell command [%s]: %m\n", shcmd);
+         ret = EXIT_FAILURE;
+      }
+
+      free (fname);
+      free (shcmd);
+      current (frm);
+      goto cleanup;
+   }
+
    if ((strcmp (command, "append"))==0) {
       char *message = cline_option_get ("message");
       if (!message) {
-         message = run_editor ();
+         message = run_editor (NULL);
       }
       if (!message) {
          fprintf (stderr, "No edit message, aborting\n");
@@ -475,6 +569,18 @@ int main (int argc, char **argv)
          ret = EXIT_FAILURE;
       }
       free (message);
+      current (frm);
+      goto cleanup;
+   }
+
+   if ((strcmp (command, "top"))==0) {
+      if (!(frm_top (frm))) {
+         fprintf (stderr, "Failed to switch to top of tree\n");
+         ret = EXIT_FAILURE;
+      }
+      if (ret == EXIT_SUCCESS) {
+         status (frm);
+      }
       goto cleanup;
    }
 
@@ -483,7 +589,9 @@ int main (int argc, char **argv)
          fprintf (stderr, "Failed to move a node up the tree\n");
          ret = EXIT_FAILURE;
       }
-      current (frm);
+      if (ret == EXIT_SUCCESS) {
+         status (frm);
+      }
       goto cleanup;
    }
 
@@ -500,7 +608,9 @@ int main (int argc, char **argv)
          ret = EXIT_FAILURE;
       }
       free (target);
-      current (frm);
+      if (ret == EXIT_SUCCESS) {
+         status (frm);
+      }
       goto cleanup;
    }
 
@@ -514,19 +624,56 @@ int main (int argc, char **argv)
       }
       if (!(frm_switch (frm, target))) {
          fprintf (stderr, "Failed to switch to node [%s]\n", target);
+         free (target);
          ret = EXIT_FAILURE;
+         goto cleanup;
       }
       free (target);
-      current (frm);
+      if (ret == EXIT_SUCCESS) {
+         status (frm);
+      }
       goto cleanup;
    }
+
+   if ((strcmp (command, "back"))==0) {
+      char *subcommand = cline_command_get (1);
+      if (!subcommand || !subcommand[0]) {
+         subcommand = ds_str_dup ("1");
+         if (!subcommand) {
+            fprintf (stderr, "OOM error allocating default parameter for 'back'\n");
+            ret = EXIT_FAILURE;
+            goto cleanup;
+         }
+      }
+
+      size_t index = 0;
+      if ((sscanf (subcommand, "%zu", &index))!=1) {
+         fprintf (stderr, "Invalid number: [%s]\n", subcommand);
+         free (subcommand);
+         ret = EXIT_FAILURE;
+         goto cleanup;
+      }
+
+      if (!(frm_back (frm, index))) {
+         fprintf (stderr, "Failed to switch to history item %zu\n", index);
+         ret = EXIT_FAILURE;
+      }
+      free (subcommand);
+      if (ret == EXIT_SUCCESS) {
+         status (frm);
+      }
+      goto cleanup;
+   }
+
 
    if ((strcmp (command, "pop"))==0) {
       if (!(frm_pop (frm))) {
          fprintf (stderr, "Failed to pop current node: %m\n");
          ret = EXIT_FAILURE;
       }
-      current (frm);
+      if (ret == EXIT_SUCCESS) {
+         status (frm);
+      }
       goto cleanup;
    }
 
@@ -542,12 +689,18 @@ int main (int argc, char **argv)
          ret = EXIT_FAILURE;
       }
       free (target);
-      current (frm);
+      if (ret == EXIT_SUCCESS) {
+         status (frm);
+      }
       goto cleanup;
    }
 
    if ((strcmp (command, "list"))==0) {
-      char **results = frm_list (frm);
+      char *from = cline_command_get(1);
+
+      char **results = frm_list (frm, from[0] ? from : NULL);
+      free (from);
+
       if (!results) {
          fprintf (stderr, "Internal error during listing\n");
          ret = EXIT_FAILURE;
@@ -564,7 +717,9 @@ int main (int argc, char **argv)
    if ((strcmp (command, "match"))==0) {
       char *sterm = cline_command_get (1);
       if (!sterm || !sterm[0]) {
-         fprintf (stderr, "No search term specified, returning everything\n");
+         if (!quiet) {
+            fprintf (stderr, "No search term specified, returning everything\n");
+         }
          free (sterm);
          if (!(sterm = ds_str_dup (""))) {
             fprintf (stderr, "OOM error allocating search term\n");
@@ -613,6 +768,7 @@ cleanup:
    free (message);
    free (from_root);
    free (invert);
+   free (quiet);
 
    free (g_options);
    free (g_commands);

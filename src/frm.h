@@ -41,14 +41,17 @@ extern "C" {
    bool frm_push (frm_t *frm, const char *name, const char *message);
    bool frm_payload_replace (frm_t *frm, const char *message);
    bool frm_payload_append (frm_t *frm, const char *message);
+   char *frm_payload_fname (frm_t *frm);
 
+   bool frm_top (frm_t *frm);
    bool frm_up (frm_t *frm);
    bool frm_down (frm_t *frm, const char *target);
    bool frm_switch (frm_t *frm, const char *target);
+   bool frm_back (frm_t *frm, size_t index);
    bool frm_delete (frm_t *frm, const char *target);
    bool frm_pop (frm_t *frm);
 
-   char **frm_list (frm_t *frm);
+   char **frm_list (frm_t *frm, const char *from);
    char **frm_match (frm_t *frm, const char *sterm, uint32_t flags);
    char **frm_match_from_root (frm_t *frm, const char *sterm, uint32_t flags);
 

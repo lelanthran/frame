@@ -1,7 +1,7 @@
 #!/bin/bash
 
 export DBPATH=/tmp/frame/
-export PROG=./debug/bin/x86_64-linux-gnu/frame.elf
+export PROG="./debug/bin/x86_64-linux-gnu/frame.elf --quiet"
 
 if [ ! -z "$VG" ]; then
    export VG="valgrind --leak-check=full --show-leak-kinds=all --error-exitcode=1"
@@ -48,6 +48,12 @@ execute () {
    $@ --dbpath=$DBPATH
 }
 
+die () {
+   echo testcommand failure: $@
+   execute $PROG status
+   exit -1
+}
+
 rm -rf $DBPATH
 execute $PROG create || die failed to create
 execute $PROG status || die failed status
@@ -73,7 +79,16 @@ execute $PROG push two --message="Two: message two" || die failed push
 execute $PROG status || die failed status
 execute $PROG history || die failed history
 
-execute $PROG switch root/one || die failed switch
+execute $PROG top || die failed top
+execute $ROG down one || die failed down one
+execute $PROG status || die failed status
+execute $PROG history || die failed history
+
+execute $PROG back 1 || die failed back
+execute $PROG status || die failed status
+execute $PROG history || die failed history
+
+execute $PROG back 1 || die failed back
 execute $PROG status || die failed status
 execute $PROG history || die failed history
 
@@ -93,9 +108,10 @@ execute $PROG delete root/two  || die failed delete
 execute $PROG status || die failed status
 execute $PROG history || die failed history
 
-execute $PROG switch root || die failed switch
+execute $PROG top || die failed top
 execute $PROG status || die failed status
 execute $PROG history || die failed history
+
 
 execute $PROG push five --message="five: five" || die failed push
 execute $PROG up || die failed up
@@ -141,7 +157,11 @@ execute $PROG match --from-root "eigh" || die failed match
 execute $PROG match "e" || die failed match
 execute $PROG match "ei" || die failed match
 execute $PROG match "eigh" || die failed match
-execute $PROG match "eigh" --inverse || die failed match
-execute $PROG match "one/eigh" && die expected failed match
+execute $PROG match "eigh" --invert || die failed match
+execute $PROG status || die failed status
+execute $PROG match "one/egh" > t
+if [ `wc -l t | cut -f 1 -d \   ` -ne 1 ]; then
+   die expected failed match
+fi
 
 execute $PROG match --from-root "one/ei" || die failed match

@@ -15,6 +15,7 @@
 #include <time.h>
 #include <inttypes.h>
 #include <string.h>
+#include <errno.h>
 
 #include <unistd.h>
 #include <sys/stat.h>
@@ -124,6 +125,7 @@ static bool removedir (const char *target)
 static char *get_path (frm_t *frm) {
    if (!frm) {
       FRM_ERROR ("Error: null object passed for frm_t\n");
+      errno = ENOENT;
       return false;
    }
 
@@ -223,6 +225,48 @@ static bool history_append (const char *dbpath, const char *path)
    return true;
 }
 
+static char *history_find (const char *dbpath, const char *prefix)
+{
+   if (!dbpath || !prefix) {
+      FRM_ERROR ("Error: cannot search history with null paths\n");
+      return NULL;
+   }
+
+   char *pwd = pushdir (dbpath);
+   if (!pwd) {
+      FRM_ERROR ("Failed to push current working directory\n");
+      return NULL;
+   }
+
+   char *history = history_read (dbpath, (size_t)-1);
+   if (!history) {
+      popdir (&pwd);
+      return NULL;
+   }
+
+   char *sptr = NULL, *tok = NULL;
+   tok = strtok_r (history, "\n", &sptr);
+   do {
+      char *found = strstr (tok, prefix);
+      if (found == tok) {
+         // If we can switch to it, it exists and we return it,
+         // otherwise we just keep on trying.
+         char *olddir = pushdir (tok);
+         if (olddir) {
+            popdir (&olddir);
+            popdir (&pwd);
+            char *ret = ds_str_dup (tok);
+            free (history);
+            return ret;
+         }
+      }
+   } while ((tok = strtok_r (NULL, "\n", &sptr)));
+
+   free (history);
+   popdir (&pwd);
+   return NULL;
+}
+
 static bool index_add (const char *dbpath, const char *entry)
 {
    if (!dbpath || !entry || !entry[0]) {
@@ -250,8 +294,6 @@ static bool index_add (const char *dbpath, const char *entry)
       free (index);
       return false;
    }
-
-   FRM_ERROR ("Added [%s] to index\n", entry);
 
    free (index);
    popdir (&olddir);
@@ -487,8 +529,10 @@ static bool node_create (const char *path, const char *name, const char *msg)
 
 static void frm_free (frm_t *frm)
 {
-   if (!frm)
+   if (!frm) {
+      errno = ENOENT;
       return;
+   }
 
    free (frm->dbpath);
    free (frm->olddir);
@@ -686,8 +730,10 @@ cleanup:
 
 void frm_close (frm_t *frm)
 {
-   if (!frm)
+   if (!frm) {
+      errno = ENOENT;
       return;
+   }
 
    popdir (&frm->olddir);
    free (frm->dbpath);
@@ -698,6 +744,7 @@ char *frm_history (frm_t *frm, size_t count)
 {
    if (!frm) {
       FRM_ERROR ("Found null object for frm_t\n");
+      errno = ENOENT;
       return ds_str_dup ("");
    }
 
@@ -708,6 +755,7 @@ char *frm_current (frm_t *frm)
 {
    if (!frm) {
       FRM_ERROR ("Error, null object passed for frm_t\n");
+      errno = ENOENT;
       return ds_str_dup ("");
    }
    char *tmp = getcwd (NULL, 0);
@@ -732,6 +780,7 @@ char *frm_payload (frm_t *frm)
 {
    if (!frm) {
       FRM_ERROR ("Error, null object passed for frm_t\n");
+      errno = ENOENT;
       return ds_str_dup ("");
    }
    char *ret = frm_readfile ("payload");
@@ -751,6 +800,7 @@ static bool read_info (frm_t *frm, struct info_t *dst, const char *fname)
 {
    if (!frm) {
       FRM_ERROR ("Error, null object passed for frm_t\n");
+      errno = ENOENT;
       return false;
    }
 
@@ -792,6 +842,7 @@ static bool write_info (frm_t *frm, const struct info_t *info, const char *fname
 {
    if (!frm) {
       FRM_ERROR ("Error, null object passed for frm_t\n");
+      errno = ENOENT;
       return false;
    }
 
@@ -853,6 +904,7 @@ bool frm_push (frm_t *frm, const char *name, const char *message)
 {
    if (!frm) {
       FRM_ERROR ("Error, null object passed for frm_t\n");
+      errno = ENOENT;
       return false;
    }
 
@@ -901,6 +953,7 @@ bool frm_payload_replace (frm_t *frm, const char *message)
 {
    if (!frm) {
       FRM_ERROR ("Error, null object passed for frm_t\n");
+      errno = ENOENT;
       return false;
    }
 
@@ -921,6 +974,7 @@ bool frm_payload_append (frm_t *frm, const char *message)
 {
    if (!frm) {
       FRM_ERROR ("Error, null object passed for frm_t\n");
+      errno = ENOENT;
       return false;
    }
 
@@ -944,10 +998,63 @@ bool frm_payload_append (frm_t *frm, const char *message)
    return ret;
 }
 
+char *frm_payload_fname (frm_t *frm)
+{
+   if (!frm) {
+      FRM_ERROR ("Error, null object passed for frm_t\n");
+      errno = ENOENT;
+      return false;
+   }
+
+   char *pwd = getcwd (NULL, 0);
+   if (!pwd) {
+      FRM_ERROR ("Error: failed to get current working directory: %m\n");
+      return NULL;
+   }
+
+   char *fname = ds_str_cat (pwd, "/payload", NULL);
+   if (!fname) {
+      FRM_ERROR ("OOM error allocating filename of payload file\n");
+   }
+
+   free (pwd);
+   return fname;
+}
+
+bool frm_top (frm_t *frm)
+{
+   if (!frm) {
+      FRM_ERROR ("Error: null object passed for frm_t\n");
+      errno = ENOENT;
+      return false;
+   }
+
+   char *target = ds_str_cat (frm->dbpath, "/root", NULL);
+   if (!target) {
+      FRM_ERROR ("OOM error allocating path for root node\n");
+      return false;
+   }
+
+   if ((chdir (target))!=0) {
+      FRM_ERROR ("Error: failed to switchdir to [%s/root]: %m\n", target);
+      free (target);
+      return false;
+   }
+
+   free (target);
+   if (!(history_append (frm->dbpath, "root"))) {
+      FRM_ERROR ("Error: failed to record history\n");
+      return false;
+   }
+
+   return true;
+}
+
 bool frm_up (frm_t *frm)
 {
    if (!frm) {
       FRM_ERROR ("Error: null object passed for frm_t\n");
+      errno = ENOENT;
       return false;
    }
 
@@ -996,6 +1103,7 @@ bool frm_down (frm_t *frm, const char *target)
 {
    if (!frm) {
       FRM_ERROR ("Error: null object passed for frm_t\n");
+      errno = ENOENT;
       return false;
    }
 
@@ -1017,38 +1125,130 @@ bool frm_down (frm_t *frm, const char *target)
 
 bool frm_switch (frm_t *frm, const char *target)
 {
-   if (!frm) {
-      FRM_ERROR ("Error: null object passed for frm_t\n");
+   if (!frm || !target || !target[0]) {
+      FRM_ERROR ("Error: null objects passed for frm_switching\n");
       return false;
+   }
+
+   char *suffixed = target[strlen(target)-1]=='/'
+      ? ds_str_dup (target)
+      : ds_str_cat (target, "/", NULL);
+   if (!suffixed) {
+      FRM_ERROR ("OOM error allocating suffixed string\n");
+      return false;
+   }
+
+   char *actual = history_find (frm->dbpath, suffixed);
+   free (suffixed);
+   if (!actual) {
+      if (!(actual = ds_str_dup (target))) {
+         FRM_ERROR ("OOM error allocating target to switch to [%s]\n", target);
+         return false;
+      }
    }
 
    if ((chdir (frm->dbpath))!=0) {
       FRM_ERROR ("Failed to switch to dbpath [%s]\n", frm->dbpath);
+      free (actual);
       return false;
    }
 
-   if ((chdir (target))!=0) {
-      FRM_ERROR ("Failed to switch to target [%s]\n", target);
+   if ((chdir (actual))!=0) {
+      FRM_ERROR ("Failed to switch to target [%s]\n", actual);
+      free (actual);
       return false;
    }
 
    char *pwd = get_path (frm);
    if (!(history_append (frm->dbpath, pwd))) {
       FRM_ERROR ("Failed to set the working node to [root]\n");
+      free (actual);
       free (pwd);
       return false;
    }
 
+   free (actual);
    free (pwd);
    return true;
+}
+
+bool frm_back (frm_t *frm, size_t index)
+{
+   if (!frm) {
+      FRM_ERROR ("Error: null object passed for frm_t\n");
+      errno = ENOENT;
+      return false;
+   }
+
+   bool error = true;
+   FILE *infile = NULL;
+   char *line = NULL;
+   char *olddir = NULL;
+   static const size_t line_len = 1024 * 1024 * 10;
+
+   if (!(olddir = pushdir (frm->dbpath))) {
+      FRM_ERROR ("Failed to switch to dbpath directory [%s]: %m\n", frm->dbpath);
+      goto cleanup;
+   }
+
+   if (!(infile = fopen ("history", "r"))) {
+      FRM_ERROR ("Failed to open [history] for reading: %m\n");
+      goto cleanup;
+   }
+
+   if (!(line = malloc (line_len))) {
+      FRM_ERROR ("OOM error allocating line for reading history\n");
+   }
+
+   size_t nline = 0;
+   line[0] = 0;
+   while ((fgets (line, line_len - 1, infile))) {
+      char *tmp = strchr (line, '\n');
+      if (tmp)
+         *tmp = 0;
+      if (nline++ >= index)
+         break;
+   }
+
+   if (!line[0]) {
+      FRM_ERROR ("History file appears to be empty, aborting switch.\n");
+      goto cleanup;
+   }
+
+   frm_switch (frm, line);
+
+   error = false;
+cleanup:
+   free (line);
+   free (olddir);
+   if (infile)
+      fclose (infile);
+
+   return !error;
 }
 
 bool frm_pop (frm_t *frm)
 {
    if (!frm) {
       FRM_ERROR ("Error: null object passed for frm_t\n");
+      errno = ENOENT;
       return false;
    }
+
+   char **subframes = frm_list (frm, NULL);
+   size_t nsubframes = 0;
+   for (size_t i=0; subframes && subframes[i]; i++) {
+      nsubframes++;
+      free (subframes[i]);
+   }
+   free (subframes);
+
+   if (nsubframes!=0) {
+      FRM_ERROR ("Error: cannot pop a frame that has children\n");
+      errno = ENOTEMPTY;
+      return false;
+   }
+
 
    char *oldpath = get_path (frm);
    if (!oldpath) {
@@ -1076,6 +1276,7 @@ bool frm_delete (frm_t *frm, const char *target)
 {
    if (!frm) {
       FRM_ERROR ("Error: null object passed for frm_t\n");
+      errno = ENOENT;
       return false;
    }
 
@@ -1099,21 +1300,12 @@ bool frm_delete (frm_t *frm, const char *target)
    return true;
 }
 
-char **frm_list (frm_t *frm)
-{
-   if (!frm) {
-      FRM_ERROR ("Error: null object passed for frm_t\n");
-      return NULL;
-   }
-
-   return index_read (frm->dbpath);
-}
-
 static char **match (frm_t *frm, const char *sterm,
       uint32_t flags, const char *from)
 {
    if (!frm) {
       FRM_ERROR ("Error: null object passed for frm_t\n");
+      errno = ENOENT;
       return NULL;
    }
 
@@ -1126,15 +1318,14 @@ static char **match (frm_t *frm, const char *sterm,
    bool error = true;
    char **results = NULL;
    size_t results_len = 0;
-   char *actual_sterm = ds_str_cat (from, "/", sterm, NULL);
-
-   if (!actual_sterm) {
-      FRM_ERROR ("OOM error allocating match search term\n");
-      goto cleanup;
-   }
 
    for (size_t i=0; index[i]; i++) {
-      bool found = strstr (index[i], actual_sterm)!=NULL;
+      bool found = strstr (index[i], from)!=NULL;
+      if (!found) {
+         continue;
+      }
+
+      found = strstr (index[i], sterm)!=NULL;
       if (flags & FRM_MATCH_INVERT) {
          found = !found;
       }
@@ -1157,6 +1348,13 @@ static char **match (frm_t *frm, const char *sterm,
       }
    }
 
+   // If we reached this point with NULL results then no errors occurred but
+   // no matches were found either. Must return an empty list.
+   if (!results && !(results = calloc (1, sizeof *results))) {
+      FRM_ERROR ("OOM error allocating empty list\n");
+      goto cleanup;
+   }
+
    error = false;
 cleanup:
    for (size_t i=0; index && index[i]; i++) {
@@ -1171,9 +1369,70 @@ cleanup:
       free (results);
       results = 0;
    }
-   free (actual_sterm);
 
    return results;
+}
+
+char **frm_list (frm_t *frm, const char *from)
+{
+   if (!frm) {
+      FRM_ERROR ("Error: null object passed for frm_t\n");
+      errno = ENOENT;
+      return NULL;
+   }
+
+   // Attempt to switch to 'from' as a relative path. If that fails
+   // attempt to switch to 'from' as an absolute nodename (absolute
+   // relative to frm->dbpath).
+   if (!from || !from[0]) {
+      from = "./";
+   }
+   char *olddir = pushdir (from);
+   if (!olddir) {
+      FRM_ERROR ("Warning: using relative path [%s] failed, trying absolute path\n",
+            from);
+      char *tmp = ds_str_cat (frm->dbpath, "/", from, NULL);
+      if (!tmp) {
+         FRM_ERROR ("OOM error allocating absolute path for nodename [%s/%s]\n",
+               frm->dbpath, from);
+         return NULL;
+      }
+      char *first_errmsg = ds_str_dup (strerror (errno));
+      if (!first_errmsg) {
+         FRM_ERROR ("OOM error allocating error message string: %i\n", errno);
+         return NULL;
+      }
+
+      olddir = pushdir (tmp);
+      free (tmp);
+      if (!olddir) {
+         FRM_ERROR ("Neither [%s] nor [%s/%s] could be used: [%s][%m]\n",
+               from, frm->dbpath, from, first_errmsg);
+         free (first_errmsg);
+         return NULL;
+      }
+      free (first_errmsg);
+   }
+
+   char *current = frm_current (frm);
+   if (!current) {
+      FRM_ERROR ("Error: unable to determine current node: %m\n");
+      return NULL;
+   }
+
+   char *prefixed_current = ds_str_cat (current, "/", NULL);
+   if (!prefixed_current) {
+      FRM_ERROR ("OOM error allocating temporary string for current node\n");
+      free (current);
+      popdir (&olddir);
+      return NULL;
+   }
+   free (current);
+
+   char **ret = match (frm, "", 0, prefixed_current);
+   free (prefixed_current);
+   popdir (&olddir);
+   return ret;
 }
 
 char **frm_match (frm_t *frm, const char *sterm, uint32_t flags)

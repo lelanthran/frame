@@ -1,0 +1,41 @@
+# Source this file to have frame autocompletions in bash
+
+_frame_completions() {
+   local cmd="$1"  # Always 'frame'
+   local cur="$2"  # Current completion, can be blank
+   local prev="$3" # Previous word, can be 'frame'
+
+   local opts="--help"
+   local commands=("status" "switch" "current" "down")
+   local args
+   local fpath="`frame current --quiet | cut -f 1 -d :`"
+
+   declare -a COMPREPLY
+
+   pushd $PWD &> /dev/null
+
+   case "${prev}" in
+      down)
+         cd "$HOME/.framedb/$fpath"
+         args="`for X in $cur*/; do printf "%s\n" "$X" | sed 's/ /|/g'; done`"
+         local INDEX=0;
+         echo "cur = [$cur]" > /tmp/t
+         for X in `compgen -W "${args}" ${cur}`
+         do
+            COMPREPLY[$INDEX]=`echo -ne $X | sed 's/|/ /g'`
+            echo $INDEX: ${COMPREPLY[$INDEX]} >> /tmp/t
+            printf "in loop: %q\n" "${COMPREPLY[@]}" >> /tmp/t
+            INDEX=$(($INDEX+1))
+         done
+         printf "out loop 1: %q\n" "${COMPREPLY[@]}" >> /tmp/t
+         printf "out loop 2: %q\n" "${COMPREPLY[*]}" >> /tmp/t
+         ;;
+      *)
+         ;;
+   esac
+
+   popd &> /dev/null
+   return 0;
+}
+
+complete -F _frame_completions frame
