@@ -220,6 +220,9 @@ static void print_helpmsg (void)
 "",
 "  --help               Print this page and exit.",
 "",
+"  --force              Force an action that against the program's wishes,",
+"                       for example popping a node that is not empty.",
+"",
 "  --dbpath=<path>      Specify the location of the database path. Defaults to",
 "                       '$HOME/.framedb' unless overridden by this option.",
 "",
@@ -358,6 +361,7 @@ int main (int argc, char **argv)
    // to the command.
    char *command = cline_command_get (0);
    char *help = cline_option_get ("help");
+   char *force = cline_option_get ("force");
    char *dbpath = cline_option_get ("dbpath");
    char *message = cline_option_get ("message");
    char *from_root = cline_option_get ("from-root");
@@ -667,7 +671,13 @@ int main (int argc, char **argv)
 
 
    if ((strcmp (command, "pop"))==0) {
-      if (!(frm_pop (frm))) {
+      bool force_pop = false;
+      if (force) {
+         force_pop = true;
+         printf ("Force-popping (you may lose subframes of this frame)\n");
+      }
+
+      if (!(frm_pop (frm, force_pop))) {
          fprintf (stderr, "Failed to pop current node: %m\n");
          ret = EXIT_FAILURE;
       }
@@ -764,6 +774,7 @@ cleanup:
    frm_close (frm);
    free (command);
    free (help);
+   free (force);
    free (dbpath);
    free (message);
    free (from_root);

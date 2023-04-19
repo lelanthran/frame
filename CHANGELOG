@@ -1,7 +1,7 @@
 v0.1.2 - ???
 
 Features
-
+1. Adds --force for pop command, to let user pop a non-empty frame.
 
 v0.1.1 - Wed 19 Apr 2023 18:00:27 SAST
 

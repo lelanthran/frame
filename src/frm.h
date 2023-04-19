@@ -49,7 +49,7 @@ extern "C" {
    bool frm_switch (frm_t *frm, const char *target);
    bool frm_back (frm_t *frm, size_t index);
    bool frm_delete (frm_t *frm, const char *target);
-   bool frm_pop (frm_t *frm);
+   bool frm_pop (frm_t *frm, bool force);
 
    char **frm_list (frm_t *frm, const char *from);
    char **frm_match (frm_t *frm, const char *sterm, uint32_t flags);
