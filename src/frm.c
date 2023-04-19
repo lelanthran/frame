@@ -1304,8 +1304,10 @@ bool frm_delete (frm_t *frm, const char *target)
          FRM_ERROR ("Warning: failed to remove [%s] from index\n", subframes[i]);
       }
    }
-
    free_str_array (subframes);
+   if (!(index_remove (frm->dbpath, target))) {
+      FRM_ERROR ("Warning: failed to remove [%s] from index\n", target);
+   }
 
    popdir (&olddir);
    return true;
