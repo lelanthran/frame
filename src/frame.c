@@ -369,11 +369,18 @@ int main (int argc, char **argv)
    char *quiet = cline_option_get ("quiet");
    frm_t *frm = NULL;
 
-   if (!command || !command[0] || (strcmp (command, "help")==0) || help) {
+   if (!command || !command[0]) {
+      free (command);
+      command = ds_str_dup("status");
+      printf ("No command specified (try --help). Defaulting to 'status'\n");
+   }
+
+   if ((strcmp (command, "help")==0) || help) {
       print_helpmsg ();
       ret = EXIT_FAILURE;
       goto cleanup;
    }
+
 
    // TODO: have a more nuanced determination of when the copyright
    // notice should be printed.

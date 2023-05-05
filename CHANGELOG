@@ -1,7 +1,8 @@
-v0.1.2 - ???
+v0.1.2 - Fri 05 May 2023 22:02:07 SAST
 
 Features
 1. Adds --force for pop command, to let user pop a non-empty frame.
+2. With no command, a short message is printed and the command defaults to status.
 
 v0.1.1 - Wed 19 Apr 2023 18:00:27 SAST
 
