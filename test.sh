@@ -80,7 +80,7 @@ execute $PROG status || die failed status
 execute $PROG history || die failed history
 
 execute $PROG top || die failed top
-execute $ROG down one || die failed down one
+execute $PROG down one || die failed down one
 execute $PROG status || die failed status
 execute $PROG history || die failed history
 

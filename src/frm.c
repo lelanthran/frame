@@ -71,61 +71,10 @@ static void popdir (char **olddir)
    *olddir = NULL;
 }
 
-static bool removedir (const char *target)
-{
-   if (!target || !target[0] || target[0]=='/' || target[0] == '.') {
-      FRM_ERROR ("Error: invalid directory removal name [%s]\n", target);
-      return false;
-   }
-
-   char *olddir = pushdir (target);
-   if (!olddir) {
-      FRM_ERROR ("Error: failed to switch to [%s]\n", target);
-      return false;
-   }
-
-   DIR *dirp = opendir (".");
-   if (!dirp) {
-      FRM_ERROR ("Error: failed to read directory [%s]: %m\n", target);
-      return false;
-   }
-   struct dirent *de;
-   while ((de = readdir (dirp))) {
-      if (de->d_name[0] == '.')
-         continue;
-      if (de->d_type == DT_DIR) {
-         char *olddir = pushdir (de->d_name);
-         if (!olddir) {
-            FRM_ERROR ("Error: Failed to switch to [%s]: %m\n", de->d_name);
-            closedir (dirp);
-            popdir (&olddir);
-            return false;
-         }
-         removedir (de->d_name);
-         popdir (&olddir);
-      } else {
-         if ((unlink (de->d_name)) != 0) {
-            FRM_ERROR ("Error: unlink [%s]: %m\n", de->d_name);
-            closedir (dirp);
-            popdir (&olddir);
-            return false;
-         }
-      }
-   }
-   closedir (dirp);
-   popdir (&olddir);
-
-   if ((rmdir (target)) != 0) {
-      FRM_ERROR ("Error: Failed to rmdir() [%s]: %m\n", target);
-      return false;
-   }
-   return true;
-}
-
 static char *get_path (frm_t *frm) {
    if (!frm) {
       FRM_ERROR ("Error: null object passed for frm_t\n");
-      errno = ENOENT;
+      errno = EINVAL;
       return false;
    }
 
@@ -387,6 +336,51 @@ cleanup:
    free (line);
 
    return !error;
+}
+
+static bool removedir (const char *target)
+{
+   if (!target || !target[0] || target[0]=='/' || target[0] == '.') {
+      FRM_ERROR ("Error: invalid directory removal name [%s]\n", target);
+      errno = EINVAL;
+      return false;
+   }
+
+   char *olddir = pushdir (target);
+   if (!olddir) {
+      FRM_ERROR ("Error: failed to switch to [%s]: %m\n", target);
+      return false;
+   }
+
+   DIR *dirp = opendir (".");
+   if (!dirp) {
+      FRM_ERROR ("Error: failed to read directory [%s]: %m\n", target);
+      return false;
+   }
+   struct dirent *de;
+   while ((de = readdir (dirp))) {
+      if (de->d_name[0] == '.')
+         continue;
+      if (de->d_type == DT_DIR) {
+         removedir (de->d_name);
+      } else {
+         if ((unlink (de->d_name)) != 0) {
+            FRM_ERROR ("Error: unlink [%s]: %m\n", de->d_name);
+            closedir (dirp);
+            popdir (&olddir);
+            return false;
+         }
+      }
+   }
+   closedir (dirp);
+   popdir (&olddir);
+
+   if ((rmdir (target)) != 0) {
+      FRM_ERROR ("Error: Failed to rmdir() [%s]: %m\n", target);
+      return false;
+   }
+
+   return true;
 }
 
 static int sort_entries (const void *lhs, const void *rhs)
@@ -744,7 +738,7 @@ char *frm_history (frm_t *frm, size_t count)
 {
    if (!frm) {
       FRM_ERROR ("Found null object for frm_t\n");
-      errno = ENOENT;
+      errno = EINVAL;
       return ds_str_dup ("");
    }
 
@@ -755,7 +749,7 @@ char *frm_current (frm_t *frm)
 {
    if (!frm) {
       FRM_ERROR ("Error, null object passed for frm_t\n");
-      errno = ENOENT;
+      errno = EINVAL;
       return ds_str_dup ("");
    }
    char *tmp = getcwd (NULL, 0);
@@ -780,7 +774,7 @@ char *frm_payload (frm_t *frm)
 {
    if (!frm) {
       FRM_ERROR ("Error, null object passed for frm_t\n");
-      errno = ENOENT;
+      errno = EINVAL;
       return ds_str_dup ("");
    }
    char *ret = frm_readfile ("payload");
@@ -800,7 +794,7 @@ static bool read_info (frm_t *frm, struct info_t *dst, const char *fname)
 {
    if (!frm) {
       FRM_ERROR ("Error, null object passed for frm_t\n");
-      errno = ENOENT;
+      errno = EINVAL;
       return false;
    }
 
@@ -842,7 +836,7 @@ static bool write_info (frm_t *frm, const struct info_t *info, const char *fname
 {
    if (!frm) {
       FRM_ERROR ("Error, null object passed for frm_t\n");
-      errno = ENOENT;
+      errno = EINVAL;
       return false;
    }
 
@@ -904,7 +898,7 @@ bool frm_push (frm_t *frm, const char *name, const char *message)
 {
    if (!frm) {
       FRM_ERROR ("Error, null object passed for frm_t\n");
-      errno = ENOENT;
+      errno = EINVAL;
       return false;
    }
 
@@ -953,7 +947,7 @@ bool frm_payload_replace (frm_t *frm, const char *message)
 {
    if (!frm) {
       FRM_ERROR ("Error, null object passed for frm_t\n");
-      errno = ENOENT;
+      errno = EINVAL;
       return false;
    }
 
@@ -974,7 +968,7 @@ bool frm_payload_append (frm_t *frm, const char *message)
 {
    if (!frm) {
       FRM_ERROR ("Error, null object passed for frm_t\n");
-      errno = ENOENT;
+      errno = EINVAL;
       return false;
    }
 
@@ -1054,7 +1048,7 @@ bool frm_up (frm_t *frm)
 {
    if (!frm) {
       FRM_ERROR ("Error: null object passed for frm_t\n");
-      errno = ENOENT;
+      errno = EINVAL;
       return false;
    }
 
@@ -1103,7 +1097,7 @@ bool frm_down (frm_t *frm, const char *target)
 {
    if (!frm) {
       FRM_ERROR ("Error: null object passed for frm_t\n");
-      errno = ENOENT;
+      errno = EINVAL;
       return false;
    }
 
@@ -1135,6 +1129,7 @@ bool frm_switch (frm_t *frm, const char *target)
       : ds_str_cat (target, "/", NULL);
    if (!suffixed) {
       FRM_ERROR ("OOM error allocating suffixed string\n");
+      errno = ENOMEM;
       return false;
    }
 
@@ -1227,28 +1222,37 @@ cleanup:
    return !error;
 }
 
-bool frm_pop (frm_t *frm)
+static void free_str_array (char **array)
+{
+   for (size_t i=0; array && array[i]; i++) {
+      free (array[i]);
+   }
+   free (array);
+}
+
+bool frm_pop (frm_t *frm, bool force)
 {
    if (!frm) {
       FRM_ERROR ("Error: null object passed for frm_t\n");
-      errno = ENOENT;
+      errno = EINVAL;
       return false;
    }
 
-   char **subframes = frm_list (frm, NULL);
-   size_t nsubframes = 0;
-   for (size_t i=0; subframes && subframes[i]; i++) {
-      nsubframes++;
-      free (subframes[i]);
-   }
-   free (subframes);
+   if (!force) {
+      char **subframes = frm_list (frm, NULL);
+      size_t nsubframes = 0;
+      for (size_t i=0; subframes && subframes[i]; i++) {
+         nsubframes++;
+         free (subframes[i]);
+      }
+      free (subframes);
 
-   if (nsubframes!=0) {
-      FRM_ERROR ("Error: cannot pop a frame that has children\n");
-      errno = ENOTEMPTY;
-      return false;
+      if (nsubframes!=0) {
+         FRM_ERROR ("Error: cannot pop a frame that has children\n");
+         errno = ENOTEMPTY;
+         return false;
+      }
    }
-
 
    char *oldpath = get_path (frm);
    if (!oldpath) {
@@ -1276,22 +1280,31 @@ bool frm_delete (frm_t *frm, const char *target)
 {
    if (!frm) {
       FRM_ERROR ("Error: null object passed for frm_t\n");
-      errno = ENOENT;
+      errno = EINVAL;
       return false;
    }
 
+   char **subframes = frm_list (frm, target);
    char *olddir = pushdir (frm->dbpath);
    if (!olddir) {
       FRM_ERROR ("Error: failed to switch directory: %m\n");
+      free_str_array(subframes);
       return false;
    }
 
    if (!(removedir (target))) {
       FRM_ERROR ("Error: failed to remove directory[%s]: %m\n", target);
       popdir (&olddir);
+      free_str_array (subframes);
       return false;
    }
 
+   for (size_t i=0; subframes && subframes[i]; i++) {
+      if (!(index_remove (frm->dbpath, subframes[i]))) {
+         FRM_ERROR ("Warning: failed to remove [%s] from index\n", subframes[i]);
+      }
+   }
+   free_str_array (subframes);
    if (!(index_remove (frm->dbpath, target))) {
       FRM_ERROR ("Warning: failed to remove [%s] from index\n", target);
    }
@@ -1305,7 +1318,7 @@ static char **match (frm_t *frm, const char *sterm,
 {
    if (!frm) {
       FRM_ERROR ("Error: null object passed for frm_t\n");
-      errno = ENOENT;
+      errno = EINVAL;
       return NULL;
    }
 
