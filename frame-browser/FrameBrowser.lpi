@@ -37,8 +37,14 @@
         <Filename Value="mainwin.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="frmMain"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="mainWin"/>
+      </Unit>
+      <Unit>
+        <Filename Value="framewrapper.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="FrameWrapper"/>
       </Unit>
     </Units>
   </ProjectOptions>
@@ -49,6 +55,8 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
+      <Libraries Value="../debug/lib/x86_64-linux-gnu"/>
+      <OtherUnitFiles Value="../debug/lib/x86_64-linux-gnu"/>
       <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Linking>
@@ -56,6 +64,7 @@
         <DebugInfoType Value="dsDwarf3"/>
       </Debugging>
       <Options>
+        <LinkerOptions Value="frame"/>
         <Win32>
           <GraphicApplication Value="True"/>
         </Win32>

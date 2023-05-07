@@ -7,27 +7,72 @@
       <Unit>
         <Filename Value="FrameBrowser.lpr"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
-        <WindowIndex Value="-1"/>
-        <TopLine Value="-1"/>
-        <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="20"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="2"/>
+        <CursorPos X="43" Y="27"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="mainwin.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="frmMain"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="mainWin"/>
-        <IsVisibleTab Value="True"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="21"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
+      <Unit>
+        <Filename Value="framewrapper.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="FrameWrapper"/>
+        <EditorIndex Value="1"/>
+        <CursorPos X="15" Y="35"/>
+        <UsageCount Value="21"/>
+        <Loaded Value="True"/>
+      </Unit>
     </Units>
-    <JumpHistory>
+    <JumpHistory HistoryIndex="9">
       <Position>
         <Filename Value="mainwin.pas"/>
+      </Position>
+      <Position>
+        <Filename Value="framewrapper.pas"/>
+        <Caret Line="37" TopLine="4"/>
+      </Position>
+      <Position>
+        <Filename Value="FrameBrowser.lpr"/>
+        <Caret Line="13" Column="31"/>
+      </Position>
+      <Position>
+        <Filename Value="framewrapper.pas"/>
+        <Caret Line="30" Column="4" TopLine="10"/>
+      </Position>
+      <Position>
+        <Filename Value="framewrapper.pas"/>
+        <Caret Line="7" Column="28"/>
+      </Position>
+      <Position>
+        <Filename Value="FrameBrowser.lpr"/>
+        <Caret Line="23" Column="14"/>
+      </Position>
+      <Position>
+        <Filename Value="framewrapper.pas"/>
+        <Caret Line="15" Column="3"/>
+      </Position>
+      <Position>
+        <Filename Value="FrameBrowser.lpr"/>
+        <Caret Line="21" Column="6"/>
+      </Position>
+      <Position>
+        <Filename Value="FrameBrowser.lpr"/>
+        <Caret Line="19" Column="28"/>
+      </Position>
+      <Position>
+        <Filename Value="FrameBrowser.lpr"/>
+        <Caret Line="27" Column="28"/>
       </Position>
     </JumpHistory>
     <RunParams>
@@ -35,4 +80,15 @@
       <Modes ActiveMode=""/>
     </RunParams>
   </ProjectSession>
+  <Debugging>
+    <BreakPoints>
+      <Item>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="FrameBrowser.lpr"/>
+        <Line Value="13"/>
+      </Item>
+    </BreakPoints>
+  </Debugging>
 </CONFIG>
