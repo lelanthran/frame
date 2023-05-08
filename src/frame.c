@@ -554,6 +554,7 @@ int main (int argc, char **argv)
       free (message);
       name = frm_current (frm);
       printf ("Created new frame [%s]\n", name);
+      status(frm);
       free (name);
       goto cleanup;
    }

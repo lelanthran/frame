@@ -56,7 +56,8 @@ begin
   strItems := SplitString(frame_history, #$0a);
 
   tlView.Items.Clear();
-  for i:=0 to Length(strItems) do
+  Writeln('nitems: ', Length(strItems));
+  for i:=0 to (Length(strItems) - 1) do
   begin
     if (Length(searchTerm) > 2) and (PosEx(searchTerm, strItems[i]) <= 0) then
     begin

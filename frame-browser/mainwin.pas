@@ -33,6 +33,8 @@ type
     TreeView1: TTreeView;
     procedure bbtnQuitClick(Sender: TObject);
     procedure edtSearchTermChange(Sender: TObject);
+    procedure FormActivate(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
 
   public
@@ -60,6 +62,17 @@ var
 begin
   sterm := frmMain.edtSearchTerm.Caption;
   frame_history_populate (sterm, frmMain.lvHistory);
+end;
+
+procedure TfrmMain.FormActivate(Sender: TObject);
+begin
+      frame_var := frm_init('/home/lelanthran/.framedb');
+  frame_history_populate('', frmMain.lvHistory);
+end;
+
+procedure TfrmMain.FormCreate(Sender: TObject);
+begin
+
 end;
 
 end.

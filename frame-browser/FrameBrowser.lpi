@@ -62,6 +62,7 @@
     <Linking>
       <Debugging>
         <DebugInfoType Value="dsDwarf3"/>
+        <TrashVariables Value="True"/>
         <UseValgrind Value="True"/>
       </Debugging>
       <Options>

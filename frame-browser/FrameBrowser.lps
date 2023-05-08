@@ -8,8 +8,8 @@
         <Filename Value="FrameBrowser.lpr"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="2"/>
-        <CursorPos X="49" Y="24"/>
-        <UsageCount Value="55"/>
+        <CursorPos X="45" Y="22"/>
+        <UsageCount Value="56"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -19,10 +19,9 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="mainWin"/>
-        <IsVisibleTab Value="True"/>
-        <TopLine Value="14"/>
-        <CursorPos X="53" Y="60"/>
-        <UsageCount Value="55"/>
+        <TopLine Value="44"/>
+        <CursorPos X="53" Y="70"/>
+        <UsageCount Value="56"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -30,10 +29,11 @@
         <Filename Value="framewrapper.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="FrameWrapper"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="38"/>
-        <CursorPos X="31" Y="61"/>
-        <UsageCount Value="55"/>
+        <TopLine Value="37"/>
+        <CursorPos X="16" Y="60"/>
+        <UsageCount Value="56"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -47,7 +47,7 @@
         <Filename Value="/usr/share/fpcsrc/3.2.2/rtl/objpas/types.pp"/>
         <UnitName Value="Types"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="13"/>
+        <TopLine Value="22"/>
         <CursorPos X="19" Y="56"/>
         <UsageCount Value="10"/>
       </Unit>
@@ -55,32 +55,19 @@
         <Filename Value="/usr/share/fpcsrc/3.2.2/packages/rtl-objpas/src/inc/strutils.pp"/>
         <UnitName Value="StrUtils"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="91"/>
-        <CursorPos X="6" Y="18"/>
+        <TopLine Value="1349"/>
+        <CursorPos X="21" Y="1377"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="/usr/share/fpcsrc/3.2.2/rtl/objpas/sysutils/syshelph.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="148"/>
+        <CursorPos X="14" Y="171"/>
         <UsageCount Value="10"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="29">
-      <Position>
-        <Filename Value="mainwin.pas"/>
-        <Caret Line="70" TopLine="46"/>
-      </Position>
-      <Position>
-        <Filename Value="mainwin.pas"/>
-        <Caret Line="76" Column="10" TopLine="46"/>
-      </Position>
-      <Position>
-        <Filename Value="mainwin.pas"/>
-        <Caret Line="72" TopLine="46"/>
-      </Position>
-      <Position>
-        <Filename Value="mainwin.pas"/>
-        <Caret Line="73" TopLine="46"/>
-      </Position>
-      <Position>
-        <Filename Value="mainwin.pas"/>
-        <Caret Line="70" TopLine="46"/>
-      </Position>
+    <JumpHistory HistoryIndex="27">
       <Position>
         <Filename Value="mainwin.pas"/>
         <Caret Line="72" TopLine="46"/>
@@ -181,6 +168,18 @@
         <Filename Value="framewrapper.pas"/>
         <Caret Line="61" Column="35" TopLine="38"/>
       </Position>
+      <Position>
+        <Filename Value="mainwin.pas"/>
+        <Caret Line="43" Column="111" TopLine="26"/>
+      </Position>
+      <Position>
+        <Filename Value="mainwin.pas"/>
+        <Caret Line="44" Column="111" TopLine="26"/>
+      </Position>
+      <Position>
+        <Filename Value="mainwin.pas"/>
+        <Caret Line="75" Column="12" TopLine="41"/>
+      </Position>
     </JumpHistory>
     <RunParams>
       <FormatVersion Value="2"/>
@@ -198,6 +197,12 @@
       </Item>
       <Item>
         <Expression Value="strItems"/>
+      </Item>
+      <Item>
+        <Expression Value="strItems[511]"/>
+      </Item>
+      <Item>
+        <Expression Value="length(strItems)"/>
       </Item>
     </Watches>
   </Debugging>

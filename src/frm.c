@@ -940,11 +940,13 @@ static bool internal_frm_push (frm_t *frm, const char *name, const char *message
    }
 
    char *path = get_path (frm);
-   if (!(history_append(frm->dbpath, path))) {
-      FRM_ERROR ("Failed to update history\n");
-      free (path);
-      popdir (&olddir);
-      return false;
+   if (dir_change) {
+      if (!(history_append(frm->dbpath, path))) {
+         FRM_ERROR ("Failed to update history\n");
+         free (path);
+         popdir (&olddir);
+         return false;
+      }
    }
 
    if (!(index_add (frm->dbpath, path))) {

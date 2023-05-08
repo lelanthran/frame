@@ -1,11 +1,13 @@
 object frmMain: TfrmMain
-  Left = 557
+  Left = 823
   Height = 486
-  Top = 299
+  Top = 160
   Width = 1046
   Caption = 'Frame Browser'
   ClientHeight = 486
   ClientWidth = 1046
+  OnActivate = FormActivate
+  OnCreate = FormCreate
   LCLVersion = '2.2.6.0'
   object Panel1: TPanel
     AnchorSideLeft.Control = Owner
@@ -192,6 +194,12 @@ object frmMain: TfrmMain
               Width = 336
               Anchors = [akTop, akLeft, akRight, akBottom]
               TabOrder = 1
+              Items.Data = {
+                F9FFFFFF020001000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF010000000000
+                000001050000004974656D30FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF01000000
+                0000000001050000004974656D31FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0000
+                00000000000000050000004974656D32
+              }
             end
           end
           object PairSplitterSide4: TPairSplitterSide
