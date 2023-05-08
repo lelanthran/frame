@@ -24,6 +24,11 @@ typedef struct frm_t frm_t;
 extern "C" {
 #endif
 
+   /* Some memory functions because FreePascal has poor support for
+    * freeing memory allocated by libraries.
+    */
+   void frm_mem_free (void *ptr);
+
    char *frm_readfile (const char *fname);
    bool frm_vwritefile (const char *fname, const char *data, va_list ap);
    bool frm_writefile (const char *fname, const char *data, ...);

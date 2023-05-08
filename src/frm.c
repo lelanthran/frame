@@ -31,6 +31,8 @@ struct frm_t {
    char *olddir;
 };
 
+#define REMOVEME FRM_ERROR
+
 /* ********************************************************** */
 /* ********************************************************** */
 /* ********************************************************** */
@@ -104,6 +106,8 @@ static char *get_path (frm_t *frm) {
 
 static char *history_read (const char *dbpath, size_t count)
 {
+   REMOVEME("Reading history [%s], %zu\n", dbpath, count);
+
    char *pwd = pushdir (dbpath);
    if (!pwd) {
       FRM_ERROR ("Failed to switch dir [%s]: %m\n", dbpath);
@@ -112,6 +116,7 @@ static char *history_read (const char *dbpath, size_t count)
 
    char *history = frm_readfile ("history");
    if (!history) {
+      REMOVEME("Empty history [%s], %zu\n", dbpath, count);
       // Ignoring empty history. History is allowed to be empty.
       history = ds_str_dup ("");
       if (!history) {
@@ -556,6 +561,11 @@ static frm_t *frm_alloc (const char *dbpath, const char *olddir)
       ret->dbpath[dbpath_len-1] = 0;
 
    return ret;
+}
+
+void frm_mem_free (void *ptr)
+{
+   free (ptr);
 }
 
 char *frm_readfile (const char *name)

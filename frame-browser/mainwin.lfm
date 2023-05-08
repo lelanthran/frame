@@ -27,10 +27,14 @@ object frmMain: TfrmMain
       AnchorSideBottom.Side = asrBottom
       Left = 1
       Height = 30
+      Hint = 'Quit FrameBrowser'
       Top = 1
       Width = 75
       Anchors = [akTop, akLeft, akBottom]
       Caption = 'Quit'
+      OnClick = bbtnQuitClick
+      ParentShowHint = False
+      ShowHint = True
       TabOrder = 0
     end
     object bbtnHelp: TBitBtn
@@ -62,7 +66,7 @@ object frmMain: TfrmMain
     Width = 762
     HorzScrollBar.Page = 640
     HorzScrollBar.Tracking = True
-    VertScrollBar.Page = 125
+    VertScrollBar.Page = 195
     Anchors = [akTop, akLeft, akRight, akBottom]
     ClientHeight = 452
     ClientWidth = 760
@@ -125,9 +129,10 @@ object frmMain: TfrmMain
           Width = 54
           Anchors = [akTop, akRight]
           Caption = 'S'
+          OnClick = bbtnSearchHistoryClick
           TabOrder = 2
         end
-        object lbHistory: TListBox
+        object lvHistory: TListView
           AnchorSideLeft.Control = PairSplitterSide1
           AnchorSideTop.Control = edtSearchTerm
           AnchorSideTop.Side = asrBottom
@@ -140,9 +145,8 @@ object frmMain: TfrmMain
           Top = 45
           Width = 232
           Anchors = [akTop, akLeft, akRight, akBottom]
-          ItemHeight = 0
+          Columns = <>
           TabOrder = 3
-          TopIndex = -1
         end
       end
       object PairSplitterSide2: TPairSplitterSide
