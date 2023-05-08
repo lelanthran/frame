@@ -272,11 +272,18 @@ static void print_helpmsg (void)
 "  Display the status of the current node.",
 "",
 "push",
-"  Create a new node as the child of the current node. If a message is specified",
-"  with '--message=<string>' then it will be used as the contents of the new",
-"  node. If no message is specified with '--message=<string>' then $EDITOR will",
-"  be started to allow the user to enter a message. If $EDITOR is not set, the",
-"  user will be prompted for a message.",
+"  Create a new node as the child of the current node AND switches to it. If a",
+"  message is specified with '--message=<string>' then it will be used as the",
+"  contents of the new node. If no message is specified with '--message=<string>'",
+"  then $EDITOR will be started to allow the user to enter a message. If $EDITOR",
+"  is not set, the user will be prompted for a message.",
+"",
+"new",
+"  Create a new node as the child of the current node WITHOUT switching to it. If",
+"  a message is specified with '--message=<string>' then it will be used as the",
+"  contents of the new node. If no message is specified with '--message=<string>'",
+"  then $EDITOR will be started to allow the user to enter a message. If $EDITOR",
+"  is not set, the user will be prompted for a message.",
 "",
 "replace",
 "  Overwrite the content of the current node with the provided message. See ",
@@ -496,6 +503,47 @@ int main (int argc, char **argv)
       }
 
       if (!(frm_push (frm, name, message))) {
+         fprintf (stderr, "Failed to create new frame\n");
+         free (name);
+         free (message);
+         ret = EXIT_FAILURE;
+         goto cleanup;
+      }
+      free (name);
+      free (message);
+      name = frm_current (frm);
+      printf ("Created new frame [%s]\n", name);
+      free (name);
+      goto cleanup;
+   }
+
+   if ((strcmp (command, "new"))==0) {
+      char *name = cline_command_get(1);
+      if (!name || !name[0]) {
+         fprintf (stderr, "Must specify a name for the new frame\n");
+         free (name);
+         ret = EXIT_FAILURE;
+         goto cleanup;
+      }
+      char *message = cline_option_get ("message");
+      if (!message) {
+         char *current = frm_current (frm);
+         if (!current) {
+            fprintf (stderr, "Warning: Failed to get the current path\n");
+         }
+         char *fpath = ds_str_cat (current, "/", name, NULL);
+         message = run_editor (fpath);
+         free (fpath);
+         free (current);
+      }
+      if (!message) {
+         fprintf (stderr, "No edit message, aborting\n");
+         free (name);
+         ret = EXIT_FAILURE;
+         goto cleanup;
+      }
+
+      if (!(frm_new (frm, name, message))) {
          fprintf (stderr, "Failed to create new frame\n");
          free (name);
          free (message);

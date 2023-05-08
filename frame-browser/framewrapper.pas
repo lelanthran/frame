@@ -4,7 +4,7 @@ unit FrameWrapper;
 
 interface
 uses
-  Classes, SysUtils, Ctypes;
+  Classes, SysUtils, Ctypes, ComCtrls, Types, StrUtils;
 
 type
   va_list = pointer;
@@ -40,8 +40,33 @@ function frm_list(frm: frm_t; from_: PChar): PPChar; cdecl; external 'frame';
 function frm_match(frm: frm_t; sterm: PChar; flags: cuint32): PPChar; cdecl; external 'frame';
 function frm_match_from_root(frm: frm_t; sterm: PChar; flags: cuint32): PPChar; cdecl; external 'frame';
 
+procedure frame_history_populate(searchTerm: String; tlView: TListView);
 
 implementation
+
+procedure frame_history_populate(searchTerm: String; tlView: TListView);
+var
+  frame_history: PChar;
+  i: csize_t;
+  strItems: TStringDynArray;
+  listItem: TListItem;
+
+begin
+  frame_history := frm_history(frame_var, csize_t($ffffffffffffffff));
+  strItems := SplitString(frame_history, #$0a);
+
+  tlView.Items.Clear();
+  for i:=0 to Length(strItems) do
+  begin
+    if (Length(searchTerm) > 2) and (PosEx(searchTerm, strItems[i]) <= 0) then
+    begin
+      continue;
+    end;
+    listItem := tlView.Items.Add();
+    listItem.Caption := Copy(strItems[i], 1, Length(strItems[i]));
+  end;
+  frm_mem_free(frame_history);
+end;
 
 end.
 

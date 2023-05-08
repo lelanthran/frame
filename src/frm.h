@@ -43,6 +43,7 @@ extern "C" {
    uint64_t frm_date_epoch (frm_t *frm);
    char *frm_date_str (frm_t *frm);
 
+   bool frm_new (frm_t *frm, const char *name, const char *message);
    bool frm_push (frm_t *frm, const char *name, const char *message);
    bool frm_payload_replace (frm_t *frm, const char *message);
    bool frm_payload_append (frm_t *frm, const char *message);

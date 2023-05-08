@@ -904,7 +904,8 @@ char *frm_date_str (frm_t *frm)
    return ds_str_dup (tmp);
 }
 
-bool frm_push (frm_t *frm, const char *name, const char *message)
+static bool internal_frm_push (frm_t *frm, const char *name, const char *message,
+                               bool dir_change)
 {
    if (!frm) {
       FRM_ERROR ("Error, null object passed for frm_t\n");
@@ -934,6 +935,7 @@ bool frm_push (frm_t *frm, const char *name, const char *message)
                "mtime: ", uint64_string(tstring, (uint64_t)time(NULL)), "\n",
                NULL))) {
       FRM_ERROR ("Failed to create info file [%s/info]: %m\n", name);
+      popdir (&olddir);
       return false;
    }
 
@@ -941,6 +943,7 @@ bool frm_push (frm_t *frm, const char *name, const char *message)
    if (!(history_append(frm->dbpath, path))) {
       FRM_ERROR ("Failed to update history\n");
       free (path);
+      popdir (&olddir);
       return false;
    }
 
@@ -948,9 +951,24 @@ bool frm_push (frm_t *frm, const char *name, const char *message)
       FRM_ERROR ("Warning: failed to update index\n");
    }
 
-   free (olddir);
+   if (dir_change) {
+      free (olddir);
+   } else {
+      popdir (&olddir);
+   }
+
    free (path);
    return true;
+}
+
+bool frm_push (frm_t *frm, const char *name, const char *message)
+{
+   return internal_frm_push (frm, name, message, true);
+}
+
+bool frm_new (frm_t *frm, const char *name, const char *message)
+{
+   return internal_frm_push (frm, name, message, false);
 }
 
 bool frm_payload_replace (frm_t *frm, const char *message)

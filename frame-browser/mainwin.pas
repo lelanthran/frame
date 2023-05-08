@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
-  StdCtrls, PairSplitter, ComCtrls, StrUtils, Types, CTypes, Cmem,
+  StdCtrls, PairSplitter, Types, ComCtrls, CTypes, Cmem,
   FrameWrapper;
 
 type
@@ -16,7 +16,6 @@ type
   TfrmMain = class(TForm)
     bbtnQuit: TBitBtn;
     bbtnHelp: TBitBtn;
-    bbtnSearchHistory: TBitBtn;
     edtSearchTerm: TEdit;
     lvHistory: TListView;
     Memo1: TMemo;
@@ -33,7 +32,7 @@ type
     StaticText3: TStaticText;
     TreeView1: TTreeView;
     procedure bbtnQuitClick(Sender: TObject);
-    procedure bbtnSearchHistoryClick(Sender: TObject);
+    procedure edtSearchTermChange(Sender: TObject);
   private
 
   public
@@ -54,25 +53,13 @@ begin
   frmMain.Close;
 end;
 
-procedure TfrmMain.bbtnSearchHistoryClick(Sender: TObject);
+
+procedure TfrmMain.edtSearchTermChange(Sender: TObject);
 var
-  frame_history: PChar;
-  nl: Char;
-  i: csize_t;
-  strItems: TStringDynArray;
-  listItem: TListItem;
-
+  sterm: String;
 begin
-  frame_history := frm_history(frame_var, csize_t($ffffffffffffffff));
-  nl := Char($0a);
-  strItems := SplitString(frame_history, #$0a);
-
-  for i:=0 to Length(strItems) do
-  begin
-    listItem := frmMain.lvHistory.Items.Add();
-    listItem.Caption := Copy(strItems[i], 1, Length(strItems[i]));
-  end;
-  frm_mem_free(frame_history);
+  sterm := frmMain.edtSearchTerm.Caption;
+  frame_history_populate (sterm, frmMain.lvHistory);
 end;
 
 end.

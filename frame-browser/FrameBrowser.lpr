@@ -21,6 +21,7 @@ begin
   Application.Initialize;
   Application.CreateForm(TfrmMain, frmMain);
   frame_var := frm_init('/home/lelanthran/.framedb');
+  frame_history_populate('', frmMain.lvHistory);
   Application.Run;
   Writeln('Application done');
   frm_close(frame_var);

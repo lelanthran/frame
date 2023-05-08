@@ -1,11 +1,11 @@
 object frmMain: TfrmMain
-  Left = 841
+  Left = 557
   Height = 486
   Top = 299
-  Width = 762
+  Width = 1046
   Caption = 'Frame Browser'
   ClientHeight = 486
-  ClientWidth = 762
+  ClientWidth = 1046
   LCLVersion = '2.2.6.0'
   object Panel1: TPanel
     AnchorSideLeft.Control = Owner
@@ -15,10 +15,10 @@ object frmMain: TfrmMain
     Left = 0
     Height = 32
     Top = 0
-    Width = 762
+    Width = 1046
     Anchors = [akTop, akLeft, akRight]
     ClientHeight = 32
-    ClientWidth = 762
+    ClientWidth = 1046
     TabOrder = 0
     object bbtnQuit: TBitBtn
       AnchorSideLeft.Control = Panel1
@@ -63,13 +63,13 @@ object frmMain: TfrmMain
     Left = 0
     Height = 454
     Top = 32
-    Width = 762
-    HorzScrollBar.Page = 640
+    Width = 1046
+    HorzScrollBar.Page = 904
     HorzScrollBar.Tracking = True
     VertScrollBar.Page = 195
     Anchors = [akTop, akLeft, akRight, akBottom]
     ClientHeight = 452
-    ClientWidth = 760
+    ClientWidth = 1044
     TabOrder = 1
     object PairSplitter1: TPairSplitter
       AnchorSideLeft.Control = Panel2
@@ -81,16 +81,16 @@ object frmMain: TfrmMain
       Left = 0
       Height = 452
       Top = 0
-      Width = 760
+      Width = 1044
       Anchors = [akTop, akLeft, akRight, akBottom]
-      Position = 232
+      Position = 408
       object PairSplitterSide1: TPairSplitterSide
         Cursor = crArrow
         Left = 0
         Height = 452
         Top = 0
-        Width = 232
-        ClientWidth = 232
+        Width = 408
+        ClientWidth = 408
         ClientHeight = 452
         object StaticText2: TStaticText
           AnchorSideLeft.Control = PairSplitterSide1
@@ -100,7 +100,7 @@ object frmMain: TfrmMain
           Left = 0
           Height = 17
           Top = 0
-          Width = 232
+          Width = 408
           Anchors = [akTop, akLeft, akRight]
           Caption = 'History'
           TabOrder = 0
@@ -109,28 +109,15 @@ object frmMain: TfrmMain
           AnchorSideLeft.Control = PairSplitterSide1
           AnchorSideTop.Control = StaticText2
           AnchorSideTop.Side = asrBottom
-          AnchorSideRight.Control = bbtnSearchHistory
+          AnchorSideRight.Control = PairSplitterSide1
+          AnchorSideRight.Side = asrBottom
           Left = 0
           Height = 28
           Top = 17
-          Width = 178
+          Width = 408
           Anchors = [akTop, akLeft, akRight]
+          OnChange = edtSearchTermChange
           TabOrder = 1
-          Text = 'Search term'
-        end
-        object bbtnSearchHistory: TBitBtn
-          AnchorSideTop.Control = StaticText2
-          AnchorSideTop.Side = asrBottom
-          AnchorSideRight.Control = PairSplitterSide1
-          AnchorSideRight.Side = asrBottom
-          Left = 178
-          Height = 28
-          Top = 17
-          Width = 54
-          Anchors = [akTop, akRight]
-          Caption = 'S'
-          OnClick = bbtnSearchHistoryClick
-          TabOrder = 2
         end
         object lvHistory: TListView
           AnchorSideLeft.Control = PairSplitterSide1
@@ -143,19 +130,19 @@ object frmMain: TfrmMain
           Left = 0
           Height = 407
           Top = 45
-          Width = 232
+          Width = 408
           Anchors = [akTop, akLeft, akRight, akBottom]
           Columns = <>
-          TabOrder = 3
+          TabOrder = 2
         end
       end
       object PairSplitterSide2: TPairSplitterSide
         Cursor = crArrow
-        Left = 237
+        Left = 413
         Height = 452
         Top = 0
-        Width = 523
-        ClientWidth = 523
+        Width = 631
+        ClientWidth = 631
         ClientHeight = 452
         object PairSplitter2: TPairSplitter
           AnchorSideLeft.Control = PairSplitterSide2
@@ -167,16 +154,16 @@ object frmMain: TfrmMain
           Left = 0
           Height = 452
           Top = 0
-          Width = 523
+          Width = 631
           Anchors = [akTop, akLeft, akRight, akBottom]
-          Position = 248
+          Position = 336
           object PairSplitterSide3: TPairSplitterSide
             Cursor = crArrow
             Left = 0
             Height = 452
             Top = 0
-            Width = 248
-            ClientWidth = 248
+            Width = 336
+            ClientWidth = 336
             ClientHeight = 452
             object StaticText1: TStaticText
               AnchorSideLeft.Control = PairSplitterSide3
@@ -186,7 +173,7 @@ object frmMain: TfrmMain
               Left = 0
               Height = 17
               Top = 0
-              Width = 248
+              Width = 336
               Anchors = [akTop, akLeft, akRight]
               Caption = 'Current Frame'
               TabOrder = 0
@@ -202,18 +189,18 @@ object frmMain: TfrmMain
               Left = 0
               Height = 435
               Top = 17
-              Width = 248
+              Width = 336
               Anchors = [akTop, akLeft, akRight, akBottom]
               TabOrder = 1
             end
           end
           object PairSplitterSide4: TPairSplitterSide
             Cursor = crArrow
-            Left = 253
+            Left = 341
             Height = 452
             Top = 0
-            Width = 270
-            ClientWidth = 270
+            Width = 290
+            ClientWidth = 290
             ClientHeight = 452
             object StaticText3: TStaticText
               AnchorSideLeft.Control = PairSplitterSide4
@@ -223,7 +210,7 @@ object frmMain: TfrmMain
               Left = 0
               Height = 17
               Top = 0
-              Width = 270
+              Width = 290
               Anchors = [akTop, akLeft, akRight]
               Caption = 'Notes'
               TabOrder = 0
@@ -239,7 +226,7 @@ object frmMain: TfrmMain
               Left = 0
               Height = 435
               Top = 17
-              Width = 270
+              Width = 290
               Anchors = [akTop, akLeft, akRight, akBottom]
               Lines.Strings = (
                 ''
