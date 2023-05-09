@@ -1,7 +1,7 @@
 object frmMain: TfrmMain
-  Left = 823
+  Left = 522
   Height = 486
-  Top = 160
+  Top = 233
   Width = 1046
   Caption = 'Frame Browser'
   ClientHeight = 486

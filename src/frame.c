@@ -12,6 +12,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <time.h>
 
 #include <unistd.h>
 
@@ -315,6 +316,9 @@ static void print_helpmsg (void)
 "list",
 "  Lists all descendents of the current node.",
 "",
+"tree",
+"  Display a tree of all the nodes starting at the root node.",
+"",
 "match <sterm> [--from-root] [--invert]",
 "  Lists the nodes that match the search term <sterm>, starting at the current",
 "  node. If '--from-root' is specified then the search is performed from the",
@@ -356,6 +360,45 @@ static void current (frm_t *frm)
    printf ("%s: %s\n", current, mtime);
    free (current);
    free (mtime);
+}
+
+int print_tree (frm_node_t *node, size_t level)
+{
+#define INDENT(x) for (size_t i=0; i<x; i++) {\
+   putchar (' ');\
+}\
+
+   if (!node) {
+      fprintf (stderr, "Internal error, accessing NULL object\n");
+      return EXIT_FAILURE;
+   }
+
+   const char *name = frm_node_name (node);
+   uint64_t date = frm_node_date (node);
+   char strdate[30];
+
+   if (!name) {
+      fprintf (stderr, "Internal error, node name missing\n");
+      return EXIT_FAILURE;
+   }
+   if (date == (uint64_t)-1) {
+      fprintf (stderr, "Internal error, node date missing\n");
+      return EXIT_FAILURE;
+   }
+
+   ctime_r ((time_t *)&date, strdate);
+   INDENT(level); printf ("%s (%s)", name, strdate);
+
+   size_t nchildren = frm_node_nchildren (node);
+   for (size_t i=0; i<nchildren; i++) {
+      frm_node_t *child = frm_node_child (node, i);
+      if ((print_tree (child, level + 3))!=EXIT_SUCCESS) {
+         fprintf (stderr, "Error printing child %zu of [%s]\n", i, name);
+         return EXIT_FAILURE;
+      }
+   }
+#undef INDENT
+   return EXIT_SUCCESS;
 }
 
 int main (int argc, char **argv)
@@ -821,6 +864,18 @@ int main (int argc, char **argv)
       goto cleanup;
    }
 
+   if ((strcmp (command, "tree"))==0) {
+      frm_node_t *root = frm_node_create (frm);
+      if (!root) {
+         fprintf (stderr, "Failed to find root node\n");
+         ret = EXIT_FAILURE;
+         goto cleanup;
+      }
+
+      ret = print_tree (root, 0);
+      frm_node_free (root);
+      goto cleanup;
+   }
    // The default, with no arguments, is to print out the help message.
    // If we got to this point we have a command but it is unrecognised.
    fprintf (stderr, "Unrecognised command [%s]\n", command);

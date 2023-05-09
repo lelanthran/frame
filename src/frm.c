@@ -106,8 +106,6 @@ static char *get_path (frm_t *frm) {
 
 static char *history_read (const char *dbpath, size_t count)
 {
-   REMOVEME("Reading history [%s], %zu\n", dbpath, count);
-
    char *pwd = pushdir (dbpath);
    if (!pwd) {
       FRM_ERROR ("Failed to switch dir [%s]: %m\n", dbpath);
@@ -116,7 +114,6 @@ static char *history_read (const char *dbpath, size_t count)
 
    char *history = frm_readfile ("history");
    if (!history) {
-      REMOVEME("Empty history [%s], %zu\n", dbpath, count);
       // Ignoring empty history. History is allowed to be empty.
       history = ds_str_dup ("");
       if (!history) {
@@ -1495,4 +1492,57 @@ char **frm_match_from_root (frm_t *frm, const char *sterm, uint32_t flags)
 {
    return match (frm, sterm, flags, "root");
 }
+
+frm_node_t *frm_node_create (frm_t *frm)
+{
+   return NULL;
+}
+
+void frm_node_free (frm_node_t *rootnode)
+{
+
+}
+
+
+const char *frm_node_name (frm_node_t *node)
+{
+   return "TODO";
+}
+
+uint64_t frm_node_date (frm_node_t *node)
+{
+   return (uint64_t)-1;
+}
+
+const char *frm_node_fpath (frm_node_t *node)
+{
+   return "TODO:";
+}
+
+
+size_t frm_node_nchildren (frm_node_t *node)
+{
+   return 0;
+}
+
+frm_node_t *frm_node_child (frm_node_t *node, size_t index)
+{
+   return NULL;
+}
+
+frm_node_t *frm_node_parent (void)
+{
+   return NULL;
+}
+
+frm_node_t *frm_node_root (void)
+{
+   return NULL;
+}
+
+frm_node_t *frm_node_find (frm_node_t *node, const char *fpath)
+{
+   return NULL;
+}
+
 
