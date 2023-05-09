@@ -336,8 +336,8 @@ NULL,
 static void status (frm_t *frm)
 {
    char *current = frm_current (frm);
-   char *payload = frm_payload (frm);
-   char *mtime = frm_date_str (frm);
+   char *payload = frm_payload ();
+   char *mtime = frm_date_str ();
 
    printf ("Current frame\n   %s\n", current);
    printf ("\nNotes (%s)\n", mtime);
@@ -355,14 +355,14 @@ static void status (frm_t *frm)
 static void current (frm_t *frm)
 {
    char *current = frm_current (frm);
-   char *mtime = frm_date_str (frm);
+   char *mtime = frm_date_str ();
 
    printf ("%s: %s\n", current, mtime);
    free (current);
    free (mtime);
 }
 
-int print_tree (frm_node_t *node, size_t level)
+int print_tree (const frm_node_t *node, size_t level)
 {
 #define INDENT(x) for (size_t i=0; i<x; i++) {\
    putchar (' ');\
@@ -387,11 +387,15 @@ int print_tree (frm_node_t *node, size_t level)
    }
 
    ctime_r ((time_t *)&date, strdate);
-   INDENT(level); printf ("%s (%s)", name, strdate);
+   char *tmp = strchr (strdate, '\n');
+   if (tmp)
+   *tmp = 0;
+
+   INDENT(level); printf ("%s (%s)\n", name, strdate);
 
    size_t nchildren = frm_node_nchildren (node);
    for (size_t i=0; i<nchildren; i++) {
-      frm_node_t *child = frm_node_child (node, i);
+      const frm_node_t *child = frm_node_child (node, i);
       if ((print_tree (child, level + 3))!=EXIT_SUCCESS) {
          fprintf (stderr, "Error printing child %zu of [%s]\n", i, name);
          return EXIT_FAILURE;

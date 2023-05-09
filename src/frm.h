@@ -50,9 +50,9 @@ extern "C" {
     */
    char *frm_history (frm_t *frm, size_t count);
    char *frm_current (frm_t *frm);
-   char *frm_payload (frm_t *frm);
-   uint64_t frm_date_epoch (frm_t *frm);
-   char *frm_date_str (frm_t *frm);
+   char *frm_payload (void);
+   uint64_t frm_date_epoch (void);
+   char *frm_date_str (void);
 
    /* Add/create information: new frame (new creates a new one and then
     * returns, push creates a new one and switches to it), replace the
@@ -101,20 +101,20 @@ extern "C" {
    /* Get the tree name, date and full path. Full path is useful to
     * directly navigate to a particular node.
     */
-   const char *frm_node_name (frm_node_t *node);
-   uint64_t frm_node_date (frm_node_t *node);
-   const char *frm_node_fpath (frm_node_t *node);
+   const char *frm_node_name (const frm_node_t *node);
+   uint64_t frm_node_date (const frm_node_t *node);
+   char *frm_node_fpath (const frm_node_t *node);
 
    /* Functions necessary for recursing. Count the number of children,
     * return child node as specifed by the index, return parent node
     * if any, return root node of the tree, return the node identified
     * by full path.
     */
-   size_t frm_node_nchildren (frm_node_t *node);
-   frm_node_t *frm_node_child (frm_node_t *node, size_t index);
-   frm_node_t *frm_node_parent (void);
-   frm_node_t *frm_node_root (void);
-   frm_node_t *frm_node_find (frm_node_t *node, const char *fpath);
+   size_t frm_node_nchildren (const frm_node_t *node);
+   const frm_node_t *frm_node_child (const frm_node_t *node, size_t index);
+   const frm_node_t *frm_node_parent (const frm_node_t *node);
+   const frm_node_t *frm_node_root (const frm_node_t *node);
+   const frm_node_t *frm_node_find (const frm_node_t *node, const char *fpath);
 
 #ifdef __cplusplus
 };
