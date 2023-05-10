@@ -30,12 +30,13 @@ type
     StaticText1: TStaticText;
     StaticText2: TStaticText;
     StaticText3: TStaticText;
-    stxtCurrentFrame: TStaticText;
+    edtCurrentFrame: TEdit;
     tvFrames: TTreeView;
     procedure bbtnQuitClick(Sender: TObject);
     procedure edtSearchTermChange(Sender: TObject);
     procedure FormActivate(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure tvFramesSelectionChanged(Sender: TObject);
   private
 
   public
@@ -69,15 +70,50 @@ procedure TfrmMain.FormActivate(Sender: TObject);
 begin
   frame_var := frm_init('/home/lelanthran/.framedb');
   frame_history_populate('', frmMain.lvHistory);
-  frame_frames_populate(frmMain.tvFrames);
-  frame_current_populate(frmMain.stxtCurrentFrame);
+  frame_current_populate(frmMain.edtCurrentFrame);
   frame_notes_populate(frmMain.memoNotes);
-  frame_set_frames_selected(frmMain.tvFrames, frmMain.stxtCurrentFrame);
+  frame_frames_populate(frmMain.tvFrames);
+  frame_set_frames_selected(frmMain.tvFrames, frmMain.edtCurrentFrame);
 end;
+
 
 procedure TfrmMain.FormCreate(Sender: TObject);
 begin
 
+end;
+
+function TreeNodeFpath(node: TTreeNode): String;
+var
+  parent: String;
+begin
+  if node = nil then
+  begin
+    Exit('');
+  end;
+
+  parent := TreeNodeFpath(node.Parent);
+  if Length(parent) > 1 then
+  begin
+    parent := parent + '/';
+  end;
+  Exit(parent + node.Text);
+end;
+
+procedure TfrmMain.tvFramesSelectionChanged(Sender: TObject);
+var
+  fpath: String;
+  ttnode: TTreeNode;
+begin
+  ttnode := frmMain.tvFrames.Selected;
+  if ttnode <> nil then
+  begin
+    fpath := TreeNodeFpath(frmMain.tvFrames.Selected);
+    Writeln('Clicked: ', fpath);
+    frm_switch(frame_var, PChar(fpath));
+    frame_history_populate('', frmMain.lvHistory);
+    frame_current_populate(frmMain.edtCurrentFrame);
+    frame_notes_populate(frmMain.memoNotes);
+  end;
 end;
 
 end.

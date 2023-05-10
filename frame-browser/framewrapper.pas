@@ -67,9 +67,9 @@ function frm_node_find(node: frm_node_t; fpath: PChar): frm_node_t; cdecl; exter
 
 procedure frame_history_populate(searchTerm: String; tlView: TListView);
 procedure frame_frames_populate(tv: TTreeView);
-procedure frame_current_populate(stxt: TStaticText);
+procedure frame_current_populate(edt: TEdit);
 procedure frame_notes_populate(memo: TMemo);
-procedure frame_set_frames_selected(tv: TTreeView; stxt: TStaticText);
+procedure frame_set_frames_selected(tv: TTreeView; edt: TEdit);
 
 implementation
 
@@ -110,6 +110,7 @@ var
 begin
   name := frm_node_name(frmNode);
   current := tv.Items.AddChild(parent, name);
+//  current.Data := frm_node_fpath(frmNode);
 
   nchildren := frm_node_nchildren(frmNode);
   i := 0;
@@ -132,27 +133,20 @@ begin
   frm_node_free(root);
 end;
 
-procedure frame_current_populate(stxt: TStaticText);
+procedure frame_current_populate(edt: TEdit);
 begin
-  stxt.Caption := frm_current(frame_var);
+  edt.Caption := frm_current(frame_var);
 end;
 
 procedure frame_notes_populate(memo: TMemo);
 begin
+  memo.Clear;
   memo.Append(frm_payload());
 end;
 
-function find_tnode_by_path (tv: TTreeNode; target: String): TTreeNode;
-var
-  fpath: String;
+procedure frame_set_frames_selected(tv: TTreeView; edt: TEdit);
 begin
-  fpath:=
-  Exit(nil);
-end;
-
-procedure frame_set_frames_selected(tv: TTreeView; stxt: TStaticText);
-begin
-    tv.Selected := find_tnode_by_path(tv.Items[0], stxt.Caption);
+  tv.Selected := tv.Items.FindNodeWithTextPath(edt.Caption);
 end;
 end.
 

@@ -1,7 +1,7 @@
 object frmMain: TfrmMain
-  Left = 872
+  Left = 537
   Height = 486
-  Top = 242
+  Top = 206
   Width = 1046
   Caption = 'Frame Browser'
   ClientHeight = 486
@@ -182,18 +182,21 @@ object frmMain: TfrmMain
             end
             object tvFrames: TTreeView
               AnchorSideLeft.Control = PairSplitterSide3
-              AnchorSideTop.Control = stxtCurrentFrame
+              AnchorSideTop.Control = edtCurrentFrame
               AnchorSideTop.Side = asrBottom
               AnchorSideRight.Control = PairSplitterSide3
               AnchorSideRight.Side = asrBottom
               AnchorSideBottom.Control = PairSplitterSide3
               AnchorSideBottom.Side = asrBottom
               Left = 0
-              Height = 412
-              Top = 40
+              Height = 407
+              Top = 45
               Width = 336
               Anchors = [akTop, akLeft, akRight, akBottom]
+              ReadOnly = True
               TabOrder = 1
+              OnSelectionChanged = tvFramesSelectionChanged
+              Options = [tvoAutoItemHeight, tvoHideSelection, tvoKeepCollapsedNodes, tvoReadOnly, tvoShowButtons, tvoShowLines, tvoShowRoot, tvoToolTips, tvoThemedDraw]
               Items.Data = {
                 F9FFFFFF020001000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF010000000000
                 000001050000004974656D30FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF01000000
@@ -201,7 +204,7 @@ object frmMain: TfrmMain
                 00000000000000050000004974656D32
               }
             end
-            object stxtCurrentFrame: TStaticText
+            object edtCurrentFrame: TEdit
               AnchorSideLeft.Control = PairSplitterSide3
               AnchorSideTop.Control = StaticText1
               AnchorSideTop.Side = asrBottom
@@ -209,7 +212,7 @@ object frmMain: TfrmMain
               AnchorSideRight.Side = asrBottom
               AnchorSideBottom.Control = tvFrames
               Left = 0
-              Height = 23
+              Height = 28
               Top = 17
               Width = 336
               Anchors = [akTop, akLeft, akRight]
@@ -253,6 +256,7 @@ object frmMain: TfrmMain
               Lines.Strings = (
                 ''
               )
+              ScrollBars = ssBoth
               TabOrder = 1
             end
           end
