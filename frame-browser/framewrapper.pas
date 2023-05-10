@@ -69,6 +69,7 @@ procedure frame_history_populate(searchTerm: String; tlView: TListView);
 procedure frame_frames_populate(tv: TTreeView);
 procedure frame_current_populate(stxt: TStaticText);
 procedure frame_notes_populate(memo: TMemo);
+procedure frame_set_frames_selected(tv: TTreeView; stxt: TStaticText);
 
 implementation
 
@@ -141,5 +142,17 @@ begin
   memo.Append(frm_payload());
 end;
 
+function find_tnode_by_path (tv: TTreeNode; target: String): TTreeNode;
+var
+  fpath: String;
+begin
+  fpath:=
+  Exit(nil);
+end;
+
+procedure frame_set_frames_selected(tv: TTreeView; stxt: TStaticText);
+begin
+    tv.Selected := find_tnode_by_path(tv.Items[0], stxt.Caption);
+end;
 end.
 

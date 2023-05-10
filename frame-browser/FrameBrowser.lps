@@ -9,7 +9,7 @@
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="2"/>
         <CursorPos X="45" Y="22"/>
-        <UsageCount Value="60"/>
+        <UsageCount Value="61"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -19,9 +19,9 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="mainWin"/>
-        <TopLine Value="47"/>
-        <CursorPos X="43" Y="74"/>
-        <UsageCount Value="60"/>
+        <TopLine Value="48"/>
+        <CursorPos X="73" Y="75"/>
+        <UsageCount Value="61"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -31,9 +31,9 @@
         <UnitName Value="FrameWrapper"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="111"/>
-        <CursorPos X="27" Y="141"/>
-        <UsageCount Value="60"/>
+        <TopLine Value="121"/>
+        <CursorPos X="50" Y="152"/>
+        <UsageCount Value="61"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -83,14 +83,6 @@
       </Unit>
     </Units>
     <JumpHistory HistoryIndex="29">
-      <Position>
-        <Filename Value="framewrapper.pas"/>
-        <Caret Line="101" TopLine="84"/>
-      </Position>
-      <Position>
-        <Filename Value="framewrapper.pas"/>
-        <Caret Line="103" TopLine="84"/>
-      </Position>
       <Position>
         <Filename Value="framewrapper.pas"/>
         <Caret Line="105" TopLine="84"/>
@@ -202,6 +194,14 @@
       <Position>
         <Filename Value="framewrapper.pas"/>
         <Caret Line="58" Column="50" TopLine="41"/>
+      </Position>
+      <Position>
+        <Filename Value="framewrapper.pas"/>
+        <Caret Line="72" TopLine="64"/>
+      </Position>
+      <Position>
+        <Filename Value="framewrapper.pas"/>
+        <Caret Line="147" Column="4" TopLine="121"/>
       </Position>
     </JumpHistory>
     <RunParams>

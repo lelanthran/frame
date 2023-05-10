@@ -72,6 +72,7 @@ begin
   frame_frames_populate(frmMain.tvFrames);
   frame_current_populate(frmMain.stxtCurrentFrame);
   frame_notes_populate(frmMain.memoNotes);
+  frame_set_frames_selected(frmMain.tvFrames, frmMain.stxtCurrentFrame);
 end;
 
 procedure TfrmMain.FormCreate(Sender: TObject);
