@@ -9,7 +9,7 @@
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="2"/>
         <CursorPos X="45" Y="22"/>
-        <UsageCount Value="56"/>
+        <UsageCount Value="60"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -19,9 +19,9 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="mainWin"/>
-        <TopLine Value="44"/>
-        <CursorPos X="53" Y="70"/>
-        <UsageCount Value="56"/>
+        <TopLine Value="47"/>
+        <CursorPos X="43" Y="74"/>
+        <UsageCount Value="60"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -31,9 +31,9 @@
         <UnitName Value="FrameWrapper"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="37"/>
-        <CursorPos X="16" Y="60"/>
-        <UsageCount Value="56"/>
+        <TopLine Value="111"/>
+        <CursorPos X="27" Y="141"/>
+        <UsageCount Value="60"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -66,119 +66,142 @@
         <CursorPos X="14" Y="171"/>
         <UsageCount Value="10"/>
       </Unit>
+      <Unit>
+        <Filename Value="/usr/share/lazarus/2.2.6/lcl/include/treeview.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="449"/>
+        <CursorPos Y="467"/>
+        <UsageCount Value="11"/>
+      </Unit>
+      <Unit>
+        <Filename Value="/usr/share/lazarus/2.2.6/lcl/stdctrls.pp"/>
+        <UnitName Value="StdCtrls"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1034"/>
+        <CursorPos X="3" Y="1121"/>
+        <UsageCount Value="10"/>
+      </Unit>
     </Units>
-    <JumpHistory HistoryIndex="27">
+    <JumpHistory HistoryIndex="29">
       <Position>
-        <Filename Value="mainwin.pas"/>
-        <Caret Line="72" TopLine="46"/>
-      </Position>
-      <Position>
-        <Filename Value="mainwin.pas"/>
-        <Caret Line="73" TopLine="46"/>
-      </Position>
-      <Position>
-        <Filename Value="mainwin.pas"/>
-        <Caret Line="70" TopLine="46"/>
-      </Position>
-      <Position>
-        <Filename Value="mainwin.pas"/>
-        <Caret Line="76" Column="7" TopLine="46"/>
-      </Position>
-      <Position>
-        <Filename Value="mainwin.pas"/>
-        <Caret Line="9" Column="67"/>
-      </Position>
-      <Position>
-        <Filename Value="mainwin.pas"/>
-        <Caret Line="76" Column="12" TopLine="46"/>
-      </Position>
-      <Position>
-        <Filename Value="mainwin.pas"/>
-        <Caret Line="16" Column="68"/>
-      </Position>
-      <Position>
-        <Filename Value="mainwin.pas"/>
-        <Caret Line="15" Column="33"/>
-      </Position>
-      <Position>
-        <Filename Value="mainwin.pas"/>
-        <Caret Line="75" Column="14" TopLine="45"/>
+        <Filename Value="framewrapper.pas"/>
+        <Caret Line="101" TopLine="84"/>
       </Position>
       <Position>
         <Filename Value="framewrapper.pas"/>
-        <Caret Line="16" Column="10"/>
-      </Position>
-      <Position>
-        <Filename Value="mainwin.pas"/>
-        <Caret Line="75" Column="15" TopLine="45"/>
+        <Caret Line="103" TopLine="84"/>
       </Position>
       <Position>
         <Filename Value="framewrapper.pas"/>
-        <Caret Line="30" Column="69" TopLine="13"/>
+        <Caret Line="105" TopLine="84"/>
       </Position>
       <Position>
         <Filename Value="framewrapper.pas"/>
-        <Caret Line="43" Column="73" TopLine="28"/>
+        <Caret Line="106" TopLine="84"/>
       </Position>
       <Position>
         <Filename Value="framewrapper.pas"/>
-        <Caret Line="47" Column="73" TopLine="28"/>
+        <Caret Line="101" TopLine="84"/>
       </Position>
       <Position>
         <Filename Value="framewrapper.pas"/>
-        <Caret Line="49" Column="3" TopLine="28"/>
+        <Caret Line="103" Column="22" TopLine="84"/>
       </Position>
       <Position>
         <Filename Value="framewrapper.pas"/>
-        <Caret Line="43" Column="73" TopLine="28"/>
+        <Caret Line="101" TopLine="84"/>
       </Position>
       <Position>
         <Filename Value="framewrapper.pas"/>
-        <Caret Line="51" Column="13" TopLine="17"/>
+        <Caret Line="103" TopLine="84"/>
       </Position>
       <Position>
         <Filename Value="framewrapper.pas"/>
-        <Caret Line="56" Column="15" TopLine="22"/>
-      </Position>
-      <Position>
-        <Filename Value="mainwin.pas"/>
-        <Caret Line="9" Column="44" TopLine="4"/>
-      </Position>
-      <Position>
-        <Filename Value="mainwin.pas"/>
-        <Caret Line="62" Column="41" TopLine="32"/>
-      </Position>
-      <Position>
-        <Filename Value="mainwin.pas"/>
-        <Caret Line="69" TopLine="38"/>
-      </Position>
-      <Position>
-        <Filename Value="mainwin.pas"/>
-        <Caret Line="68" Column="17" TopLine="39"/>
-      </Position>
-      <Position>
-        <Filename Value="mainwin.pas"/>
-        <Caret Line="67" Column="17" TopLine="38"/>
-      </Position>
-      <Position>
-        <Filename Value="mainwin.pas"/>
-        <Caret Line="56" TopLine="33"/>
+        <Caret Line="105" TopLine="84"/>
       </Position>
       <Position>
         <Filename Value="framewrapper.pas"/>
-        <Caret Line="61" Column="35" TopLine="38"/>
+        <Caret Line="106" TopLine="84"/>
+      </Position>
+      <Position>
+        <Filename Value="framewrapper.pas"/>
+        <Caret Line="101" TopLine="84"/>
+      </Position>
+      <Position>
+        <Filename Value="framewrapper.pas"/>
+        <Caret Line="103" TopLine="84"/>
+      </Position>
+      <Position>
+        <Filename Value="framewrapper.pas"/>
+        <Caret Line="105" TopLine="84"/>
+      </Position>
+      <Position>
+        <Filename Value="framewrapper.pas"/>
+        <Caret Line="106" TopLine="84"/>
+      </Position>
+      <Position>
+        <Filename Value="framewrapper.pas"/>
+        <Caret Line="101" TopLine="84"/>
+      </Position>
+      <Position>
+        <Filename Value="framewrapper.pas"/>
+        <Caret Line="103" TopLine="84"/>
+      </Position>
+      <Position>
+        <Filename Value="framewrapper.pas"/>
+        <Caret Line="105" TopLine="84"/>
+      </Position>
+      <Position>
+        <Filename Value="framewrapper.pas"/>
+        <Caret Line="106" TopLine="84"/>
       </Position>
       <Position>
         <Filename Value="mainwin.pas"/>
-        <Caret Line="43" Column="111" TopLine="26"/>
+        <Caret Line="71" Column="45" TopLine="46"/>
       </Position>
       <Position>
         <Filename Value="mainwin.pas"/>
-        <Caret Line="44" Column="111" TopLine="26"/>
+        <Caret Line="72" Column="45" TopLine="47"/>
       </Position>
       <Position>
         <Filename Value="mainwin.pas"/>
-        <Caret Line="75" Column="12" TopLine="41"/>
+        <Caret Line="71" Column="45" TopLine="46"/>
+      </Position>
+      <Position>
+        <Filename Value="mainwin.pas"/>
+        <Caret Line="72" Column="45" TopLine="47"/>
+      </Position>
+      <Position>
+        <Filename Value="framewrapper.pas"/>
+        <Caret Line="59" TopLine="28"/>
+      </Position>
+      <Position>
+        <Filename Value="framewrapper.pas"/>
+        <Caret Line="8" Column="11"/>
+      </Position>
+      <Position>
+        <Filename Value="framewrapper.pas"/>
+        <Caret Line="60" Column="53" TopLine="43"/>
+      </Position>
+      <Position>
+        <Filename Value="framewrapper.pas"/>
+        <Caret Line="61" TopLine="44"/>
+      </Position>
+      <Position>
+        <Filename Value="framewrapper.pas"/>
+        <Caret Line="53" TopLine="19"/>
+      </Position>
+      <Position>
+        <Filename Value="framewrapper.pas"/>
+        <Caret Line="59" TopLine="25"/>
+      </Position>
+      <Position>
+        <Filename Value="framewrapper.pas"/>
+        <Caret Line="61" Column="60" TopLine="40"/>
+      </Position>
+      <Position>
+        <Filename Value="framewrapper.pas"/>
+        <Caret Line="58" Column="50" TopLine="41"/>
       </Position>
     </JumpHistory>
     <RunParams>
@@ -189,20 +212,16 @@
   <Debugging>
     <Watches>
       <Item>
-        <Expression Value="frame_history"/>
-      </Item>
-      <Item ClassAutoCast="True">
-        <Expression Value="listItem.Caption"/>
-        <DisplayStyle Value="wdfStructure"/>
+        <Expression Value="nchildren"/>
       </Item>
       <Item>
-        <Expression Value="strItems"/>
+        <Expression Value="name"/>
       </Item>
       <Item>
-        <Expression Value="strItems[511]"/>
+        <Expression Value="i"/>
       </Item>
       <Item>
-        <Expression Value="length(strItems)"/>
+        <Expression Value="child"/>
       </Item>
     </Watches>
   </Debugging>

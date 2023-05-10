@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
-  StdCtrls, PairSplitter, Types, ComCtrls, CTypes, Cmem,
+  StdCtrls, PairSplitter, Types, ComCtrls, TreeFilterEdit, CTypes, Cmem,
   FrameWrapper;
 
 type
@@ -18,7 +18,7 @@ type
     bbtnHelp: TBitBtn;
     edtSearchTerm: TEdit;
     lvHistory: TListView;
-    Memo1: TMemo;
+    memoNotes: TMemo;
     PairSplitter1: TPairSplitter;
     PairSplitter2: TPairSplitter;
     PairSplitterSide1: TPairSplitterSide;
@@ -30,7 +30,8 @@ type
     StaticText1: TStaticText;
     StaticText2: TStaticText;
     StaticText3: TStaticText;
-    TreeView1: TTreeView;
+    stxtCurrentFrame: TStaticText;
+    tvFrames: TTreeView;
     procedure bbtnQuitClick(Sender: TObject);
     procedure edtSearchTermChange(Sender: TObject);
     procedure FormActivate(Sender: TObject);
@@ -66,8 +67,11 @@ end;
 
 procedure TfrmMain.FormActivate(Sender: TObject);
 begin
-      frame_var := frm_init('/home/lelanthran/.framedb');
+  frame_var := frm_init('/home/lelanthran/.framedb');
   frame_history_populate('', frmMain.lvHistory);
+  frame_frames_populate(frmMain.tvFrames);
+  frame_current_populate(frmMain.stxtCurrentFrame);
+  frame_notes_populate(frmMain.memoNotes);
 end;
 
 procedure TfrmMain.FormCreate(Sender: TObject);

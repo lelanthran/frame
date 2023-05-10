@@ -1,7 +1,7 @@
 object frmMain: TfrmMain
-  Left = 522
+  Left = 872
   Height = 486
-  Top = 233
+  Top = 242
   Width = 1046
   Caption = 'Frame Browser'
   ClientHeight = 486
@@ -180,17 +180,17 @@ object frmMain: TfrmMain
               Caption = 'Current Frame'
               TabOrder = 0
             end
-            object TreeView1: TTreeView
+            object tvFrames: TTreeView
               AnchorSideLeft.Control = PairSplitterSide3
-              AnchorSideTop.Control = StaticText1
+              AnchorSideTop.Control = stxtCurrentFrame
               AnchorSideTop.Side = asrBottom
               AnchorSideRight.Control = PairSplitterSide3
               AnchorSideRight.Side = asrBottom
               AnchorSideBottom.Control = PairSplitterSide3
               AnchorSideBottom.Side = asrBottom
               Left = 0
-              Height = 435
-              Top = 17
+              Height = 412
+              Top = 40
               Width = 336
               Anchors = [akTop, akLeft, akRight, akBottom]
               TabOrder = 1
@@ -200,6 +200,20 @@ object frmMain: TfrmMain
                 0000000001050000004974656D31FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF0000
                 00000000000000050000004974656D32
               }
+            end
+            object stxtCurrentFrame: TStaticText
+              AnchorSideLeft.Control = PairSplitterSide3
+              AnchorSideTop.Control = StaticText1
+              AnchorSideTop.Side = asrBottom
+              AnchorSideRight.Control = PairSplitterSide3
+              AnchorSideRight.Side = asrBottom
+              AnchorSideBottom.Control = tvFrames
+              Left = 0
+              Height = 23
+              Top = 17
+              Width = 336
+              Anchors = [akTop, akLeft, akRight]
+              TabOrder = 2
             end
           end
           object PairSplitterSide4: TPairSplitterSide
@@ -223,7 +237,7 @@ object frmMain: TfrmMain
               Caption = 'Notes'
               TabOrder = 0
             end
-            object Memo1: TMemo
+            object memoNotes: TMemo
               AnchorSideLeft.Control = PairSplitterSide4
               AnchorSideTop.Control = StaticText3
               AnchorSideTop.Side = asrBottom
