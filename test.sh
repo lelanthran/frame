@@ -165,3 +165,7 @@ if [ `wc -l t | cut -f 1 -d \   ` -ne 1 ]; then
 fi
 
 execute $PROG match --from-root "one/ei" || die failed match
+
+execute $PROG tree || die failed tree
+
+echo 'Use [sed "s:(.\+)::g"] to strip the dates'
