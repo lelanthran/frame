@@ -955,14 +955,8 @@ bool frm_new (frm_t *frm, const char *name, const char *message)
    return internal_frm_push (frm, name, message, false);
 }
 
-bool frm_payload_replace (frm_t *frm, const char *message)
+bool frm_payload_replace (const char *message)
 {
-   if (!frm) {
-      FRM_ERROR ("Error, null object passed for frm_t\n");
-      errno = EINVAL;
-      return false;
-   }
-
    if (!(frm_writefile ("payload", message, NULL))) {
       FRM_ERROR ("Failed to write [payload]: %m\n");
       return false;
@@ -976,14 +970,8 @@ bool frm_payload_replace (frm_t *frm, const char *message)
    return true;
 }
 
-bool frm_payload_append (frm_t *frm, const char *message)
+bool frm_payload_append (const char *message)
 {
-   if (!frm) {
-      FRM_ERROR ("Error, null object passed for frm_t\n");
-      errno = EINVAL;
-      return false;
-   }
-
    char *current = frm_readfile ("payload");
    if (!current) {
       FRM_ERROR ("Warning: failed to read [payload]: %m\n");
@@ -1004,14 +992,8 @@ bool frm_payload_append (frm_t *frm, const char *message)
    return ret;
 }
 
-char *frm_payload_fname (frm_t *frm)
+char *frm_payload_fname (void)
 {
-   if (!frm) {
-      FRM_ERROR ("Error, null object passed for frm_t\n");
-      errno = ENOENT;
-      return false;
-   }
-
    char *pwd = getcwd (NULL, 0);
    if (!pwd) {
       FRM_ERROR ("Error: failed to get current working directory: %m\n");
@@ -1234,7 +1216,7 @@ cleanup:
    return !error;
 }
 
-static void free_str_array (char **array)
+void frm_strarray_free (char **array)
 {
    for (size_t i=0; array && array[i]; i++) {
       free (array[i]);
@@ -1300,14 +1282,14 @@ bool frm_delete (frm_t *frm, const char *target)
    char *olddir = pushdir (frm->dbpath);
    if (!olddir) {
       FRM_ERROR ("Error: failed to switch directory: %m\n");
-      free_str_array(subframes);
+      frm_strarray_free(subframes);
       return false;
    }
 
    if (!(removedir (target))) {
       FRM_ERROR ("Error: failed to remove directory[%s]: %m\n", target);
       popdir (&olddir);
-      free_str_array (subframes);
+      frm_strarray_free (subframes);
       return false;
    }
 
@@ -1316,7 +1298,7 @@ bool frm_delete (frm_t *frm, const char *target)
          FRM_ERROR ("Warning: failed to remove [%s] from index\n", subframes[i]);
       }
    }
-   free_str_array (subframes);
+   frm_strarray_free (subframes);
    if (!(index_remove (frm->dbpath, target))) {
       FRM_ERROR ("Warning: failed to remove [%s] from index\n", target);
    }
@@ -1508,7 +1490,8 @@ static void node_del (frm_node_t *node)
    free (node);
 }
 
-static frm_node_t *node_new (const frm_node_t *parent, const char *name, uint64_t date)
+static frm_node_t *node_new (const frm_node_t *parent,
+                             const char *name, uint64_t date)
 {
    frm_node_t *ret = calloc (1, sizeof *ret);
    if (!ret) {
@@ -1522,6 +1505,7 @@ static frm_node_t *node_new (const frm_node_t *parent, const char *name, uint64_
    }
 
    ret->parent = parent;
+   ret->date = date;
 
    if (!(ret->name = ds_str_dup (name))) {
       FRM_ERROR ("OOM error allocating name field for node\n");

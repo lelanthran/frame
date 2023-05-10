@@ -617,7 +617,7 @@ int main (int argc, char **argv)
          goto cleanup;
       }
 
-      if (!(frm_payload_replace (frm, message))) {
+      if (!(frm_payload_replace (message))) {
          fprintf (stderr, "Failed to replace message of current node: %m\n");
          ret = EXIT_FAILURE;
       }
@@ -632,7 +632,7 @@ int main (int argc, char **argv)
          ret = EXIT_FAILURE;
          goto cleanup;
       }
-      char *fname = frm_payload_fname (frm);
+      char *fname = frm_payload_fname ();
       if (!fname) {
          fprintf (stderr, "Failed to retrieve filename of current node: %m\n");
          ret = EXIT_FAILURE;
@@ -671,7 +671,7 @@ int main (int argc, char **argv)
          goto cleanup;
       }
 
-      if (!(frm_payload_append (frm, message))) {
+      if (!(frm_payload_append (message))) {
          fprintf (stderr, "Failed to append message to current node: %m\n");
          ret = EXIT_FAILURE;
       }

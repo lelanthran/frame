@@ -30,6 +30,7 @@ extern "C" {
     * freeing memory allocated by libraries.
     */
    void frm_mem_free (void *ptr);
+   void frm_strarray_free (char **array);
 
    /* A few utility functions: simple ways to read and write entire
     * files.
@@ -60,9 +61,9 @@ extern "C" {
     */
    bool frm_new (frm_t *frm, const char *name, const char *message);
    bool frm_push (frm_t *frm, const char *name, const char *message);
-   bool frm_payload_replace (frm_t *frm, const char *message);
-   bool frm_payload_append (frm_t *frm, const char *message);
-   char *frm_payload_fname (frm_t *frm);
+   bool frm_payload_replace (const char *message);
+   bool frm_payload_append (const char *message);
+   char *frm_payload_fname (void);
 
    /* Navigational functions, including deletion when popping.
     */
