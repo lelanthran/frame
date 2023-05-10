@@ -37,6 +37,8 @@ type
     procedure edtSearchTermChange(Sender: TObject);
     procedure FormActivate(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure lvHistorySelectItem(Sender: TObject; Item: TListItem;
+      Selected: Boolean);
     procedure memoNotesEditingDone(Sender: TObject);
     procedure tvFramesSelectionChanged(Sender: TObject);
   private
@@ -82,6 +84,24 @@ end;
 procedure TfrmMain.FormCreate(Sender: TObject);
 begin
 
+end;
+
+procedure TfrmMain.lvHistorySelectItem(Sender: TObject; Item: TListItem;
+  Selected: Boolean);
+var
+  fpath: String;
+  ttnode: TListItem;
+begin
+  ttnode := frmMain.lvHistory.Selected;
+  if ttnode <> nil then
+  begin
+    fpath := ttnode.Caption;
+    frm_switch_direct(frame_var, PChar(fpath));
+    frame_current_populate(frmMain.edtCurrentFrame);
+    frame_notes_populate(frmMain.memoNotes);
+    frame_frames_populate(frmMain.tvFrames);
+    frame_set_frames_selected(frmMain.tvFrames, frmMain.edtCurrentFrame);
+  end;
 end;
 
 procedure TfrmMain.memoNotesEditingDone(Sender: TObject);

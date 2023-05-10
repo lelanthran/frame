@@ -136,6 +136,7 @@ object frmMain: TfrmMain
           Anchors = [akTop, akLeft, akRight, akBottom]
           Columns = <>
           TabOrder = 2
+          OnSelectItem = lvHistorySelectItem
         end
       end
       object PairSplitterSide2: TPairSplitterSide

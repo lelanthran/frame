@@ -21,7 +21,7 @@
         <UnitName Value="mainWin"/>
         <IsVisibleTab Value="True"/>
         <TopLine Value="78"/>
-        <CursorPos X="54" Y="95"/>
+        <CursorPos X="28" Y="98"/>
         <UsageCount Value="89"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -82,11 +82,7 @@
         <UsageCount Value="7"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="26">
-      <Position>
-        <Filename Value="framewrapper.pas"/>
-        <Caret Line="131" TopLine="103"/>
-      </Position>
+    <JumpHistory HistoryIndex="29">
       <Position>
         <Filename Value="framewrapper.pas"/>
         <Caret Line="132" TopLine="104"/>
@@ -190,6 +186,22 @@
       <Position>
         <Filename Value="mainwin.pas"/>
         <Caret Line="92" Column="92" TopLine="76"/>
+      </Position>
+      <Position>
+        <Filename Value="mainwin.pas"/>
+        <Caret Line="105" Column="89" TopLine="95"/>
+      </Position>
+      <Position>
+        <Filename Value="mainwin.pas"/>
+        <Caret Line="125" Column="2" TopLine="78"/>
+      </Position>
+      <Position>
+        <Filename Value="mainwin.pas"/>
+        <Caret Line="142" TopLine="111"/>
+      </Position>
+      <Position>
+        <Filename Value="mainwin.pas"/>
+        <Caret Line="104" Column="7" TopLine="71"/>
       </Position>
     </JumpHistory>
     <RunParams>
