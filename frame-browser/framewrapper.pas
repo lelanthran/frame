@@ -36,6 +36,7 @@ var frame_var: frm_t;
     function frm_up(frm: frm_t): LongBool; cdecl; external 'frame';
     function frm_down(frm: frm_t; target: PAnsiChar): LongBool; cdecl; external 'frame';
     function frm_switch(frm: frm_t; target: PAnsiChar): LongBool; cdecl; external 'frame';
+    function frm_switch_direct(frm: frm_t; target: PAnsiChar): LongBool; cdecl; external 'frame';
     function frm_back(frm: frm_t; index: csize_t): LongBool; cdecl; external 'frame';
     function frm_delete(frm: frm_t; target: PAnsiChar): LongBool; cdecl; external 'frame';
     function frm_pop(frm: frm_t; force: LongBool): LongBool; cdecl; external 'frame';

@@ -1161,6 +1161,47 @@ bool frm_switch (frm_t *frm, const char *target)
    return true;
 }
 
+bool frm_switch_direct (frm_t *frm, const char *target)
+{
+   if (!frm || !target || !target[0]) {
+      FRM_ERROR ("Error: null objects passed for frm_switching\n");
+      return false;
+   }
+
+   char *suffixed = target[strlen(target)-1]=='/'
+      ? ds_str_dup (target)
+      : ds_str_cat (target, "/", NULL);
+   if (!suffixed) {
+      FRM_ERROR ("OOM error allocating suffixed string\n");
+      errno = ENOMEM;
+      return false;
+   }
+
+   if ((chdir (frm->dbpath))!=0) {
+      FRM_ERROR ("Failed to switch to dbpath [%s]\n", frm->dbpath);
+      free (suffixed);
+      return false;
+   }
+
+   if ((chdir (suffixed))!=0) {
+      FRM_ERROR ("Failed to switch to target [%s]\n", suffixed);
+      free (suffixed);
+      return false;
+   }
+
+   char *pwd = get_path (frm);
+   if (!(history_append (frm->dbpath, pwd))) {
+      FRM_ERROR ("Failed to set the working frame to [root]\n");
+      free (suffixed);
+      free (pwd);
+      return false;
+   }
+
+   free (suffixed);
+   free (pwd);
+   return true;
+}
+
 bool frm_back (frm_t *frm, size_t index)
 {
    if (!frm) {

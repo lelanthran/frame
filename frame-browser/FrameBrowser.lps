@@ -8,8 +8,8 @@
         <Filename Value="FrameBrowser.lpr"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="2"/>
-        <CursorPos X="45" Y="22"/>
-        <UsageCount Value="88"/>
+        <CursorPos Y="26"/>
+        <UsageCount Value="89"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -19,9 +19,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="mainWin"/>
-        <TopLine Value="86"/>
-        <CursorPos X="19" Y="114"/>
-        <UsageCount Value="88"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="78"/>
+        <CursorPos X="54" Y="95"/>
+        <UsageCount Value="89"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -29,11 +30,10 @@
         <Filename Value="framewrapper.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="FrameWrapper"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="117"/>
-        <CursorPos X="14" Y="143"/>
-        <UsageCount Value="88"/>
+        <TopLine Value="22"/>
+        <CursorPos X="24" Y="38"/>
+        <UsageCount Value="89"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -82,7 +82,7 @@
         <UsageCount Value="7"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="19">
+    <JumpHistory HistoryIndex="26">
       <Position>
         <Filename Value="framewrapper.pas"/>
         <Caret Line="131" TopLine="103"/>
@@ -161,7 +161,35 @@
       </Position>
       <Position>
         <Filename Value="framewrapper.pas"/>
-        <Caret Line="143" TopLine="117"/>
+        <Caret Line="143" Column="14" TopLine="117"/>
+      </Position>
+      <Position>
+        <Filename Value="framewrapper.pas"/>
+        <Caret Line="39" Column="31" TopLine="22"/>
+      </Position>
+      <Position>
+        <Filename Value="mainwin.pas"/>
+        <Caret Line="112" Column="22" TopLine="86"/>
+      </Position>
+      <Position>
+        <Filename Value="mainwin.pas"/>
+        <Caret Line="118" Column="22" TopLine="92"/>
+      </Position>
+      <Position>
+        <Filename Value="mainwin.pas"/>
+        <Caret Line="90" Column="3" TopLine="74"/>
+      </Position>
+      <Position>
+        <Filename Value="mainwin.pas"/>
+        <Caret Line="10" Column="11"/>
+      </Position>
+      <Position>
+        <Filename Value="mainwin.pas"/>
+        <Caret Line="95" Column="48" TopLine="71"/>
+      </Position>
+      <Position>
+        <Filename Value="mainwin.pas"/>
+        <Caret Line="92" Column="92" TopLine="76"/>
       </Position>
     </JumpHistory>
     <RunParams>
@@ -170,22 +198,6 @@
     </RunParams>
   </ProjectSession>
   <Debugging>
-    <BreakPoints>
-      <Item>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="framewrapper.pas"/>
-        <Line Value="138"/>
-      </Item>
-      <Item>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="framewrapper.pas"/>
-        <Line Value="144"/>
-      </Item>
-    </BreakPoints>
     <Watches>
       <Item ClassAutoCast="True">
         <Expression Value="fpath"/>
