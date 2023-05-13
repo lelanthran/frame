@@ -260,9 +260,13 @@ The next time I do `frame switch root/frame`, it returns me to
 *[root/frame/create GUI/populate history]*.
 
 ## Command reference
-You can get a list of commands using `frame --help`. The following commands
-are, as of writing, available in the latest release branch:
+You can get a list of commands using `frame --help`. The important commands
+are
 
+1. `push <title>` - push a new child frame with specified title.
+2. `pop` - discard current frame and make parent current.
+3. `list` - list all child frames of current frame.
+4. `switch <path>` - (smart) switch to a new path.
 
 
 [^1]: I made a conscious decision at the start of this project that `root` will
