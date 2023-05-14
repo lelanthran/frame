@@ -1,6 +1,6 @@
 # FRAME
 
-Estimated time to read this document: 5m
+Estimated time to read this document: 10m
 
 This is a small utility that I can use from the command-line to keep
 track of where in the bigger picture my current efforts fit.
@@ -23,11 +23,13 @@ given time only a single frame can be active. To see all the notes I made
 while working during that frame of context I use `frame status`.
 
 When I start a task I first do `push frame 'title of task name here'` and
-enter a short name, and that new frame is the current frame. When I am done I
-do `frame pop` and the current frame is then whatever frame I was in prior to
-the `push`.
+enter a short message, and that new frame is the current frame. When I am done I
+do `frame pop` and the current frame switches to the parent of the popped
+frame. The popped frame is discarded.
 
-All frames descend from an initial frame called `root`[^1]
+All frames descend from an initial frame called `root`[^1].
+
+
 ## Setup for terminal usage
 The first thing to do is to integrate the frame name into the shell's
 `PS1` variable. The command `frame current` prints the name of the current
@@ -38,13 +40,14 @@ $ frame current
 root/projects/frame: Thu May 11 22:26:29 2023
 ```
 
-I added the following function which is called within my `PS1` variable:
+I have the following function which is called within my `PS1` variable:
 
 ```sh
 frame_ps1() {
    frame current --quiet | cut -f 1 -d :
 }
 ```
+
 Calling `frame_ps1` within the `PS1` variable prints out the current frame
 after each command, in every terminal I am logged into[^2].
 
@@ -76,16 +79,15 @@ The current frame's name is `create GUI`. It has a parent, `projects`, which
 itself has the parent `root`.
 
 ```mermaid
-graph TD;
-   root-->projects;
-   projects-->frame;
-   frame-->create GUI;
+graph TD
+   A[root] --> B[projects];
+   B --> C[frame];
+   C --> D[create GUI];
 ```
 Some useful commands at this point:
 
 1. `frame status` returns the notes (message) for this frame.
 2. `frame edit` opens the editor to allow editing the notes for this frame.
-was entered.
 
 I have some idea of what needs to be done, namely, startup a new Lazarus
 project, create the GUI elements, include the `libframe.so` library, ensure
@@ -136,7 +138,7 @@ Created new frame [root/frame/create GUI/GUI Elements/decls needed]
 
 To make things easier, I paste the `C` header file into ChatGPT and ask for
 the Lazarus definitions. It provides the definitions, helpfully hallucinating
-a few types, and I copy the results into a Lazarus file and fix all the
+a few types. and I copy the results into a Lazarus sourcefile and fix all the
 compilation errors.
 
 Finally, the needed declarations are in. To return to whatever I was
@@ -156,7 +158,6 @@ Notes (Sat May 13 08:26:59 2023)
    expanded.
    3. An editor box that displays the notes for the current frame, and allows the
    user to edit those notes.
-
 ```
 
 Right, I was on the first item. Maybe create a frame for that:
@@ -173,13 +174,13 @@ I create the named function, run it, watch in disbelief as it crashes, and
 then investigate the crash. Turns out there's a bug in the library. New frame
 time:
 ```sh
-[root/frame/create demo/create GUI/GUI Elements/populate history element] $ frame push 'debug frm_history' --message='
+[root/frame/create GUI/GUI Elements/populate history element] $ frame push 'debug frm_history' --message='
 > frm_history, when called multiple times in the same session, has a double-free
 > bug. This does not show up in the c/line `frame history` command because the `frame`
 > program runs the specified command and then exits.
 > '
 Frame 0.1.2, (© 2023 Lelanthran Manickum)
-Created new frame [root/frame/create demo/create GUI/GUI Elements/populate history element/debug frm_history]
+Created new frame [root/frame/create GUI/GUI Elements/populate history element/debug frm_history]
 ```
 
 I switch to working on the frame library instead. I update the test script to
@@ -187,14 +188,14 @@ reproduce the error, and using valgrind, and then some gdb, I come up with an
 appropriate fix.
 
 ```mermaid
-graph TD;
-   root-->projects;
-   projects-->frame;
-   frame-->create GUI;
-   create GUI-->populate history element;
-   populate history element-->debug frm_history;
-   debug frm_history-->update tests to reproduce bugs;
-   update tests to reproduce bugs-->fix bug;
+graph TD
+   A[root] -->B[projects];
+   B[projects] --> C[frame];
+   C --> D[create GUI];
+   D --> E[populate history element];
+   E --> F[debug frm_history];
+   F --> G[update tests to reproduce bugs];
+   G --> H[fix bug];
 ```
 
 Now that the bug in frm_history has been fixed, I perform multiple `frame pop`s,
@@ -225,7 +226,7 @@ was I wanted to do next.
 It's all very linear, and intentionally so. You can create new frames
 without immediately switching to the newly created frame by using `frame new`.
 I do this when I know in advance that I need to do $X, $Y and $Z: then it's
-simpler to just do `frame create $X`, etc.
+simpler to just do `frame create $X`, `frame create $Y` and `frame create $Z`,
 
 ## Not only linear
 I create multiple frames off `root`; typically one for each project. The
@@ -235,22 +236,22 @@ sub-branch of that frame that you were last working on.
 For example, having frames
 
 ```mermaid
-graph TD;
-   root--frame;
-   root->game;
-   frame-->create GUI;
-   create GUI-->populate history;
-   populate history-->debug crash;
-   frame-->write docs;
-   game-->Scrabble Clone;
-   Scrabble Clone-->implement basic user mgmt;
-   implement basic user mgmt-->email verification on signup;
-   Scrabble Clone-->create board;
-   create board-->store game state;
+graph TD
+   A[root] --> B[frame];
+   A --> C[game];
+   B --> D[create GUI];
+   D --> E[populate history];
+   E --> G[debug crash];
+   B --> H[write docs];
+   C --> I[Scrabble Clone];
+   I --> J[implement basic user mgmt];
+   J --> K[email verification on signup];
+   I --> L[create board];
+   L --> M[store game state];
 ```
 My current frame is *[root/frame/create GUI/populate history]*. The last time I
 was in a sub-branch of *[root/game]*, it was in the *[email verification on
-signup] sub-branch.
+signup]* sub-branch.
 
 When I do `frame switch root/game`, it returns me to the branch
 *[root/game/Scrabble Clone/implement basic user mgmt/ email verification on
@@ -265,7 +266,7 @@ are
 
 1. `push <title>` - push a new child frame with specified title.
 2. `pop` - discard current frame and make parent current.
-3. `list` - list all child frames of current frame.
+3. `edit` - edit the context attached to the current frame.
 4. `switch <path>` - (smart) switch to a new path.
 
 
@@ -273,7 +274,6 @@ are
 always be explicit and not implicit. This avoids errors where a typo results
 in addressing root when the user did not mean to. For example the following
 error is impossible when root is explicit: `rm -rf myhomedir/Downloads /lib`.
-```
 
 [^2]: In reality, my `PS1` variable is a lot more complex than this, as it
 includes the git branch (if any) and other information (current directory,
