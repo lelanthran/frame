@@ -224,9 +224,11 @@ static void print_helpmsg (void)
 "  --force              Force an action that against the program's wishes,",
 "                       for example popping a frame that is not empty.",
 "",
-"  --parent             Execute in the context of the parent frame.",
+"  --frame=<path>       Execute in the context of the specified frame. Frame can",
+"                       be specified with a relative path (\"../..\") or an",
+"                       absolute path from root (\"root/frame\").",
 "                       For example, to create a sibling frame, use the command:",
-"                             frame --parent new 'New Task Name'",
+"                             frame --frame=../ new 'New Task Name'",
 "",
 "  --dbpath=<path>      Specify the location of the database path. Defaults to",
 "                       '$HOME/.framedb' unless overridden by this option.",
@@ -425,6 +427,9 @@ int main (int argc, char **argv)
    char *from_root = cline_option_get ("from-root");
    char *invert = cline_option_get ("invert");
    char *quiet = cline_option_get ("quiet");
+   char *frame = cline_option_get ("frame");
+   char *oldpath = NULL;
+
    frm_t *frm = NULL;
 
    if (!command || !command[0]) {
@@ -479,6 +484,16 @@ int main (int argc, char **argv)
       fprintf (stderr, "Failed to load db from [%s]\n", dbpath);
       ret = EXIT_FAILURE;
       goto cleanup;
+   }
+
+   if (frame && frame[1]) {
+      oldpath = frm_switch_path (frm, frame);
+      if (!oldpath) {
+         fprintf (stderr, "Specified a --frame path that is invalid: [%s]: %m\n",
+                  frame);
+         ret = EXIT_FAILURE;
+         goto cleanup;
+      }
    }
 
    if ((strcmp (command, "history"))==0) {
@@ -899,6 +914,8 @@ cleanup:
    free (from_root);
    free (invert);
    free (quiet);
+   free (frame);
+   free (oldpath); // No need to change back as we are exiting now.
 
    free (g_options);
    free (g_commands);

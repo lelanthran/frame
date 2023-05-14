@@ -118,6 +118,11 @@ extern "C" {
    const frm_node_t *frm_node_root (const frm_node_t *node);
    const frm_node_t *frm_node_find (const frm_node_t *node, const char *fpath);
 
+   /* These functions are not very useful to the caller and should be avoided
+    * in favour of the functions above.
+    */
+   char *frm_switch_path (frm_t *frm, const char *from);
+
 #ifdef __cplusplus
 };
 #endif

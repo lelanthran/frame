@@ -1429,42 +1429,16 @@ char **frm_list (frm_t *frm, const char *from)
       return NULL;
    }
 
-   // Attempt to switch to 'from' as a relative path. If that fails
-   // attempt to switch to 'from' as an absolute framename (absolute
-   // relative to frm->dbpath).
-   if (!from || !from[0]) {
-      from = "./";
-   }
-   char *olddir = pushdir (from);
+   char *olddir = frm_switch_path (frm, from);
    if (!olddir) {
-      FRM_ERROR ("Warning: using relative path [%s] failed, trying absolute path\n",
-            from);
-      char *tmp = ds_str_cat (frm->dbpath, "/", from, NULL);
-      if (!tmp) {
-         FRM_ERROR ("OOM error allocating absolute path for framename [%s/%s]\n",
-               frm->dbpath, from);
-         return NULL;
-      }
-      char *first_errmsg = ds_str_dup (strerror (errno));
-      if (!first_errmsg) {
-         FRM_ERROR ("OOM error allocating error message string: %i\n", errno);
-         return NULL;
-      }
-
-      olddir = pushdir (tmp);
-      free (tmp);
-      if (!olddir) {
-         FRM_ERROR ("Neither [%s] nor [%s/%s] could be used: [%s][%m]\n",
-               from, frm->dbpath, from, first_errmsg);
-         free (first_errmsg);
-         return NULL;
-      }
-      free (first_errmsg);
+      FRM_ERROR ("Error: failed to switch path to [%s]\n", from);
+      return NULL;
    }
 
    char *current = frm_current (frm);
    if (!current) {
       FRM_ERROR ("Error: unable to determine current frame: %m\n");
+      popdir (&olddir);
       return NULL;
    }
 
@@ -1724,4 +1698,40 @@ const frm_node_t *frm_node_find (const frm_node_t *node, const char *fpath)
    return NULL;
 }
 
+char *frm_switch_path (frm_t *frm, const char *from)
+{
+   // Attempt to switch to 'from' as a relative path. If that fails
+   // attempt to switch to 'from' as an absolute framename (absolute
+   // relative to frm->dbpath).
+   if (!from || !from[0]) {
+      from = "./";
+   }
+   char *olddir = pushdir (from);
+   if (!olddir) {
+      FRM_ERROR ("Warning: using relative path [%s] failed, trying absolute path\n",
+            from);
+      char *tmp = ds_str_cat (frm->dbpath, "/", from, NULL);
+      if (!tmp) {
+         FRM_ERROR ("OOM error allocating absolute path for framename [%s/%s]\n",
+               frm->dbpath, from);
+         return NULL;
+      }
+      char *first_errmsg = ds_str_dup (strerror (errno));
+      if (!first_errmsg) {
+         FRM_ERROR ("OOM error allocating error message string: %i\n", errno);
+         return NULL;
+      }
 
+      olddir = pushdir (tmp);
+      free (tmp);
+      if (!olddir) {
+         FRM_ERROR ("Neither [%s] nor [%s/%s] could be used: [%s][%m]\n",
+               from, frm->dbpath, from, first_errmsg);
+         free (first_errmsg);
+         return NULL;
+      }
+      free (first_errmsg);
+   }
+
+   return olddir;
+}
