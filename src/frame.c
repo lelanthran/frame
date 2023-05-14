@@ -158,7 +158,7 @@ static char *run_editor (const char *default_file_contents)
       }
       close (fd);
       if (!default_file_contents) {
-         default_file_contents = "Enter a description of this node here";
+         default_file_contents = "Enter a description of this frame here";
       }
 
       if (!(frm_writefile (fname,
@@ -222,7 +222,11 @@ static void print_helpmsg (void)
 "  --help               Print this page and exit.",
 "",
 "  --force              Force an action that against the program's wishes,",
-"                       for example popping a node that is not empty.",
+"                       for example popping a frame that is not empty.",
+"",
+"  --parent             Execute in the context of the parent frame.",
+"                       For example, to create a sibling frame, use the command:",
+"                             frame --parent new 'New Task Name'",
 "",
 "  --dbpath=<path>      Specify the location of the database path. Defaults to",
 "                       '$HOME/.framedb' unless overridden by this option.",
@@ -235,8 +239,8 @@ static void print_helpmsg (void)
 "                       standard input.",
 "",
 "  --from-root          Specify that the match command must search for matches",
-"                       from the root node. If this option is not present then",
-"                       matches are, by default, made only from the current node",
+"                       from the root frame. If this option is not present then",
+"                       matches are, by default, made only from the current frame",
 "                       onwards (down the tree).",
 "",
 "  --invert             Perform an inverted search when matching using a search",
@@ -270,59 +274,59 @@ static void print_helpmsg (void)
 "  history to jump to. Specifying '0' is pointless.",
 "",
 "status",
-"  Display the status of the current node.",
+"  Display the status of the current frame.",
 "",
 "push",
-"  Create a new node as the child of the current node AND switches to it. If a",
+"  Create a new frame as the child of the current frame AND switches to it. If a",
 "  message is specified with '--message=<string>' then it will be used as the",
-"  contents of the new node. If no message is specified with '--message=<string>'",
+"  contents of the new frame. If no message is specified with '--message=<string>'",
 "  then $EDITOR will be started to allow the user to enter a message. If $EDITOR",
 "  is not set, the user will be prompted for a message.",
 "",
 "new",
-"  Create a new node as the child of the current node WITHOUT switching to it. If",
+"  Create a new frame as the child of the current frame WITHOUT switching to it. If",
 "  a message is specified with '--message=<string>' then it will be used as the",
-"  contents of the new node. If no message is specified with '--message=<string>'",
+"  contents of the new frame. If no message is specified with '--message=<string>'",
 "  then $EDITOR will be started to allow the user to enter a message. If $EDITOR",
 "  is not set, the user will be prompted for a message.",
 "",
 "replace",
-"  Overwrite the content of the current node with the provided message. See ",
+"  Overwrite the content of the current frame with the provided message. See ",
 "  option '--message=<string>'.",
 "",
 "append",
 "  Appends the provided message (see option '--message' and command 'push') to",
-"  the current node.",
+"  the current frame.",
 "",
 "top",
-"  Changes the current node to root node (i.e. top of the tree).",
+"  Changes the current frame to root frame (i.e. top of the tree).",
 "",
 "up",
-"  Changes the current node to the parent of the current node.",
+"  Changes the current frame to the parent of the current frame.",
 "",
 "down <name>",
-"  Changes the current node to the child node named by 'name'.",
+"  Changes the current frame to the child frame named by 'name'.",
 "",
 "switch <path>",
-"  Changes the current node to the non-child node named by <path>.",
+"  Changes the current frame to the non-child frame named by <path>.",
 "",
 "pop",
-"  Deletes the current node and set the current node to the parent of the",
-"  deleted node.",
+"  Deletes the current frame and set the current frame to the parent of the",
+"  deleted frame.",
 "",
 "delete <path>",
-"  Deletes the node named by <path>. The current node is not changed.",
+"  Deletes the frame named by <path>. The current frame is not changed.",
 "",
 "list",
-"  Lists all descendents of the current node.",
+"  Lists all descendents of the current frame.",
 "",
 "tree",
-"  Display a tree of all the nodes starting at the root node.",
+"  Display a tree of all the nodes starting at the root frame.",
 "",
 "match <sterm> [--from-root] [--invert]",
 "  Lists the nodes that match the search term <sterm>, starting at the current",
-"  node. If '--from-root' is specified then the search is performed from the",
-"  root node and not the current node. If --invert is specified, then the search",
+"  frame. If '--from-root' is specified then the search is performed from the",
+"  root frame and not the current frame. If --invert is specified, then the search",
 "  is performed for all those nodes *NOT MATCHING* the search term <sterm>.",
 "",
 NULL,
@@ -378,11 +382,11 @@ int print_tree (const frm_node_t *node, size_t level)
    char strdate[30];
 
    if (!name) {
-      fprintf (stderr, "Internal error, node name missing\n");
+      fprintf (stderr, "Internal error, frame name missing\n");
       return EXIT_FAILURE;
    }
    if (date == (uint64_t)-1) {
-      fprintf (stderr, "Internal error, node date missing\n");
+      fprintf (stderr, "Internal error, frame date missing\n");
       return EXIT_FAILURE;
    }
 
@@ -618,7 +622,7 @@ int main (int argc, char **argv)
       }
 
       if (!(frm_payload_replace (message))) {
-         fprintf (stderr, "Failed to replace message of current node: %m\n");
+         fprintf (stderr, "Failed to replace message of current frame: %m\n");
          ret = EXIT_FAILURE;
       }
       free (message);
@@ -634,7 +638,7 @@ int main (int argc, char **argv)
       }
       char *fname = frm_payload_fname ();
       if (!fname) {
-         fprintf (stderr, "Failed to retrieve filename of current node: %m\n");
+         fprintf (stderr, "Failed to retrieve filename of current frame: %m\n");
          ret = EXIT_FAILURE;
          goto cleanup;
       }
@@ -672,7 +676,7 @@ int main (int argc, char **argv)
       }
 
       if (!(frm_payload_append (message))) {
-         fprintf (stderr, "Failed to append message to current node: %m\n");
+         fprintf (stderr, "Failed to append message to current frame: %m\n");
          ret = EXIT_FAILURE;
       }
       free (message);
@@ -693,7 +697,7 @@ int main (int argc, char **argv)
 
    if ((strcmp (command, "up"))==0) {
       if (!(frm_up (frm))) {
-         fprintf (stderr, "Failed to move a node up the tree\n");
+         fprintf (stderr, "Failed to move a frame up the tree\n");
          ret = EXIT_FAILURE;
       }
       if (ret == EXIT_SUCCESS) {
@@ -705,13 +709,13 @@ int main (int argc, char **argv)
    if ((strcmp (command, "down"))==0) {
       char *target = cline_command_get(1);
       if (!target || !target[0]) {
-         fprintf (stderr, "Must specify name of child node to switch to\n");
+         fprintf (stderr, "Must specify name of child frame to switch to\n");
          free (target);
          ret = EXIT_FAILURE;
          goto cleanup;
       }
       if (!(frm_down (frm, target))) {
-         fprintf (stderr, "Failed to switch to node [%s]\n", target);
+         fprintf (stderr, "Failed to switch to frame [%s]\n", target);
          ret = EXIT_FAILURE;
       }
       free (target);
@@ -730,7 +734,7 @@ int main (int argc, char **argv)
          goto cleanup;
       }
       if (!(frm_switch (frm, target))) {
-         fprintf (stderr, "Failed to switch to node [%s]\n", target);
+         fprintf (stderr, "Failed to switch to frame [%s]\n", target);
          free (target);
          ret = EXIT_FAILURE;
          goto cleanup;
@@ -781,7 +785,7 @@ int main (int argc, char **argv)
       }
 
       if (!(frm_pop (frm, force_pop))) {
-         fprintf (stderr, "Failed to pop current node: %m\n");
+         fprintf (stderr, "Failed to pop current frame: %m\n");
          ret = EXIT_FAILURE;
       }
       if (ret == EXIT_SUCCESS) {
@@ -793,12 +797,12 @@ int main (int argc, char **argv)
    if ((strcmp (command, "delete"))==0) {
       char *target = cline_command_get (1);
       if (!target || !target[0]) {
-         fprintf (stderr, "Must specify a target node to delete\n");
+         fprintf (stderr, "Must specify a target frame to delete\n");
          ret = EXIT_FAILURE;
       }
 
       if (!(frm_delete (frm, target))) {
-         fprintf (stderr, "Failed to delete current node: %m\n");
+         fprintf (stderr, "Failed to delete current frame: %m\n");
          ret = EXIT_FAILURE;
       }
       free (target);
@@ -871,7 +875,7 @@ int main (int argc, char **argv)
    if ((strcmp (command, "tree"))==0) {
       frm_node_t *root = frm_node_create (frm);
       if (!root) {
-         fprintf (stderr, "Failed to find root node\n");
+         fprintf (stderr, "Failed to find root frame\n");
          ret = EXIT_FAILURE;
          goto cleanup;
       }
