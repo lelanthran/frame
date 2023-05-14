@@ -25,11 +25,14 @@
 
 #include "frm.h"
 #include "ds_str.h"
+#include "ds_array.h"
 
 struct frm_t {
    char *dbpath;
    char *olddir;
 };
+
+#define REMOVEME FRM_ERROR
 
 /* ********************************************************** */
 /* ********************************************************** */
@@ -470,7 +473,8 @@ cleanup:
    return lines;
 }
 
-static bool node_create (const char *path, const char *name, const char *msg)
+static bool internal_frame_create (const char *path,
+                                   const char *name, const char *msg)
 {
    char *pwd = pushdir (path);
    if (!pwd) {
@@ -558,6 +562,11 @@ static frm_t *frm_alloc (const char *dbpath, const char *olddir)
    return ret;
 }
 
+void frm_mem_free (void *ptr)
+{
+   free (ptr);
+}
+
 char *frm_readfile (const char *name)
 {
    FILE *inf = fopen (name, "r");
@@ -640,8 +649,8 @@ frm_t *frm_create (const char *dbpath)
       return NULL;
    }
 
-   if (!(node_create (dbpath, "root", "ENTER YOUR NOTES HERE"))) {
-      FRM_ERROR ("Failed to create node [%s/root]: %m\n", dbpath);
+   if (!(internal_frame_create (dbpath, "root", "ENTER YOUR NOTES HERE"))) {
+      FRM_ERROR ("Failed to create frame [%s/root]: %m\n", dbpath);
       return NULL;
    }
 
@@ -652,7 +661,7 @@ frm_t *frm_create (const char *dbpath)
    }
 
    if (!(history_append (dbpath, "root"))) {
-      FRM_ERROR ("Failed to set the working node to [root]\n");
+      FRM_ERROR ("Failed to set the working frame to [root]\n");
       popdir (&pwd);
       return NULL;
    }
@@ -670,7 +679,7 @@ frm_t *frm_init (const char *dbpath)
 {
    bool error = true;
    frm_t *ret = NULL;
-   char *history = NULL, *node = NULL, *newpath = NULL;
+   char *history = NULL, *frame = NULL, *newpath = NULL;
 
    char *pwd = pushdir (dbpath);
    if (!pwd) {
@@ -680,26 +689,26 @@ frm_t *frm_init (const char *dbpath)
 
    // TODO: replace this with frm_history
    history = frm_readfile ("history");
-   node = NULL;
+   frame = NULL;
    if (!history) {
-      FRM_ERROR ("Warning: no history found, defaulting to root node\n");
-      node = "root";
+      FRM_ERROR ("Warning: no history found, defaulting to root frame\n");
+      frame = "root";
    } else {
       char *eol = strchr (history, '\n');
       if (!eol) {
          eol = &history[strlen (history)];
       }
       *eol = 0;
-      node = ds_str_dup (history);
-      if (!node) {
-         FRM_ERROR ("OOM error copying last working node path\n");
+      frame = ds_str_dup (history);
+      if (!frame) {
+         FRM_ERROR ("OOM error copying last working frame path\n");
          goto cleanup;
       }
    }
 
-   newpath = pushdir (node);
+   newpath = pushdir (frame);
    if (!newpath) {
-      FRM_ERROR ("Failed to switch to node [%s]: %m\n", node);
+      FRM_ERROR ("Failed to switch to frame [%s]: %m\n", frame);
       goto cleanup;
    }
 
@@ -713,7 +722,7 @@ frm_t *frm_init (const char *dbpath)
 cleanup:
    free (pwd);
    free (history);
-   free (node);
+   free (frame);
    free (newpath);
    if (error) {
       frm_close (ret);
@@ -770,13 +779,8 @@ char *frm_current (frm_t *frm)
    return ret;
 }
 
-char *frm_payload (frm_t *frm)
+char *frm_payload (void)
 {
-   if (!frm) {
-      FRM_ERROR ("Error, null object passed for frm_t\n");
-      errno = EINVAL;
-      return ds_str_dup ("");
-   }
    char *ret = frm_readfile ("payload");
    if (!ret) {
       FRM_ERROR ("Failed to read [payload]: %m\n");
@@ -790,14 +794,8 @@ struct info_t {
    uint64_t mtime;
 };
 
-static bool read_info (frm_t *frm, struct info_t *dst, const char *fname)
+static bool read_info (struct info_t *dst, const char *fname)
 {
-   if (!frm) {
-      FRM_ERROR ("Error, null object passed for frm_t\n");
-      errno = EINVAL;
-      return false;
-   }
-
    char *data = frm_readfile(fname);
    if (!data) {
       FRM_ERROR ("Failed to read [%s]: %m\n", fname);
@@ -832,14 +830,8 @@ static bool read_info (frm_t *frm, struct info_t *dst, const char *fname)
    return true;
 }
 
-static bool write_info (frm_t *frm, const struct info_t *info, const char *fname)
+static bool write_info (const struct info_t *info, const char *fname)
 {
-   if (!frm) {
-      FRM_ERROR ("Error, null object passed for frm_t\n");
-      errno = EINVAL;
-      return false;
-   }
-
    char tstring[47];
    if (!(frm_writefile (fname,
                "mtime:", uint64_string (tstring, info->mtime), "\n",
@@ -851,16 +843,16 @@ static bool write_info (frm_t *frm, const struct info_t *info, const char *fname
    return true;
 }
 
-static bool update_info_mtime (frm_t *frm, const char *fname)
+static bool update_info_mtime (const char *fname)
 {
    struct info_t info;
-   if (!(read_info (frm, &info, fname))) {
+   if (!(read_info (&info, fname))) {
       FRM_ERROR ("Failed to read info file: %m\n");
       return false;
    }
 
    info.mtime = time (NULL);
-   if (!(write_info (frm, &info, fname))) {
+   if (!(write_info (&info, fname))) {
       FRM_ERROR ("Failed to update info file: %m\n");
       return false;
    }
@@ -869,10 +861,10 @@ static bool update_info_mtime (frm_t *frm, const char *fname)
 }
 
 
-uint64_t frm_date_epoch (frm_t *frm)
+uint64_t frm_date_epoch (void)
 {
    struct info_t info;
-   if (!(read_info (frm, &info, "info"))) {
+   if (!(read_info (&info, "info"))) {
       FRM_ERROR ("Failed to read [info]: %m\n");
       return (uint64_t)-1;
    }
@@ -880,9 +872,9 @@ uint64_t frm_date_epoch (frm_t *frm)
    return info.mtime;
 }
 
-char *frm_date_str (frm_t *frm)
+char *frm_date_str (void)
 {
-   uint64_t epoch = frm_date_epoch (frm);
+   uint64_t epoch = frm_date_epoch ();
    if (epoch == (uint64_t)-1) {
       FRM_ERROR ("Failed to retrieve mtime\n");
       return ds_str_dup ("");
@@ -894,7 +886,8 @@ char *frm_date_str (frm_t *frm)
    return ds_str_dup (tmp);
 }
 
-bool frm_push (frm_t *frm, const char *name, const char *message)
+static bool internal_frm_push (frm_t *frm, const char *name, const char *message,
+                               bool dir_change)
 {
    if (!frm) {
       FRM_ERROR ("Error, null object passed for frm_t\n");
@@ -924,39 +917,52 @@ bool frm_push (frm_t *frm, const char *name, const char *message)
                "mtime: ", uint64_string(tstring, (uint64_t)time(NULL)), "\n",
                NULL))) {
       FRM_ERROR ("Failed to create info file [%s/info]: %m\n", name);
+      popdir (&olddir);
       return false;
    }
 
    char *path = get_path (frm);
-   if (!(history_append(frm->dbpath, path))) {
-      FRM_ERROR ("Failed to update history\n");
-      free (path);
-      return false;
+   if (dir_change) {
+      if (!(history_append(frm->dbpath, path))) {
+         FRM_ERROR ("Failed to update history\n");
+         free (path);
+         popdir (&olddir);
+         return false;
+      }
    }
 
    if (!(index_add (frm->dbpath, path))) {
       FRM_ERROR ("Warning: failed to update index\n");
    }
 
-   free (olddir);
+   if (dir_change) {
+      free (olddir);
+   } else {
+      popdir (&olddir);
+   }
+
    free (path);
    return true;
 }
 
-bool frm_payload_replace (frm_t *frm, const char *message)
+bool frm_push (frm_t *frm, const char *name, const char *message)
 {
-   if (!frm) {
-      FRM_ERROR ("Error, null object passed for frm_t\n");
-      errno = EINVAL;
-      return false;
-   }
+   return internal_frm_push (frm, name, message, true);
+}
 
+bool frm_new (frm_t *frm, const char *name, const char *message)
+{
+   return internal_frm_push (frm, name, message, false);
+}
+
+bool frm_payload_replace (const char *message)
+{
    if (!(frm_writefile ("payload", message, NULL))) {
       FRM_ERROR ("Failed to write [payload]: %m\n");
       return false;
    }
 
-   if (!(update_info_mtime (frm, "info"))) {
+   if (!(update_info_mtime ("info"))) {
       FRM_ERROR ("Failed to update info file with mtime: %m\n");
       return false;
    }
@@ -964,14 +970,8 @@ bool frm_payload_replace (frm_t *frm, const char *message)
    return true;
 }
 
-bool frm_payload_append (frm_t *frm, const char *message)
+bool frm_payload_append (const char *message)
 {
-   if (!frm) {
-      FRM_ERROR ("Error, null object passed for frm_t\n");
-      errno = EINVAL;
-      return false;
-   }
-
    char *current = frm_readfile ("payload");
    if (!current) {
       FRM_ERROR ("Warning: failed to read [payload]: %m\n");
@@ -984,7 +984,7 @@ bool frm_payload_append (frm_t *frm, const char *message)
    }
    free (current);
 
-   if (ret && !(update_info_mtime (frm, "info"))) {
+   if (ret && !(update_info_mtime ("info"))) {
       FRM_ERROR ("Failed to update info file with mtime: %m\n");
       ret = false;
    }
@@ -992,14 +992,8 @@ bool frm_payload_append (frm_t *frm, const char *message)
    return ret;
 }
 
-char *frm_payload_fname (frm_t *frm)
+char *frm_payload_fname (void)
 {
-   if (!frm) {
-      FRM_ERROR ("Error, null object passed for frm_t\n");
-      errno = ENOENT;
-      return false;
-   }
-
    char *pwd = getcwd (NULL, 0);
    if (!pwd) {
       FRM_ERROR ("Error: failed to get current working directory: %m\n");
@@ -1025,7 +1019,7 @@ bool frm_top (frm_t *frm)
 
    char *target = ds_str_cat (frm->dbpath, "/root", NULL);
    if (!target) {
-      FRM_ERROR ("OOM error allocating path for root node\n");
+      FRM_ERROR ("OOM error allocating path for root frame\n");
       return false;
    }
 
@@ -1081,7 +1075,7 @@ bool frm_up (frm_t *frm)
 
    char *path = get_path (frm);
    if (!(history_append (frm->dbpath, path))) {
-      FRM_ERROR ("Failed to set the working node to [root]\n");
+      FRM_ERROR ("Failed to set the working frame to [root]\n");
       free (olddir);
       free (pwd);
       return false;
@@ -1108,7 +1102,7 @@ bool frm_down (frm_t *frm, const char *target)
 
    char *pwd = get_path (frm);
    if (!(history_append (frm->dbpath, pwd))) {
-      FRM_ERROR ("Failed to set the working node to [root]\n");
+      FRM_ERROR ("Failed to set the working frame to [root]\n");
       free (pwd);
       return false;
    }
@@ -1156,13 +1150,54 @@ bool frm_switch (frm_t *frm, const char *target)
 
    char *pwd = get_path (frm);
    if (!(history_append (frm->dbpath, pwd))) {
-      FRM_ERROR ("Failed to set the working node to [root]\n");
+      FRM_ERROR ("Failed to set the working frame to [root]\n");
       free (actual);
       free (pwd);
       return false;
    }
 
    free (actual);
+   free (pwd);
+   return true;
+}
+
+bool frm_switch_direct (frm_t *frm, const char *target)
+{
+   if (!frm || !target || !target[0]) {
+      FRM_ERROR ("Error: null objects passed for frm_switching\n");
+      return false;
+   }
+
+   char *suffixed = target[strlen(target)-1]=='/'
+      ? ds_str_dup (target)
+      : ds_str_cat (target, "/", NULL);
+   if (!suffixed) {
+      FRM_ERROR ("OOM error allocating suffixed string\n");
+      errno = ENOMEM;
+      return false;
+   }
+
+   if ((chdir (frm->dbpath))!=0) {
+      FRM_ERROR ("Failed to switch to dbpath [%s]\n", frm->dbpath);
+      free (suffixed);
+      return false;
+   }
+
+   if ((chdir (suffixed))!=0) {
+      FRM_ERROR ("Failed to switch to target [%s]\n", suffixed);
+      free (suffixed);
+      return false;
+   }
+
+   char *pwd = get_path (frm);
+   if (!(history_append (frm->dbpath, pwd))) {
+      FRM_ERROR ("Failed to set the working frame to [root]\n");
+      free (suffixed);
+      free (pwd);
+      return false;
+   }
+
+   free (suffixed);
    free (pwd);
    return true;
 }
@@ -1222,7 +1257,7 @@ cleanup:
    return !error;
 }
 
-static void free_str_array (char **array)
+void frm_strarray_free (char **array)
 {
    for (size_t i=0; array && array[i]; i++) {
       free (array[i]);
@@ -1261,7 +1296,7 @@ bool frm_pop (frm_t *frm, bool force)
    }
 
    if (!(frm_up (frm))) {
-      FRM_ERROR ("Error: failed to switch to parent node: %m\n");
+      FRM_ERROR ("Error: failed to switch to parent frame: %m\n");
       free (oldpath);
       return false;
    }
@@ -1288,14 +1323,14 @@ bool frm_delete (frm_t *frm, const char *target)
    char *olddir = pushdir (frm->dbpath);
    if (!olddir) {
       FRM_ERROR ("Error: failed to switch directory: %m\n");
-      free_str_array(subframes);
+      frm_strarray_free(subframes);
       return false;
    }
 
    if (!(removedir (target))) {
       FRM_ERROR ("Error: failed to remove directory[%s]: %m\n", target);
       popdir (&olddir);
-      free_str_array (subframes);
+      frm_strarray_free (subframes);
       return false;
    }
 
@@ -1304,7 +1339,7 @@ bool frm_delete (frm_t *frm, const char *target)
          FRM_ERROR ("Warning: failed to remove [%s] from index\n", subframes[i]);
       }
    }
-   free_str_array (subframes);
+   frm_strarray_free (subframes);
    if (!(index_remove (frm->dbpath, target))) {
       FRM_ERROR ("Warning: failed to remove [%s] from index\n", target);
    }
@@ -1395,7 +1430,7 @@ char **frm_list (frm_t *frm, const char *from)
    }
 
    // Attempt to switch to 'from' as a relative path. If that fails
-   // attempt to switch to 'from' as an absolute nodename (absolute
+   // attempt to switch to 'from' as an absolute framename (absolute
    // relative to frm->dbpath).
    if (!from || !from[0]) {
       from = "./";
@@ -1406,7 +1441,7 @@ char **frm_list (frm_t *frm, const char *from)
             from);
       char *tmp = ds_str_cat (frm->dbpath, "/", from, NULL);
       if (!tmp) {
-         FRM_ERROR ("OOM error allocating absolute path for nodename [%s/%s]\n",
+         FRM_ERROR ("OOM error allocating absolute path for framename [%s/%s]\n",
                frm->dbpath, from);
          return NULL;
       }
@@ -1429,13 +1464,13 @@ char **frm_list (frm_t *frm, const char *from)
 
    char *current = frm_current (frm);
    if (!current) {
-      FRM_ERROR ("Error: unable to determine current node: %m\n");
+      FRM_ERROR ("Error: unable to determine current frame: %m\n");
       return NULL;
    }
 
    char *prefixed_current = ds_str_cat (current, "/", NULL);
    if (!prefixed_current) {
-      FRM_ERROR ("OOM error allocating temporary string for current node\n");
+      FRM_ERROR ("OOM error allocating temporary string for current frame\n");
       free (current);
       popdir (&olddir);
       return NULL;
@@ -1452,7 +1487,7 @@ char **frm_match (frm_t *frm, const char *sterm, uint32_t flags)
 {
    char *current = frm_current (frm);
    if (!current) {
-      FRM_ERROR ("Failed to retrieve the current node\n");
+      FRM_ERROR ("Failed to retrieve the current frame\n");
       return NULL;
    }
 
@@ -1465,4 +1500,228 @@ char **frm_match_from_root (frm_t *frm, const char *sterm, uint32_t flags)
 {
    return match (frm, sterm, flags, "root");
 }
+
+
+/* ************************************************************ */
+
+
+struct frm_node_t {
+   const frm_node_t *parent;
+   ds_array_t *children;
+
+   char *name;
+   uint64_t date;
+};
+
+static void node_del (frm_node_t *node)
+{
+   if (!node)
+      return;
+
+   size_t nchildren = ds_array_length(node->children);
+   for (size_t i=0; i<nchildren; i++) {
+      frm_node_t *child = ds_array_get(node->children, i);
+      if (!child) {
+         FRM_ERROR ("Possible corruption, attempt to overflow array: %zu\n", i);
+      }
+      node_del (child);
+   }
+   ds_array_del (node->children);
+   free (node->name);
+   free (node);
+}
+
+static frm_node_t *node_new (const frm_node_t *parent,
+                             const char *name, uint64_t date)
+{
+   frm_node_t *ret = calloc (1, sizeof *ret);
+   if (!ret) {
+      FRM_ERROR ("OOM error allocating node\n");
+   }
+
+   if (!(ret->children = ds_array_new ())) {
+      FRM_ERROR ("OOM error allocating array object for children\n");
+      free (ret);
+      return NULL;
+   }
+
+   ret->parent = parent;
+   ret->date = date;
+
+   if (!(ret->name = ds_str_dup (name))) {
+      FRM_ERROR ("OOM error allocating name field for node\n");
+      node_del (ret);
+      ret = NULL;
+   }
+
+   return ret;
+}
+
+static frm_node_t *node_open (const frm_node_t *parent, const char *dirname)
+{
+   bool error = true;
+   DIR *dirp = NULL;
+   char *pwd = pushdir (dirname);
+   frm_node_t *ret = NULL;
+   struct info_t info;
+
+   if (!pwd) {
+      FRM_ERROR ("Error: failed to switch to directory [%s]: %m\n", dirname);
+      goto cleanup;
+   }
+
+   if (!(dirp = opendir ("."))) {
+      FRM_ERROR ("Error: failed to read directory [%s]: %m\n", dirname);
+      goto cleanup;
+   }
+
+   if (!(read_info (&info, "info"))) {
+      FRM_ERROR ("Failed to read info file: %m\n");
+      return false;
+   }
+
+   if (!(ret = node_new (parent, dirname, info.mtime))) {
+      FRM_ERROR ("Error: failed to create new node [%s]\n", dirname);
+      goto cleanup;
+   }
+
+   struct dirent *de;
+   while ((de = readdir (dirp))) {
+      if (de->d_name[0] == '.')
+         continue;
+      if (de->d_type == DT_DIR) {
+         frm_node_t *child = node_open (ret, de->d_name);
+         if (!child) {
+            FRM_ERROR ("Error: failed to read child [%s] of [%s]: %m\n",
+                     de->d_name, dirname);
+         }
+         if (!(ds_array_ins_tail(ret->children, child))) {
+            FRM_ERROR ("OOM error adding child [%s] to [%s]\n",
+                     de->d_name, dirname);
+            node_del (child);
+            goto cleanup;
+         }
+      }
+   }
+
+   error = false;
+
+cleanup:
+   if (error) {
+      node_del (ret);
+      ret = NULL;
+   }
+
+   closedir (dirp);
+   popdir (&pwd);
+   return ret;
+}
+
+frm_node_t *frm_node_create (frm_t *frm)
+{
+   char *pwd = pushdir (frm->dbpath);
+   if (!pwd) {
+      FRM_ERROR ("Error: failed to switch to [%s]: %m\n", frm->dbpath);
+      return NULL;
+   }
+
+   // TODO: Must switch to basedir first.
+   frm_node_t *ret = node_open (NULL, "root");
+   popdir (&pwd);
+   return ret;
+}
+
+void frm_node_free (frm_node_t *rootnode)
+{
+   node_del (rootnode);
+}
+
+
+const char *frm_node_name (const frm_node_t *node)
+{
+   return node ? node->name : "???";
+}
+
+uint64_t frm_node_date (const frm_node_t *node)
+{
+   return node ? node->date : (uint64_t)-1;
+}
+
+char *frm_node_fpath (const frm_node_t *node)
+{
+   if (!node) {
+      return "";
+   }
+
+   char *parent_fpath = frm_node_fpath (node->parent);
+   if (!parent_fpath) {
+      FRM_ERROR ("OOM error getting parent name [%s]\n", node->name);
+      return NULL;
+   }
+
+   char *ret = ds_str_cat (parent_fpath, "/", node->name, NULL);
+   free (parent_fpath);
+
+   if (!ret) {
+      FRM_ERROR ("OOM error joining name [%s] to parent fpath [%s]\n",
+               node->name, parent_fpath);
+   }
+
+   return ret;
+}
+
+
+size_t frm_node_nchildren (const frm_node_t *node)
+{
+   return node ? ds_array_length (node->children) :  0;
+}
+
+const frm_node_t *frm_node_child (const frm_node_t *node, size_t index)
+{
+   if (!node || index > (ds_array_length(node->children) + 1)) {
+      FRM_ERROR ("Error: possible overflow detected\n");
+      return NULL;
+   }
+
+   return ds_array_get (node->children, index);
+}
+
+const frm_node_t *frm_node_parent (const frm_node_t *node)
+{
+   return node ? node->parent : NULL;
+}
+
+const frm_node_t *frm_node_root (const frm_node_t *node)
+{
+   if (!node)
+      return NULL;
+
+   if (!node->parent)
+      return node;
+
+   return frm_node_root (node->parent);
+}
+
+const frm_node_t *frm_node_find (const frm_node_t *node, const char *fpath)
+{
+   size_t slen = strlen (node->name);
+   if ((memcmp (node->name, fpath, slen))!=0)
+      return NULL;
+
+   size_t nchildren = ds_array_length (node->children);
+   for (size_t i=0; i<nchildren; i++) {
+      frm_node_t *child = ds_array_get (node->children, i);
+      if (!child) {
+         FRM_ERROR ("Possible corruption, indexing [%zu] of [%s]\n",
+                  i, node->name);
+         return NULL;
+      }
+
+      const frm_node_t *target = frm_node_find (child, &fpath[slen+1]);
+      if (target)
+         return target;
+   }
+   return NULL;
+}
+
 

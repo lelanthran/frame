@@ -12,6 +12,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <time.h>
 
 #include <unistd.h>
 
@@ -272,11 +273,18 @@ static void print_helpmsg (void)
 "  Display the status of the current node.",
 "",
 "push",
-"  Create a new node as the child of the current node. If a message is specified",
-"  with '--message=<string>' then it will be used as the contents of the new",
-"  node. If no message is specified with '--message=<string>' then $EDITOR will",
-"  be started to allow the user to enter a message. If $EDITOR is not set, the",
-"  user will be prompted for a message.",
+"  Create a new node as the child of the current node AND switches to it. If a",
+"  message is specified with '--message=<string>' then it will be used as the",
+"  contents of the new node. If no message is specified with '--message=<string>'",
+"  then $EDITOR will be started to allow the user to enter a message. If $EDITOR",
+"  is not set, the user will be prompted for a message.",
+"",
+"new",
+"  Create a new node as the child of the current node WITHOUT switching to it. If",
+"  a message is specified with '--message=<string>' then it will be used as the",
+"  contents of the new node. If no message is specified with '--message=<string>'",
+"  then $EDITOR will be started to allow the user to enter a message. If $EDITOR",
+"  is not set, the user will be prompted for a message.",
 "",
 "replace",
 "  Overwrite the content of the current node with the provided message. See ",
@@ -308,6 +316,9 @@ static void print_helpmsg (void)
 "list",
 "  Lists all descendents of the current node.",
 "",
+"tree",
+"  Display a tree of all the nodes starting at the root node.",
+"",
 "match <sterm> [--from-root] [--invert]",
 "  Lists the nodes that match the search term <sterm>, starting at the current",
 "  node. If '--from-root' is specified then the search is performed from the",
@@ -325,8 +336,8 @@ NULL,
 static void status (frm_t *frm)
 {
    char *current = frm_current (frm);
-   char *payload = frm_payload (frm);
-   char *mtime = frm_date_str (frm);
+   char *payload = frm_payload ();
+   char *mtime = frm_date_str ();
 
    printf ("Current frame\n   %s\n", current);
    printf ("\nNotes (%s)\n", mtime);
@@ -344,11 +355,54 @@ static void status (frm_t *frm)
 static void current (frm_t *frm)
 {
    char *current = frm_current (frm);
-   char *mtime = frm_date_str (frm);
+   char *mtime = frm_date_str ();
 
    printf ("%s: %s\n", current, mtime);
    free (current);
    free (mtime);
+}
+
+int print_tree (const frm_node_t *node, size_t level)
+{
+#define INDENT(x) for (size_t i=0; i<x; i++) {\
+   putchar (' ');\
+}\
+
+   if (!node) {
+      fprintf (stderr, "Internal error, accessing NULL object\n");
+      return EXIT_FAILURE;
+   }
+
+   const char *name = frm_node_name (node);
+   uint64_t date = frm_node_date (node);
+   char strdate[30];
+
+   if (!name) {
+      fprintf (stderr, "Internal error, node name missing\n");
+      return EXIT_FAILURE;
+   }
+   if (date == (uint64_t)-1) {
+      fprintf (stderr, "Internal error, node date missing\n");
+      return EXIT_FAILURE;
+   }
+
+   ctime_r ((time_t *)&date, strdate);
+   char *tmp = strchr (strdate, '\n');
+   if (tmp)
+   *tmp = 0;
+
+   INDENT(level); printf ("%s (%s)\n", name, strdate);
+
+   size_t nchildren = frm_node_nchildren (node);
+   for (size_t i=0; i<nchildren; i++) {
+      const frm_node_t *child = frm_node_child (node, i);
+      if ((print_tree (child, level + 3))!=EXIT_SUCCESS) {
+         fprintf (stderr, "Error printing child %zu of [%s]\n", i, name);
+         return EXIT_FAILURE;
+      }
+   }
+#undef INDENT
+   return EXIT_SUCCESS;
 }
 
 int main (int argc, char **argv)
@@ -510,6 +564,48 @@ int main (int argc, char **argv)
       goto cleanup;
    }
 
+   if ((strcmp (command, "new"))==0) {
+      char *name = cline_command_get(1);
+      if (!name || !name[0]) {
+         fprintf (stderr, "Must specify a name for the new frame\n");
+         free (name);
+         ret = EXIT_FAILURE;
+         goto cleanup;
+      }
+      char *message = cline_option_get ("message");
+      if (!message) {
+         char *current = frm_current (frm);
+         if (!current) {
+            fprintf (stderr, "Warning: Failed to get the current path\n");
+         }
+         char *fpath = ds_str_cat (current, "/", name, NULL);
+         message = run_editor (fpath);
+         free (fpath);
+         free (current);
+      }
+      if (!message) {
+         fprintf (stderr, "No edit message, aborting\n");
+         free (name);
+         ret = EXIT_FAILURE;
+         goto cleanup;
+      }
+
+      if (!(frm_new (frm, name, message))) {
+         fprintf (stderr, "Failed to create new frame\n");
+         free (name);
+         free (message);
+         ret = EXIT_FAILURE;
+         goto cleanup;
+      }
+      free (name);
+      free (message);
+      name = frm_current (frm);
+      printf ("Created new frame [%s]\n", name);
+      status(frm);
+      free (name);
+      goto cleanup;
+   }
+
    if ((strcmp (command, "replace"))==0) {
       char *message = cline_option_get ("message");
       if (!message) {
@@ -521,7 +617,7 @@ int main (int argc, char **argv)
          goto cleanup;
       }
 
-      if (!(frm_payload_replace (frm, message))) {
+      if (!(frm_payload_replace (message))) {
          fprintf (stderr, "Failed to replace message of current node: %m\n");
          ret = EXIT_FAILURE;
       }
@@ -536,7 +632,7 @@ int main (int argc, char **argv)
          ret = EXIT_FAILURE;
          goto cleanup;
       }
-      char *fname = frm_payload_fname (frm);
+      char *fname = frm_payload_fname ();
       if (!fname) {
          fprintf (stderr, "Failed to retrieve filename of current node: %m\n");
          ret = EXIT_FAILURE;
@@ -575,7 +671,7 @@ int main (int argc, char **argv)
          goto cleanup;
       }
 
-      if (!(frm_payload_append (frm, message))) {
+      if (!(frm_payload_append (message))) {
          fprintf (stderr, "Failed to append message to current node: %m\n");
          ret = EXIT_FAILURE;
       }
@@ -772,6 +868,18 @@ int main (int argc, char **argv)
       goto cleanup;
    }
 
+   if ((strcmp (command, "tree"))==0) {
+      frm_node_t *root = frm_node_create (frm);
+      if (!root) {
+         fprintf (stderr, "Failed to find root node\n");
+         ret = EXIT_FAILURE;
+         goto cleanup;
+      }
+
+      ret = print_tree (root, 0);
+      frm_node_free (root);
+      goto cleanup;
+   }
    // The default, with no arguments, is to print out the help message.
    // If we got to this point we have a command but it is unrecognised.
    fprintf (stderr, "Unrecognised command [%s]\n", command);
