@@ -66,7 +66,7 @@ object frmMain: TfrmMain
     Height = 454
     Top = 32
     Width = 1046
-    HorzScrollBar.Page = 904
+    HorzScrollBar.Page = 948
     HorzScrollBar.Tracking = True
     VertScrollBar.Page = 195
     Anchors = [akTop, akLeft, akRight, akBottom]
@@ -237,8 +237,7 @@ object frmMain: TfrmMain
               Left = 0
               Height = 17
               Top = 0
-              Width = 290
-              Anchors = [akTop, akLeft, akRight]
+              Width = 58
               Caption = 'Notes'
               TabOrder = 0
             end
@@ -258,9 +257,26 @@ object frmMain: TfrmMain
               Lines.Strings = (
                 ''
               )
+              OnChange = memoNotesChange
               OnEditingDone = memoNotesEditingDone
               ScrollBars = ssBoth
               TabOrder = 1
+            end
+            object stxtStatusChanged: TStaticText
+              AnchorSideTop.Control = PairSplitterSide4
+              AnchorSideRight.Control = PairSplitterSide4
+              AnchorSideRight.Side = asrBottom
+              Left = 96
+              Height = 17
+              Top = 0
+              Width = 194
+              Anchors = [akTop, akRight]
+              Caption = 'Notes Changed'
+              Color = clDefault
+              Font.Color = clRed
+              ParentFont = False
+              ParentColor = False
+              TabOrder = 2
             end
           end
         end

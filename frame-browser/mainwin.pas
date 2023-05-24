@@ -32,6 +32,7 @@ type
     StaticText2: TStaticText;
     StaticText3: TStaticText;
     edtCurrentFrame: TEdit;
+    stxtStatusChanged: TStaticText;
     tvFrames: TTreeView;
     procedure bbtnQuitClick(Sender: TObject);
     procedure edtSearchTermChange(Sender: TObject);
@@ -39,10 +40,11 @@ type
     procedure FormCreate(Sender: TObject);
     procedure lvHistorySelectItem(Sender: TObject; Item: TListItem;
       Selected: Boolean);
+    procedure memoNotesChange(Sender: TObject);
     procedure memoNotesEditingDone(Sender: TObject);
     procedure tvFramesSelectionChanged(Sender: TObject);
   private
-
+    notesChanged: Boolean;
   public
 
   end;
@@ -104,16 +106,25 @@ begin
   end;
 end;
 
+procedure TfrmMain.memoNotesChange(Sender: TObject);
+begin
+  frmMain.notesChanged:=true;
+  frmMain.stxtStatusChanged.Caption:='Frame notes changed';
+end;
+
 procedure TfrmMain.memoNotesEditingDone(Sender: TObject);
 var
  reply, boxStyle: Integer;
 begin
- boxStyle := MB_ICONQUESTION + MB_YESNO;
- reply := Application.MessageBox('Frame contents changed. Save Changes?', 'Contents Changed', BoxStyle);
- if reply = IDYES then
- begin
-   frm_payload_replace(PChar(frmMain.memoNotes.Text));
- end;
+  if frmMain.notesChanged = false then
+     Exit;
+
+  boxStyle := MB_ICONQUESTION + MB_YESNO;
+  reply := Application.MessageBox('Frame contents changed. Save Changes?', 'Contents Changed', BoxStyle);
+  if reply = IDYES then
+  begin
+    frm_payload_replace(PChar(frmMain.memoNotes.Text));
+  end;
 end;
 
 function TreeNodeFpath(node: TTreeNode): String;
@@ -147,6 +158,8 @@ begin
     frame_history_populate('', frmMain.lvHistory);
     frame_current_populate(frmMain.edtCurrentFrame);
     frame_notes_populate(frmMain.memoNotes);
+    frmMain.notesChanged:=false;
+    frmMain.stxtStatusChanged.Caption:= '';
   end;
 end;
 
