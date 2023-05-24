@@ -8,7 +8,7 @@
         <Filename Value="FrameBrowser.lpr"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="2"/>
-        <CursorPos Y="26"/>
+        <CursorPos Y="24"/>
         <UsageCount Value="103"/>
         <Loaded Value="True"/>
       </Unit>
@@ -20,8 +20,8 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="mainWin"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="133"/>
-        <CursorPos Y="162"/>
+        <TopLine Value="132"/>
+        <CursorPos X="55" Y="155"/>
         <UsageCount Value="103"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -31,8 +31,8 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="FrameWrapper"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="22"/>
-        <CursorPos X="24" Y="38"/>
+        <TopLine Value="61"/>
+        <CursorPos Y="89"/>
         <UsageCount Value="103"/>
         <Loaded Value="True"/>
       </Unit>
@@ -210,15 +210,6 @@
     </RunParams>
   </ProjectSession>
   <Debugging>
-    <BreakPoints>
-      <Item>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="mainwin.pas"/>
-        <Line Value="162"/>
-      </Item>
-    </BreakPoints>
     <Watches>
       <Item ClassAutoCast="True">
         <Expression Value="fpath"/>

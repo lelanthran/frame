@@ -21,7 +21,6 @@ begin
   Application.Initialize;
   Application.CreateForm(TfrmMain, frmMain);
   Application.Run;
-  Writeln('Application done');
   frm_close(frame_var);
 end.
 

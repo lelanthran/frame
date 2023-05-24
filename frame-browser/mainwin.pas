@@ -153,7 +153,6 @@ begin
   if ttnode <> nil then
   begin
     fpath := TreeNodeFpath(frmMain.tvFrames.Selected);
-    Writeln('Clicked: ', fpath);
     frm_switch_direct(frame_var, PChar(fpath));
     frame_history_populate('', frmMain.lvHistory);
     frame_current_populate(frmMain.edtCurrentFrame);
