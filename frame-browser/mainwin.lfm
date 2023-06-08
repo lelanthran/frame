@@ -195,6 +195,7 @@ object frmMain: TfrmMain
               Top = 45
               Width = 336
               Anchors = [akTop, akLeft, akRight, akBottom]
+              PopupMenu = ctxMenuCurrentFrame
               ReadOnly = True
               TabOrder = 1
               OnSelectionChanged = tvFramesSelectionChanged
@@ -281,6 +282,28 @@ object frmMain: TfrmMain
           end
         end
       end
+    end
+  end
+  object sbarStatus: TStatusBar
+    Left = 0
+    Height = 18
+    Top = 468
+    Width = 1046
+    Panels = <>
+    SimpleText = 'help'
+  end
+  object ctxMenuCurrentFrame: TPopupMenu
+    Left = 208
+    object MenuItem1: TMenuItem
+      Caption = 'Push Child Frame'
+      OnClick = MenuItem1Click
+    end
+    object MenuItem2: TMenuItem
+      Caption = 'Pop This Frame'
+      OnClick = MenuItem2Click
+    end
+    object MenuItem3: TMenuItem
+      Caption = 'Rename This Frame'
     end
   end
 end

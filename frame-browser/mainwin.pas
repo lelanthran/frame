@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
   StdCtrls, PairSplitter, Types, ComCtrls, TreeFilterEdit, CTypes, Cmem,
-  LCLType,
+  LCLType, Menus,
   FrameWrapper;
 
 type
@@ -20,6 +20,9 @@ type
     edtSearchTerm: TEdit;
     lvHistory: TListView;
     memoNotes: TMemo;
+    MenuItem1: TMenuItem;
+    MenuItem2: TMenuItem;
+    MenuItem3: TMenuItem;
     PairSplitter1: TPairSplitter;
     PairSplitter2: TPairSplitter;
     PairSplitterSide1: TPairSplitterSide;
@@ -28,10 +31,12 @@ type
     PairSplitterSide4: TPairSplitterSide;
     Panel1: TPanel;
     Panel2: TScrollBox;
+    ctxMenuCurrentFrame: TPopupMenu;
     StaticText1: TStaticText;
     StaticText2: TStaticText;
     StaticText3: TStaticText;
     edtCurrentFrame: TEdit;
+    sbarStatus: TStatusBar;
     stxtStatusChanged: TStaticText;
     tvFrames: TTreeView;
     procedure bbtnQuitClick(Sender: TObject);
@@ -42,6 +47,8 @@ type
       Selected: Boolean);
     procedure memoNotesChange(Sender: TObject);
     procedure memoNotesEditingDone(Sender: TObject);
+    procedure MenuItem1Click(Sender: TObject);
+    procedure MenuItem2Click(Sender: TObject);
     procedure tvFramesSelectionChanged(Sender: TObject);
   private
     notesChanged: Boolean;
@@ -70,6 +77,17 @@ var
 begin
   sterm := frmMain.edtSearchTerm.Caption;
   frame_history_populate (sterm, frmMain.lvHistory);
+end;
+
+procedure FrameReopen();
+begin
+  frm_close(frame_var);
+  frame_var := frm_init('/home/lelanthran/.framedb');
+  frame_history_populate('', frmMain.lvHistory);
+  frame_current_populate(frmMain.edtCurrentFrame);
+  frame_notes_populate(frmMain.memoNotes);
+  frame_frames_populate(frmMain.tvFrames);
+  frame_set_frames_selected(frmMain.tvFrames, frmMain.edtCurrentFrame);
 end;
 
 procedure TfrmMain.FormActivate(Sender: TObject);
@@ -112,6 +130,11 @@ begin
   frmMain.stxtStatusChanged.Caption:='Frame notes changed';
 end;
 
+procedure Alert(message: String);
+begin
+   ShowMessage(message);
+end;
+
 procedure TfrmMain.memoNotesEditingDone(Sender: TObject);
 var
  reply, boxStyle: Integer;
@@ -124,6 +147,30 @@ begin
   if reply = IDYES then
   begin
     frm_payload_replace(PChar(frmMain.memoNotes.Text));
+  end;
+end;
+
+procedure TfrmMain.MenuItem1Click(Sender: TObject);
+begin
+  frmMain.sbarStatus.SimpleText:='Pushing new frame';
+  if frm_push(frame_var, 'New Frame', 'Enter Contents for new frame') <> true then
+  begin
+    Alert('failed to push new frame');
+  end else
+  begin
+    FrameReopen();
+  end;
+end;
+
+procedure TfrmMain.MenuItem2Click(Sender: TObject);
+begin
+  frmMain.sbarStatus.SimpleText:='Popping current frame';
+  if frm_pop(frame_var, false) <> true then
+  begin
+       Alert('failed to pop frame');
+  end else
+  begin
+    FrameReopen();
   end;
 end;
 
