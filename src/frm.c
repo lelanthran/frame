@@ -34,6 +34,8 @@ struct frm_t {
 
 #define REMOVEME FRM_ERROR
 
+static const char *lockfile = "framedb.lock";
+
 /* ********************************************************** */
 /* ********************************************************** */
 /* ********************************************************** */
@@ -571,7 +573,9 @@ char *frm_readfile (const char *name)
 {
    FILE *inf = fopen (name, "r");
    if (!inf) {
-      FRM_ERROR ("Failed to open [%s] for reading: %m\n", name);
+      // Commenting this out - caller must print out the fname of the failing
+      // frm_readfile(fname) call.
+      // FRM_ERROR ("Failed to open [%s] for reading: %m\n", name);
       return NULL;
    }
 
@@ -687,6 +691,12 @@ frm_t *frm_init (const char *dbpath)
       goto cleanup;
    }
 
+   int fd = -1;
+   if ((fd = open (lockfile, O_CREAT|O_EXCL, S_IRWXU))<0) {
+      FRM_ERROR ("Error: Failed to create lockfile: %m\n");
+      goto cleanup;
+   }
+
    // TODO: replace this with frm_history
    history = frm_readfile ("history");
    frame = NULL;
@@ -739,6 +749,18 @@ void frm_close (frm_t *frm)
    }
 
    popdir (&frm->olddir);
+   if ((chdir (frm->dbpath))!=0) {
+      FRM_ERROR ("Error: Failed to switch to dbpath [%s]: %m\n", frm->dbpath);
+      FRM_ERROR ("Warning: lockfile must be maually deleted [%s/%s]\n",
+               frm->dbpath, lockfile);
+   } else {
+      if ((remove (lockfile))!=0) {
+         FRM_ERROR ("Error: Failed to remove [%s/%s]\n", frm->dbpath, lockfile);
+         FRM_ERROR ("Warning: lockfile must be maually deleted [%s/%s]\n",
+               frm->dbpath, lockfile);
+      }
+   }
+
    free (frm->dbpath);
    free (frm);
 }
