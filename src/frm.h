@@ -54,6 +54,7 @@ extern "C" {
    char *frm_payload (void);
    uint64_t frm_date_epoch (void);
    char *frm_date_str (void);
+   const char *frm_lastmsg (frm_t *frm);
 
    /* Add/create information: new frame (new creates a new one and then
     * returns, push creates a new one and switches to it), replace the

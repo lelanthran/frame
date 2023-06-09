@@ -25,6 +25,7 @@ var frame_var: frm_t;
     function frm_payload: PAnsiChar; cdecl; external 'frame';
     function frm_date_epoch: UInt64; cdecl; external 'frame';
     function frm_date_str: PAnsiChar; cdecl; external 'frame';
+    function frm_lastmsg(frm: frm_t): PAnsiChar; cdecl; external 'frame';
 
     function frm_new(frm: frm_t; name, message: PAnsiChar): LongBool; cdecl; external 'frame';
     function frm_push(frm: frm_t; name, message: PAnsiChar): LongBool; cdecl; external 'frame';
@@ -40,6 +41,7 @@ var frame_var: frm_t;
     function frm_back(frm: frm_t; index: csize_t): LongBool; cdecl; external 'frame';
     function frm_delete(frm: frm_t; target: PAnsiChar): LongBool; cdecl; external 'frame';
     function frm_pop(frm: frm_t; force: LongBool): LongBool; cdecl; external 'frame';
+    function frm_rename(frm: frm_t; newname: PAnsiChar): LongBool; cdecl; external 'frame';
 
     function frm_list(frm: frm_t; from: PAnsiChar): PPAnsiChar; cdecl; external 'frame';
     function frm_match(frm: frm_t; sterm: PAnsiChar; flags: LongWord): PPAnsiChar; cdecl; external 'frame';

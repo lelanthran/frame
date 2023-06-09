@@ -49,6 +49,9 @@ type
     procedure memoNotesEditingDone(Sender: TObject);
     procedure MenuItem1Click(Sender: TObject);
     procedure MenuItem2Click(Sender: TObject);
+    procedure MenuItem3Click(Sender: TObject);
+    procedure tvFramesEditingEnd(Sender: TObject; Node: TTreeNode;
+      Cancel: Boolean);
     procedure tvFramesSelectionChanged(Sender: TObject);
   private
     notesChanged: Boolean;
@@ -168,6 +171,33 @@ begin
   if frm_pop(frame_var, false) <> true then
   begin
        Alert('failed to pop frame');
+  end else
+  begin
+    FrameReopen();
+  end;
+end;
+
+procedure TfrmMain.MenuItem3Click(Sender: TObject);
+var
+ node: TTreeNode;
+begin
+  frmMain.sbarStatus.SimpleText:='Renaming current frame';
+  node := frmMain.tvFrames.Selected;
+  node.EditText();
+end;
+
+procedure TfrmMain.tvFramesEditingEnd(Sender: TObject; Node: TTreeNode;
+  Cancel: Boolean);
+var
+  newname: String;
+begin
+  if Cancel = true then
+     Exit();
+
+  newname := Node.Text;
+  if frm_rename(frame_var, PChar(newname)) <> true then
+  begin
+    Alert('Failed to rename node' + frm_lastmsg(frame_var));
   end else
   begin
     FrameReopen();

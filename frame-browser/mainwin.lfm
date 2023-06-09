@@ -1,7 +1,7 @@
 object frmMain: TfrmMain
-  Left = 537
+  Left = 472
   Height = 486
-  Top = 206
+  Top = 234
   Width = 1046
   Caption = 'Frame Browser'
   ClientHeight = 486
@@ -196,10 +196,9 @@ object frmMain: TfrmMain
               Width = 336
               Anchors = [akTop, akLeft, akRight, akBottom]
               PopupMenu = ctxMenuCurrentFrame
-              ReadOnly = True
               TabOrder = 1
+              OnEditingEnd = tvFramesEditingEnd
               OnSelectionChanged = tvFramesSelectionChanged
-              Options = [tvoAutoItemHeight, tvoHideSelection, tvoKeepCollapsedNodes, tvoReadOnly, tvoShowButtons, tvoShowLines, tvoShowRoot, tvoToolTips, tvoThemedDraw]
               Items.Data = {
                 F9FFFFFF020001000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF010000000000
                 000001050000004974656D30FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF01000000
@@ -304,6 +303,7 @@ object frmMain: TfrmMain
     end
     object MenuItem3: TMenuItem
       Caption = 'Rename This Frame'
+      OnClick = MenuItem3Click
     end
   end
 end
