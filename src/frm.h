@@ -75,6 +75,7 @@ extern "C" {
    bool frm_back (frm_t *frm, size_t index);
    bool frm_delete (frm_t *frm, const char *target);
    bool frm_pop (frm_t *frm, bool force);
+   bool frm_rename (frm_t *frm, const char *newname);
 
    /* Search/listing functions.
     */

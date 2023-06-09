@@ -1,10 +1,10 @@
 #!/bin/bash
 
 export DBPATH=/tmp/frame/
-export PROG="./debug/bin/x86_64-linux-gnu/frame.elf --quiet"
+export PROG="./recent/bin/x86_64-linux-gnu/frame.elf --quiet"
 
 if [ ! -z "$VG" ]; then
-   export VG="valgrind --leak-check=full --show-leak-kinds=all --error-exitcode=1"
+   export VG="valgrind -q --leak-check=full --show-leak-kinds=all --error-exitcode=1"
 fi
 
 die () {
@@ -163,6 +163,10 @@ execute $PROG match "one/egh" > t
 if [ `wc -l t | cut -f 1 -d \   ` -ne 1 ]; then
    die expected failed match
 fi
+
+# Rename root/one
+execute $PROG rename 'ONE' || die failed rename
+# Current node is root/ONE
 
 execute $PROG match --from-root "one/ei" || die failed match
 

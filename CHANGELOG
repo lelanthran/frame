@@ -4,6 +4,7 @@ v0.1.3 - ???
    frame.
 3. Adds a gui program, FrameBrowser, for easy navigation and editing of
    frames.
+4. Adds 'rename' command.
 
 v0.1.2 - Fri 05 May 2023 22:02:07 SAST
 

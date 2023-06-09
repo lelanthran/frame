@@ -1191,7 +1191,7 @@ bool frm_switch_direct (frm_t *frm, const char *target)
 
    char *pwd = get_path (frm);
    if (!(history_append (frm->dbpath, pwd))) {
-      FRM_ERROR ("Failed to set the working frame to [root]\n");
+      FRM_ERROR ("Failed to append history: [%s]\n", pwd);
       free (suffixed);
       free (pwd);
       return false;
@@ -1308,6 +1308,43 @@ bool frm_pop (frm_t *frm, bool force)
    }
 
    free (oldpath);
+   return true;
+}
+
+bool frm_rename (frm_t *frm, const char *newname)
+{
+   if (!frm) {
+      FRM_ERROR ("Error: null object passed for frm_t\n");
+      errno = EINVAL;
+      return false;
+   }
+
+   char *current_name = frm_current(frm);
+   if (!current_name) {
+      FRM_ERROR ("OOM error retrieving current frame path\n");
+      return false;
+   }
+
+   const char *oldname = &current_name[strlen("root/")];
+
+   if (!(frm_up (frm))) {
+      FRM_ERROR ("Error: Failed to switch to parent directory [%s/..]\n", oldname);
+      free (current_name);
+      return false;
+   }
+
+   if ((rename (oldname, newname))!=0) {
+      FRM_ERROR ("Error: failed to rename [%s] to [%s]\n", oldname, newname);
+      free (current_name);
+      return false;
+   }
+   free (current_name);
+
+   if (!(frm_down(frm, newname))) {
+      FRM_ERROR ("Error: cannot switch to renamed frame [%s]\n", newname);
+      return false;
+   }
+
    return true;
 }
 

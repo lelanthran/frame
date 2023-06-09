@@ -325,6 +325,9 @@ static void print_helpmsg (void)
 "tree",
 "  Display a tree of all the nodes starting at the root frame.",
 "",
+"rename <newname>",
+"  Rename the current node to <newname>.",
+"",
 "match <sterm> [--from-root] [--invert]",
 "  Lists the nodes that match the search term <sterm>, starting at the current",
 "  frame. If '--from-root' is specified then the search is performed from the",
@@ -897,6 +900,25 @@ int main (int argc, char **argv)
 
       ret = print_tree (root, 0);
       frm_node_free (root);
+      goto cleanup;
+   }
+
+   if ((strcmp (command, "rename"))==0) {
+      char *newname = cline_command_get(1);
+      if (!newname || !newname[0]) {
+         fprintf (stderr, "Must specify a new name for the current node\n");
+         free (newname);
+         ret = EXIT_FAILURE;
+         goto cleanup;
+      }
+      if (!(frm_rename (frm, newname))) {
+         fprintf (stderr, "Failed to rename frame to [%s]\n", newname);
+         ret = EXIT_FAILURE;
+      }
+      free (newname);
+      if (ret == EXIT_SUCCESS) {
+         status (frm);
+      }
       goto cleanup;
    }
    // The default, with no arguments, is to print out the help message.

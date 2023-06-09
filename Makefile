@@ -259,8 +259,10 @@ debug:	CXXFLAGS+= -ggdb -DDEBUG
 debug:	$(SWIG_WRAPPERS)
 debug:	all
 
-release:	CFLAGS+= -O3
-release:	CXXFLAGS+= -O3
+release:	CFLAGS+= -O3 -fsanitize=address -fsanitize=undefined -fsanitize=leak
+release:	CXXFLAGS+= -O3 -fsanitize=address -fsanitize=undefined -fsanitize=leak
+release:	LDFLAGS+= -fsanitize=address -fsanitize=undefined -fsanitize=leak
+
 debug:	$(SWIG_WRAPPERS)
 release:	all
 
@@ -291,6 +293,8 @@ real-help:
 
 
 real-all:	$(OUTDIRS) $(DYNLIB) $(STCLIB) $(BINPROGS)
+	@unlink ./recent &> /dev/null
+	@ln -s $(OUTDIR) ./recent
 
 all:	$(SWIG_WRAPPERS) real-all
 	@$(ECHO) "[$(CYAN)Soft linking$(NONE)]    [$(STCLNK_TARGET)]"
