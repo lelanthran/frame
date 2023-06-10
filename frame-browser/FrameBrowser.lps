@@ -9,7 +9,7 @@
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="2"/>
         <CursorPos X="64" Y="11"/>
-        <UsageCount Value="152"/>
+        <UsageCount Value="153"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -20,9 +20,9 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="mainWin"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="58"/>
-        <CursorPos Y="77"/>
-        <UsageCount Value="152"/>
+        <TopLine Value="205"/>
+        <CursorPos X="10" Y="223"/>
+        <UsageCount Value="153"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -31,9 +31,9 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="FrameWrapper"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="20"/>
-        <CursorPos X="14" Y="32"/>
-        <UsageCount Value="152"/>
+        <TopLine Value="24"/>
+        <CursorPos X="61" Y="151"/>
+        <UsageCount Value="153"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -81,104 +81,24 @@
         <CursorPos Y="11"/>
         <UsageCount Value="15"/>
       </Unit>
+      <Unit>
+        <Filename Value="/usr/share/lazarus/2.2.6/lcl/lcltype.pp"/>
+        <UnitName Value="LCLType"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="637"/>
+        <CursorPos X="3" Y="654"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="/usr/share/fpcsrc/3.2.2/rtl/linux/system.pp"/>
+        <UnitName Value="System"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="22"/>
+        <CursorPos Y="22"/>
+        <UsageCount Value="10"/>
+      </Unit>
     </Units>
-    <JumpHistory HistoryIndex="29">
-      <Position>
-        <Filename Value="mainwin.pas"/>
-        <Caret Line="172" Column="59" TopLine="138"/>
-      </Position>
-      <Position>
-        <Filename Value="mainwin.pas"/>
-        <Caret Line="138" Column="53" TopLine="136"/>
-      </Position>
-      <Position>
-        <Filename Value="mainwin.pas"/>
-        <Caret Line="143" Column="58" TopLine="136"/>
-      </Position>
-      <Position>
-        <Filename Value="mainwin.pas"/>
-        <Caret Line="141" Column="63" TopLine="115"/>
-      </Position>
-      <Position>
-        <Filename Value="mainwin.pas"/>
-        <Caret Line="139" Column="9" TopLine="122"/>
-      </Position>
-      <Position>
-        <Filename Value="mainwin.pas"/>
-        <Caret Line="123" Column="34" TopLine="107"/>
-      </Position>
-      <Position>
-        <Filename Value="mainwin.pas"/>
-        <Caret Line="172" Column="19" TopLine="146"/>
-      </Position>
-      <Position>
-        <Filename Value="mainwin.pas"/>
-        <Caret Line="171" Column="31" TopLine="147"/>
-      </Position>
-      <Position>
-        <Filename Value="mainwin.pas"/>
-        <Caret Line="182" Column="3" TopLine="155"/>
-      </Position>
-      <Position>
-        <Filename Value="framewrapper.pas"/>
-        <Caret Line="43" Column="55" TopLine="13"/>
-      </Position>
-      <Position>
-        <Filename Value="mainwin.pas"/>
-        <Caret Line="184" Column="18" TopLine="167"/>
-      </Position>
-      <Position>
-        <Filename Value="mainwin.pas"/>
-        <Caret Line="193" Column="26" TopLine="169"/>
-      </Position>
-      <Position>
-        <Filename Value="mainwin.pas"/>
-        <Caret Line="200" Column="19" TopLine="169"/>
-      </Position>
-      <Position>
-        <Filename Value="mainwin.pas"/>
-        <Caret Line="195" Column="48" TopLine="178"/>
-      </Position>
-      <Position>
-        <Filename Value="mainwin.pas"/>
-        <Caret Line="200" Column="51" TopLine="173"/>
-      </Position>
-      <Position>
-        <Filename Value="framewrapper.pas"/>
-        <Caret Line="29" TopLine="13"/>
-      </Position>
-      <Position>
-        <Filename Value="mainwin.pas"/>
-        <Caret Line="139" Column="57" TopLine="132"/>
-      </Position>
-      <Position>
-        <Filename Value="FrameBrowser.lpr"/>
-        <Caret Line="24"/>
-      </Position>
-      <Position>
-        <Filename Value="mainwin.pas"/>
-        <Caret Line="96" Column="14" TopLine="76"/>
-      </Position>
-      <Position>
-        <Filename Value="mainwin.pas"/>
-        <Caret Line="88" Column="37" TopLine="71"/>
-      </Position>
-      <Position>
-        <Filename Value="mainwin.pas"/>
-        <Caret Line="89" Column="21" TopLine="72"/>
-      </Position>
-      <Position>
-        <Filename Value="mainwin.pas"/>
-        <Caret Line="179" Column="19" TopLine="145"/>
-      </Position>
-      <Position>
-        <Filename Value="mainwin.pas"/>
-        <Caret Line="100" Column="26" TopLine="90"/>
-      </Position>
-      <Position>
-        <Filename Value="mainwin.pas"/>
-        <Caret Line="122" Column="10" TopLine="97"/>
-      </Position>
+    <JumpHistory HistoryIndex="27">
       <Position>
         <Filename Value="mainwin.pas"/>
         <Caret Line="98" TopLine="91"/>
@@ -202,6 +122,94 @@
       <Position>
         <Filename Value="mainwin.pas"/>
         <Caret Line="77" TopLine="58"/>
+      </Position>
+      <Position>
+        <Filename Value="mainwin.pas"/>
+        <Caret Line="191" Column="46" TopLine="169"/>
+      </Position>
+      <Position>
+        <Filename Value="mainwin.pas"/>
+        <Caret Line="190" TopLine="173"/>
+      </Position>
+      <Position>
+        <Filename Value="mainwin.pas"/>
+        <Caret Line="189" TopLine="173"/>
+      </Position>
+      <Position>
+        <Filename Value="mainwin.pas"/>
+        <Caret Line="111" TopLine="94"/>
+      </Position>
+      <Position>
+        <Filename Value="mainwin.pas"/>
+        <Caret Line="112" TopLine="94"/>
+      </Position>
+      <Position>
+        <Filename Value="mainwin.pas"/>
+        <Caret Line="113" TopLine="94"/>
+      </Position>
+      <Position>
+        <Filename Value="mainwin.pas"/>
+        <Caret Line="189" TopLine="172"/>
+      </Position>
+      <Position>
+        <Filename Value="mainwin.pas"/>
+        <Caret Line="111" TopLine="94"/>
+      </Position>
+      <Position>
+        <Filename Value="mainwin.pas"/>
+        <Caret Line="112" TopLine="94"/>
+      </Position>
+      <Position>
+        <Filename Value="mainwin.pas"/>
+        <Caret Line="113" TopLine="94"/>
+      </Position>
+      <Position>
+        <Filename Value="mainwin.pas"/>
+        <Caret Line="97" TopLine="90"/>
+      </Position>
+      <Position>
+        <Filename Value="mainwin.pas"/>
+        <Caret Line="112" TopLine="90"/>
+      </Position>
+      <Position>
+        <Filename Value="mainwin.pas"/>
+        <Caret Line="189" TopLine="172"/>
+      </Position>
+      <Position>
+        <Filename Value="mainwin.pas"/>
+        <Caret Line="260" Column="32" TopLine="234"/>
+      </Position>
+      <Position>
+        <Filename Value="mainwin.pas"/>
+        <Caret Line="57" TopLine="39"/>
+      </Position>
+      <Position>
+        <Filename Value="mainwin.pas"/>
+        <Caret Line="240" Column="39" TopLine="234"/>
+      </Position>
+      <Position>
+        <Filename Value="mainwin.pas"/>
+        <Caret Line="238" Column="11" TopLine="221"/>
+      </Position>
+      <Position>
+        <Filename Value="mainwin.pas"/>
+        <Caret Line="245" Column="38" TopLine="221"/>
+      </Position>
+      <Position>
+        <Filename Value="mainwin.pas"/>
+        <Caret Line="243" Column="19" TopLine="226"/>
+      </Position>
+      <Position>
+        <Filename Value="mainwin.pas"/>
+        <Caret Line="244" Column="19" TopLine="227"/>
+      </Position>
+      <Position>
+        <Filename Value="mainwin.pas"/>
+        <Caret Line="245" Column="19" TopLine="228"/>
+      </Position>
+      <Position>
+        <Filename Value="mainwin.pas"/>
+        <Caret Line="251" Column="19" TopLine="234"/>
       </Position>
     </JumpHistory>
     <RunParams>

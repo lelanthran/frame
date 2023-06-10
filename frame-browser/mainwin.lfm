@@ -198,6 +198,7 @@ object frmMain: TfrmMain
               PopupMenu = ctxMenuCurrentFrame
               TabOrder = 1
               OnEditingEnd = tvFramesEditingEnd
+              OnKeyDown = tvFramesKeyDown
               OnSelectionChanged = tvFramesSelectionChanged
               Items.Data = {
                 F9FFFFFF020001000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF010000000000
@@ -304,6 +305,13 @@ object frmMain: TfrmMain
     object MenuItem3: TMenuItem
       Caption = 'Rename This Frame'
       OnClick = MenuItem3Click
+    end
+    object Separator1: TMenuItem
+      Caption = '-'
+    end
+    object MenuItem4: TMenuItem
+      Caption = 'Pop Frame and All Children'
+      OnClick = MenuItem4Click
     end
   end
 end

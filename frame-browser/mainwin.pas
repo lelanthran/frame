@@ -23,6 +23,7 @@ type
     MenuItem1: TMenuItem;
     MenuItem2: TMenuItem;
     MenuItem3: TMenuItem;
+    MenuItem4: TMenuItem;
     PairSplitter1: TPairSplitter;
     PairSplitter2: TPairSplitter;
     PairSplitterSide1: TPairSplitterSide;
@@ -32,6 +33,7 @@ type
     Panel1: TPanel;
     Panel2: TScrollBox;
     ctxMenuCurrentFrame: TPopupMenu;
+    Separator1: TMenuItem;
     StaticText1: TStaticText;
     StaticText2: TStaticText;
     StaticText3: TStaticText;
@@ -50,8 +52,11 @@ type
     procedure MenuItem1Click(Sender: TObject);
     procedure MenuItem2Click(Sender: TObject);
     procedure MenuItem3Click(Sender: TObject);
+    procedure MenuItem4Click(Sender: TObject);
     procedure tvFramesEditingEnd(Sender: TObject; Node: TTreeNode;
       Cancel: Boolean);
+    procedure tvFramesKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState
+      );
     procedure tvFramesSelectionChanged(Sender: TObject);
   private
     notesChanged: Boolean;
@@ -109,7 +114,6 @@ end;
 
 procedure FrameReopen();
 begin
-  frm_close(frame_var);
   FrameInit('/home/lelanthran/.framedb');
   frame_history_populate('', frmMain.lvHistory);
   frame_current_populate(frmMain.edtCurrentFrame);
@@ -187,6 +191,8 @@ begin
   end else
   begin
     FrameReopen();
+    frmMain.tvFrames.Selected := frmMain.tvFrames.Items.FindNodeWithTextPath(frmMain.edtCurrentFrame.Caption);
+    frmMain.tvFrames.Selected.EditText;
   end;
 end;
 
@@ -211,6 +217,18 @@ begin
   node.EditText();
 end;
 
+procedure TfrmMain.MenuItem4Click(Sender: TObject);
+begin
+  frmMain.sbarStatus.SimpleText:='Recursively popping current frame';
+  if frm_pop(frame_var, true) <> true then
+  begin
+       Alert('failed to force pop frame:' + sLineBreak + frm_lastmsg(frame_var));
+  end else
+  begin
+    FrameReopen();
+  end;
+end;
+
 procedure TfrmMain.tvFramesEditingEnd(Sender: TObject; Node: TTreeNode;
   Cancel: Boolean);
 var
@@ -228,6 +246,21 @@ begin
     FrameReopen();
   end;
 end;
+
+procedure TfrmMain.tvFramesKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if key = VK_F2 then
+  begin
+    frmMain.tvFrames.Selected.EditText;
+  end;
+
+  if key = VK_LCL_ALT then
+  begin
+    frmMain.ctxMenuCurrentFrame.PopUp;
+  end;
+end;
+
 
 function TreeNodeFpath(node: TTreeNode): String;
 var
