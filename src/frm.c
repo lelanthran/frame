@@ -1401,13 +1401,26 @@ bool frm_rename (frm_t *frm, const char *newname)
       free (current_name);
       return false;
    }
+
+   if (!(index_remove (frm->dbpath, current_name))) {
+      ERR (frm, "Warning: failed to remove [%s] from index\n", current_name);
+   }
    free (current_name);
 
    if (!(frm_down(frm, newname))) {
-      ERR (frm, "Error: cannot switch to renamed frame [%s]: %m\n", newname);
+      ERR (frm, "Warning: cannot switch to renamed frame [%s]: %m\n", newname);
       return false;
    }
 
+   current_name = frm_current(frm);
+   if (!current_name) {
+      ERR (frm, "OOM error retrieving current frame path\n");
+      return false;
+   }
+
+   if (!(index_add(frm->dbpath, current_name))) {
+      ERR (frm, "Warning: failed to add [%s] to index\n", current_name);
+   }
    return true;
 }
 

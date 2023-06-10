@@ -136,6 +136,7 @@ end;
 procedure Alert(message: String);
 begin
    ShowMessage(message);
+   frmMain.sbarStatus.SimpleText:=frm_lastmsg(frame_var);
 end;
 
 procedure TfrmMain.memoNotesEditingDone(Sender: TObject);
@@ -158,7 +159,7 @@ begin
   frmMain.sbarStatus.SimpleText:='Pushing new frame';
   if frm_push(frame_var, 'New Frame', 'Enter Contents for new frame') <> true then
   begin
-    Alert('failed to push new frame');
+    Alert('failed to push new frame:' + sLineBreak + frm_lastmsg(frame_var));
   end else
   begin
     FrameReopen();
@@ -170,7 +171,7 @@ begin
   frmMain.sbarStatus.SimpleText:='Popping current frame';
   if frm_pop(frame_var, false) <> true then
   begin
-       Alert('failed to pop frame');
+       Alert('failed to pop frame:' + sLineBreak + frm_lastmsg(frame_var));
   end else
   begin
     FrameReopen();
@@ -197,7 +198,7 @@ begin
   newname := Node.Text;
   if frm_rename(frame_var, PChar(newname)) <> true then
   begin
-    Alert('Failed to rename node' + frm_lastmsg(frame_var));
+    Alert('Failed to rename node:' + sLineBreak + frm_lastmsg(frame_var));
   end else
   begin
     FrameReopen();
