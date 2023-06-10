@@ -4,7 +4,7 @@ Executing 1: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet status
 Current frame
    root
 
-Notes (Sat Jun 10 10:28:22 2023)
+Notes 
    ENTER YOUR NOTES HERE
 
 Executing 2: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet history
@@ -16,7 +16,7 @@ Executing 4: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet status
 Current frame
    root
 
-Notes (Sat Jun 10 10:28:22 2023)
+Notes 
    Root:
 
 Executing 5: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet history
@@ -29,7 +29,7 @@ Executing 7: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet status
 Current frame
    root/one
 
-Notes (Sat Jun 10 10:28:22 2023)
+Notes 
    One:
 
 Executing 8: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet history
@@ -40,12 +40,12 @@ Frame history
 Executing 9: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet append --message=
 Message: 1
 
-root/one: Sat Jun 10 10:28:22 2023
+root/one: Sat Jun 10 12:36:55 2023
 Executing 10: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet status
 Current frame
    root/one
 
-Notes (Sat Jun 10 10:28:22 2023)
+Notes 
    One:
    \nMessage:
 
@@ -58,14 +58,14 @@ Executing 12: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet up
 Current frame
    root
 
-Notes (Sat Jun 10 10:28:22 2023)
+Notes 
    Root:
 
 Executing 13: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet status
 Current frame
    root
 
-Notes (Sat Jun 10 10:28:22 2023)
+Notes 
    Root:
 
 Executing 14: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet history
@@ -80,7 +80,7 @@ Executing 16: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet status
 Current frame
    root/two
 
-Notes (Sat Jun 10 10:28:22 2023)
+Notes 
    Two:
 
 Executing 17: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet history
@@ -94,14 +94,14 @@ Executing 18: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet top
 Current frame
    root
 
-Notes (Sat Jun 10 10:28:22 2023)
+Notes 
    Root:
 
 Executing 19: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet down one
 Current frame
    root/one
 
-Notes (Sat Jun 10 10:28:22 2023)
+Notes 
    One:
    \nMessage:
 
@@ -109,7 +109,7 @@ Executing 20: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet status
 Current frame
    root/one
 
-Notes (Sat Jun 10 10:28:22 2023)
+Notes 
    One:
    \nMessage:
 
@@ -126,7 +126,7 @@ Executing 22: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet back 1
 Current frame
    root/one
 
-Notes (Sat Jun 10 10:28:22 2023)
+Notes 
    One:
    \nMessage:
 
@@ -134,7 +134,7 @@ Executing 23: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet status
 Current frame
    root/one
 
-Notes (Sat Jun 10 10:28:22 2023)
+Notes 
    One:
    \nMessage:
 
@@ -152,7 +152,7 @@ Executing 25: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet back 1
 Current frame
    root/one
 
-Notes (Sat Jun 10 10:28:22 2023)
+Notes 
    One:
    \nMessage:
 
@@ -160,7 +160,7 @@ Executing 26: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet status
 Current frame
    root/one
 
-Notes (Sat Jun 10 10:28:22 2023)
+Notes 
    One:
    \nMessage:
 
@@ -181,7 +181,7 @@ Executing 29: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet status
 Current frame
    root/one/three
 
-Notes (Sat Jun 10 10:28:22 2023)
+Notes 
    three:
 
 Executing 30: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet history
@@ -200,7 +200,7 @@ Executing 31: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet pop
 Current frame
    root/one
 
-Notes (Sat Jun 10 10:28:22 2023)
+Notes 
    One:
    \nMessage:
 
@@ -208,7 +208,7 @@ Executing 32: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet status
 Current frame
    root/one
 
-Notes (Sat Jun 10 10:28:22 2023)
+Notes 
    One:
    \nMessage:
 
@@ -231,7 +231,7 @@ Executing 35: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet status
 Current frame
    root/one/four
 
-Notes (Sat Jun 10 10:28:22 2023)
+Notes 
    four:
 
 Executing 36: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet history
@@ -251,14 +251,14 @@ Executing 37: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet delete root/two
 Current frame
    root/one/four
 
-Notes (Sat Jun 10 10:28:22 2023)
+Notes 
    four:
 
 Executing 38: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet status
 Current frame
    root/one/four
 
-Notes (Sat Jun 10 10:28:22 2023)
+Notes 
    four:
 
 Executing 39: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet history
@@ -278,14 +278,14 @@ Executing 40: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet top
 Current frame
    root
 
-Notes (Sat Jun 10 10:28:22 2023)
+Notes 
    Root:
 
 Executing 41: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet status
 Current frame
    root
 
-Notes (Sat Jun 10 10:28:22 2023)
+Notes 
    Root:
 
 Executing 42: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet history
@@ -307,7 +307,7 @@ Executing 44: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet up
 Current frame
    root
 
-Notes (Sat Jun 10 10:28:22 2023)
+Notes 
    Root:
 
 Executing 45: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet push six --message=six: six
@@ -316,7 +316,7 @@ Executing 46: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet up
 Current frame
    root
 
-Notes (Sat Jun 10 10:28:22 2023)
+Notes 
    Root:
 
 Executing 47: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet push seven --message=seven: seven
@@ -325,7 +325,7 @@ Executing 48: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet up
 Current frame
    root
 
-Notes (Sat Jun 10 10:28:22 2023)
+Notes 
    Root:
 
 Executing 49: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet push eight --message=eight: eight
@@ -334,7 +334,7 @@ Executing 50: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet up
 Current frame
    root
 
-Notes (Sat Jun 10 10:28:22 2023)
+Notes 
    Root:
 
 Executing 51: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet push eighteen --message=eight: eight
@@ -343,7 +343,7 @@ Executing 52: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet up
 Current frame
    root
 
-Notes (Sat Jun 10 10:28:22 2023)
+Notes 
    Root:
 
 Executing 53: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet push eighty --message=eight: eight
@@ -352,14 +352,14 @@ Executing 54: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet up
 Current frame
    root
 
-Notes (Sat Jun 10 10:28:22 2023)
+Notes 
    Root:
 
 Executing 55: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet down one
 Current frame
    root/one
 
-Notes (Sat Jun 10 10:28:22 2023)
+Notes 
    One:
    \nMessage:
 
@@ -369,7 +369,7 @@ Executing 57: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet up
 Current frame
    root/one
 
-Notes (Sat Jun 10 10:28:22 2023)
+Notes 
    One:
    \nMessage:
 
@@ -379,7 +379,7 @@ Executing 59: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet up
 Current frame
    root/one
 
-Notes (Sat Jun 10 10:28:22 2023)
+Notes 
    One:
    \nMessage:
 
@@ -389,7 +389,7 @@ Executing 61: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet up
 Current frame
    root/one
 
-Notes (Sat Jun 10 10:28:22 2023)
+Notes 
    One:
    \nMessage:
 
@@ -399,7 +399,7 @@ Executing 63: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet up
 Current frame
    root/one
 
-Notes (Sat Jun 10 10:28:22 2023)
+Notes 
    One:
    \nMessage:
 
@@ -409,7 +409,7 @@ Executing 65: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet up
 Current frame
    root/one
 
-Notes (Sat Jun 10 10:28:22 2023)
+Notes 
    One:
    \nMessage:
 
@@ -419,7 +419,7 @@ Executing 67: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet up
 Current frame
    root/one
 
-Notes (Sat Jun 10 10:28:22 2023)
+Notes 
    One:
    \nMessage:
 
@@ -429,7 +429,7 @@ Executing 69: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet up
 Current frame
    root/one
 
-Notes (Sat Jun 10 10:28:22 2023)
+Notes 
    One:
    \nMessage:
 
@@ -439,7 +439,7 @@ Executing 71: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet up
 Current frame
    root/one
 
-Notes (Sat Jun 10 10:28:22 2023)
+Notes 
    One:
    \nMessage:
 
@@ -449,7 +449,7 @@ Executing 73: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet up
 Current frame
    root/one
 
-Notes (Sat Jun 10 10:28:22 2023)
+Notes 
    One:
    \nMessage:
 
@@ -457,7 +457,7 @@ Executing 74: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet status
 Current frame
    root/one
 
-Notes (Sat Jun 10 10:28:22 2023)
+Notes 
    One:
    \nMessage:
 
@@ -530,7 +530,7 @@ Executing 83: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet status
 Current frame
    root/one
 
-Notes (Sat Jun 10 10:28:22 2023)
+Notes 
    One:
    \nMessage:
 
@@ -538,42 +538,42 @@ Executing 85: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet switch root/one/fi
 Current frame
    root/one/five
 
-Notes (Sat Jun 10 10:28:23 2023)
+Notes 
    new
 
 Executing 86: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet rename FIVE
 Current frame
    root/one/FIVE
 
-Notes (Sat Jun 10 10:28:23 2023)
+Notes 
    new
 
 Executing 87: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet status
 Current frame
    root/one/FIVE
 
-Notes (Sat Jun 10 10:28:23 2023)
+Notes 
    new
 
 Executing 88: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet match --from-root one/ei
    root/one/eight
 Executing 89: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet tree
-root (Sat Jun 10 10:28:22 2023)
-   eighty (Sat Jun 10 10:28:23 2023)
-   eighteen (Sat Jun 10 10:28:23 2023)
-   five (Sat Jun 10 10:28:23 2023)
-   six (Sat Jun 10 10:28:23 2023)
-   eight (Sat Jun 10 10:28:23 2023)
-   seven (Sat Jun 10 10:28:23 2023)
-   one (Sat Jun 10 10:28:22 2023)
-      four (Sat Jun 10 10:28:22 2023)
-      FIVE (Sat Jun 10 10:28:23 2023)
-      two (Sat Jun 10 10:28:23 2023)
-      three (Sat Jun 10 10:28:23 2023)
-      six (Sat Jun 10 10:28:23 2023)
-      eight (Sat Jun 10 10:28:23 2023)
-      ten (Sat Jun 10 10:28:23 2023)
-      nine (Sat Jun 10 10:28:23 2023)
-      seven (Sat Jun 10 10:28:23 2023)
-      one (Sat Jun 10 10:28:23 2023)
-Use [sed "s:(.\+)::g"] to strip the dates
+root 
+   eighty 
+   eighteen 
+   five 
+   six 
+   eight 
+   seven 
+   one 
+      four 
+      FIVE 
+      two 
+      three 
+      six 
+      eight 
+      ten 
+      nine 
+      seven 
+      one 
+Use [sed "s:::g"] to strip the dates

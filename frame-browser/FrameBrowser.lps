@@ -7,10 +7,9 @@
       <Unit>
         <Filename Value="FrameBrowser.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
         <CursorPos X="64" Y="11"/>
-        <UsageCount Value="151"/>
+        <UsageCount Value="152"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -20,9 +19,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="mainWin"/>
-        <TopLine Value="132"/>
-        <CursorPos X="57" Y="139"/>
-        <UsageCount Value="151"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="58"/>
+        <CursorPos Y="77"/>
+        <UsageCount Value="152"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -31,9 +31,9 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="FrameWrapper"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="49"/>
+        <TopLine Value="20"/>
         <CursorPos X="14" Y="32"/>
-        <UsageCount Value="151"/>
+        <UsageCount Value="152"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -42,7 +42,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="22"/>
         <CursorPos X="19" Y="56"/>
-        <UsageCount Value="0"/>
+        <UsageCount Value="10"/>
       </Unit>
       <Unit>
         <Filename Value="/usr/share/fpcsrc/3.2.2/packages/rtl-objpas/src/inc/strutils.pp"/>
@@ -50,14 +50,14 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="1349"/>
         <CursorPos X="21" Y="1377"/>
-        <UsageCount Value="0"/>
+        <UsageCount Value="10"/>
       </Unit>
       <Unit>
         <Filename Value="/usr/share/fpcsrc/3.2.2/rtl/objpas/sysutils/syshelph.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="148"/>
         <CursorPos X="14" Y="171"/>
-        <UsageCount Value="0"/>
+        <UsageCount Value="10"/>
       </Unit>
       <Unit>
         <Filename Value="/usr/share/lazarus/2.2.6/lcl/include/treeview.inc"/>
@@ -83,50 +83,6 @@
       </Unit>
     </Units>
     <JumpHistory HistoryIndex="29">
-      <Position>
-        <Filename Value="mainwin.pas"/>
-        <Caret Line="126" Column="3" TopLine="120"/>
-      </Position>
-      <Position>
-        <Filename Value="mainwin.pas"/>
-        <Caret Line="48" TopLine="15"/>
-      </Position>
-      <Position>
-        <Filename Value="mainwin.pas"/>
-        <Caret Line="49" Column="27" TopLine="41"/>
-      </Position>
-      <Position>
-        <Filename Value="mainwin.pas"/>
-        <Caret Line="113" Column="3" TopLine="110"/>
-      </Position>
-      <Position>
-        <Filename Value="mainwin.pas"/>
-        <Caret Line="112" Column="3" TopLine="109"/>
-      </Position>
-      <Position>
-        <Filename Value="mainwin.pas"/>
-        <Caret Line="111" Column="3" TopLine="108"/>
-      </Position>
-      <Position>
-        <Filename Value="mainwin.pas"/>
-        <Caret Line="112" TopLine="95"/>
-      </Position>
-      <Position>
-        <Filename Value="mainwin.pas"/>
-        <Caret Line="155" Column="55" TopLine="131"/>
-      </Position>
-      <Position>
-        <Filename Value="mainwin.pas"/>
-        <Caret Line="163" Column="59" TopLine="112"/>
-      </Position>
-      <Position>
-        <Filename Value="mainwin.pas"/>
-        <Caret Line="164" Column="59" TopLine="130"/>
-      </Position>
-      <Position>
-        <Filename Value="mainwin.pas"/>
-        <Caret Line="165" Column="59" TopLine="131"/>
-      </Position>
       <Position>
         <Filename Value="mainwin.pas"/>
         <Caret Line="172" Column="59" TopLine="138"/>
@@ -200,8 +156,52 @@
         <Caret Line="24"/>
       </Position>
       <Position>
-        <Filename Value="framewrapper.pas"/>
-        <Caret Line="32" Column="14" TopLine="49"/>
+        <Filename Value="mainwin.pas"/>
+        <Caret Line="96" Column="14" TopLine="76"/>
+      </Position>
+      <Position>
+        <Filename Value="mainwin.pas"/>
+        <Caret Line="88" Column="37" TopLine="71"/>
+      </Position>
+      <Position>
+        <Filename Value="mainwin.pas"/>
+        <Caret Line="89" Column="21" TopLine="72"/>
+      </Position>
+      <Position>
+        <Filename Value="mainwin.pas"/>
+        <Caret Line="179" Column="19" TopLine="145"/>
+      </Position>
+      <Position>
+        <Filename Value="mainwin.pas"/>
+        <Caret Line="100" Column="26" TopLine="90"/>
+      </Position>
+      <Position>
+        <Filename Value="mainwin.pas"/>
+        <Caret Line="122" Column="10" TopLine="97"/>
+      </Position>
+      <Position>
+        <Filename Value="mainwin.pas"/>
+        <Caret Line="98" TopLine="91"/>
+      </Position>
+      <Position>
+        <Filename Value="mainwin.pas"/>
+        <Caret Line="119" TopLine="91"/>
+      </Position>
+      <Position>
+        <Filename Value="mainwin.pas"/>
+        <Caret Line="98" TopLine="91"/>
+      </Position>
+      <Position>
+        <Filename Value="mainwin.pas"/>
+        <Caret Line="74" Column="25" TopLine="58"/>
+      </Position>
+      <Position>
+        <Filename Value="mainwin.pas"/>
+        <Caret Line="75" Column="34" TopLine="58"/>
+      </Position>
+      <Position>
+        <Filename Value="mainwin.pas"/>
+        <Caret Line="77" TopLine="58"/>
       </Position>
     </JumpHistory>
     <RunParams>
@@ -212,18 +212,11 @@
   <Debugging>
     <Watches>
       <Item ClassAutoCast="True">
-        <Expression Value="fpath"/>
+        <Expression Value="frame_var"/>
         <DisplayStyle Value="wdfChar"/>
       </Item>
       <Item>
-        <Expression Value="PChar(fpath)"/>
-      </Item>
-      <Item>
-        <Expression Value="ttnode.text"/>
-      </Item>
-      <Item ClassAutoCast="True">
-        <Expression Value="edt"/>
-        <DisplayStyle Value="wdfStructure"/>
+        <Expression Value="tmp"/>
       </Item>
     </Watches>
   </Debugging>

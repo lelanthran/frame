@@ -96,7 +96,7 @@ static void popdir (char **olddir)
 
 static char *get_path (frm_t *frm) {
    if (!frm) {
-      ERR (frm, "Error: null object passed for frm_t\n");
+      FRM_ERROR ("Error: null object passed for frm_t\n");
       errno = EINVAL;
       return false;
    }
@@ -789,7 +789,7 @@ void frm_close (frm_t *frm)
 char *frm_history (frm_t *frm, size_t count)
 {
    if (!frm) {
-      ERR (frm, "Found null object for frm_t\n");
+      FRM_ERROR ("Found null object for frm_t\n");
       errno = EINVAL;
       return ds_str_dup ("");
    }
@@ -800,7 +800,7 @@ char *frm_history (frm_t *frm, size_t count)
 char *frm_current (frm_t *frm)
 {
    if (!frm) {
-      ERR (frm, "Error, null object passed for frm_t\n");
+      FRM_ERROR ("Error, null object passed for frm_t\n");
       errno = EINVAL;
       return ds_str_dup ("");
    }
@@ -932,9 +932,9 @@ char *frm_date_str (void)
 const char *frm_lastmsg (frm_t *frm)
 {
    if (!frm) {
-      ERR (frm, "Error: null object passed for frm_t\n");
+      FRM_ERROR ("Error: null object passed for frm_t\n");
       errno = EINVAL;
-      return false;
+      return "";
    }
 
    return frm->lastmsg;
@@ -945,7 +945,7 @@ static bool internal_frm_push (frm_t *frm, const char *name, const char *message
                                bool dir_change)
 {
    if (!frm) {
-      ERR (frm, "Error, null object passed for frm_t\n");
+      FRM_ERROR ("Error, null object passed for frm_t\n");
       errno = EINVAL;
       return false;
    }
@@ -1067,7 +1067,7 @@ char *frm_payload_fname (void)
 bool frm_top (frm_t *frm)
 {
    if (!frm) {
-      ERR (frm, "Error: null object passed for frm_t\n");
+      FRM_ERROR ("Error: null object passed for frm_t\n");
       errno = ENOENT;
       return false;
    }
@@ -1096,7 +1096,7 @@ bool frm_top (frm_t *frm)
 bool frm_up (frm_t *frm)
 {
    if (!frm) {
-      ERR (frm, "Error: null object passed for frm_t\n");
+      FRM_ERROR ("Error: null object passed for frm_t\n");
       errno = EINVAL;
       return false;
    }
@@ -1145,7 +1145,7 @@ bool frm_up (frm_t *frm)
 bool frm_down (frm_t *frm, const char *target)
 {
    if (!frm) {
-      ERR (frm, "Error: null object passed for frm_t\n");
+      FRM_ERROR ("Error: null object passed for frm_t\n");
       errno = EINVAL;
       return false;
    }
@@ -1260,7 +1260,7 @@ bool frm_switch_direct (frm_t *frm, const char *target)
 bool frm_back (frm_t *frm, size_t index)
 {
    if (!frm) {
-      ERR (frm, "Error: null object passed for frm_t\n");
+      FRM_ERROR ("Error: null object passed for frm_t\n");
       errno = ENOENT;
       return false;
    }
@@ -1323,7 +1323,7 @@ void frm_strarray_free (char **array)
 bool frm_pop (frm_t *frm, bool force)
 {
    if (!frm) {
-      ERR (frm, "Error: null object passed for frm_t\n");
+      FRM_ERROR ("Error: null object passed for frm_t\n");
       errno = EINVAL;
       return false;
    }
@@ -1369,7 +1369,7 @@ bool frm_pop (frm_t *frm, bool force)
 bool frm_rename (frm_t *frm, const char *newname)
 {
    if (!frm) {
-      ERR (frm, "Error: null object passed for frm_t\n");
+      FRM_ERROR ("Error: null object passed for frm_t\n");
       errno = EINVAL;
       return false;
    }
@@ -1421,13 +1421,14 @@ bool frm_rename (frm_t *frm, const char *newname)
    if (!(index_add(frm->dbpath, current_name))) {
       ERR (frm, "Warning: failed to add [%s] to index\n", current_name);
    }
+   free (current_name);
    return true;
 }
 
 bool frm_delete (frm_t *frm, const char *target)
 {
    if (!frm) {
-      ERR (frm, "Error: null object passed for frm_t\n");
+      FRM_ERROR ("Error: null object passed for frm_t\n");
       errno = EINVAL;
       return false;
    }
@@ -1465,7 +1466,7 @@ static char **match (frm_t *frm, const char *sterm,
       uint32_t flags, const char *from)
 {
    if (!frm) {
-      ERR (frm, "Error: null object passed for frm_t\n");
+      FRM_ERROR ("Error: null object passed for frm_t\n");
       errno = EINVAL;
       return NULL;
    }
@@ -1537,7 +1538,7 @@ cleanup:
 char **frm_list (frm_t *frm, const char *from)
 {
    if (!frm) {
-      ERR (frm, "Error: null object passed for frm_t\n");
+      FRM_ERROR ("Error: null object passed for frm_t\n");
       errno = ENOENT;
       return NULL;
    }

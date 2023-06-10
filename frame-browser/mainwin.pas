@@ -68,6 +68,17 @@ implementation
 
 { TfrmMain }
 
+
+procedure Alert(message: String);
+var
+  tmp: String;
+begin
+   ShowMessage(message);
+   tmp := frm_lastmsg(frame_var);
+   Writeln(tmp);
+   frmMain.sbarStatus.SimpleText:=frm_lastmsg(frame_var);
+end;
+
 procedure TfrmMain.bbtnQuitClick(Sender: TObject);
 begin
   frmMain.Close;
@@ -82,10 +93,24 @@ begin
   frame_history_populate (sterm, frmMain.lvHistory);
 end;
 
+function FrameInit (path: String): Boolean;
+begin
+  frm_close(frame_var);
+  frame_var := frm_init(Pchar(path));
+  if frame_var = nil then
+  begin
+    Alert('Failed to open Frame Database at [' + path + ']'
+                  + sLineBreak
+                  + 'Aborting');
+    Exit(false);
+  end;
+  Exit(true);
+end;
+
 procedure FrameReopen();
 begin
   frm_close(frame_var);
-  frame_var := frm_init('/home/lelanthran/.framedb');
+  FrameInit('/home/lelanthran/.framedb');
   frame_history_populate('', frmMain.lvHistory);
   frame_current_populate(frmMain.edtCurrentFrame);
   frame_notes_populate(frmMain.memoNotes);
@@ -95,7 +120,11 @@ end;
 
 procedure TfrmMain.FormActivate(Sender: TObject);
 begin
-  frame_var := frm_init('/home/lelanthran/.framedb');
+  if FrameInit('/home/lelanthran/.framedb') <> true then
+  begin
+    frmMain.Close;
+    Exit;
+  end;
   frame_history_populate('', frmMain.lvHistory);
   frame_current_populate(frmMain.edtCurrentFrame);
   frame_notes_populate(frmMain.memoNotes);
@@ -133,11 +162,6 @@ begin
   frmMain.stxtStatusChanged.Caption:='Frame notes changed';
 end;
 
-procedure Alert(message: String);
-begin
-   ShowMessage(message);
-   frmMain.sbarStatus.SimpleText:=frm_lastmsg(frame_var);
-end;
 
 procedure TfrmMain.memoNotesEditingDone(Sender: TObject);
 var
