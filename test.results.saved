@@ -1,119 +1,119 @@
-[31mExecuting[0m [32m0:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet create[0m
+Executing 0: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet create
 Created framedb at [/tmp/frame/]
-[31mExecuting[0m [32m1:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet status[0m
+Executing 1: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet status
 Current frame
    root
 
-Notes 
+Notes (Sat Jun 10 10:28:22 2023)
    ENTER YOUR NOTES HERE
 
-[31mExecuting[0m [32m2:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet history[0m
+Executing 2: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet history
 Frame history
 *      0: root
 
-[31mExecuting[0m [32m3:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet replace --message=Root: replacement[0m
-[31mExecuting[0m [32m4:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet status[0m
+Executing 3: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet replace --message=Root: replacement
+Executing 4: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet status
 Current frame
    root
 
-Notes 
+Notes (Sat Jun 10 10:28:22 2023)
    Root:
 
-[31mExecuting[0m [32m5:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet history[0m
+Executing 5: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet history
 Frame history
 *      0: root
 
-[31mExecuting[0m [32m6:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet push one --message=One: message one[0m
+Executing 6: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet push one --message=One: message one
 Created new frame [root/one]
-[31mExecuting[0m [32m7:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet status[0m
+Executing 7: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet status
 Current frame
    root/one
 
-Notes 
+Notes (Sat Jun 10 10:28:22 2023)
    One:
 
-[31mExecuting[0m [32m8:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet history[0m
+Executing 8: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet history
 Frame history
 *      0: root/one
        1: root
 
-[31mExecuting[0m [32m9:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet append --message=
+Executing 9: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet append --message=
 Message: 1
-[0m
-root/one: Fri Jun  9 11:30:26 2023
-[31mExecuting[0m [32m10:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet status[0m
+
+root/one: Sat Jun 10 10:28:22 2023
+Executing 10: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet status
 Current frame
    root/one
 
-Notes 
+Notes (Sat Jun 10 10:28:22 2023)
    One:
    \nMessage:
 
-[31mExecuting[0m [32m11:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet history[0m
+Executing 11: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet history
 Frame history
 *      0: root/one
        1: root
 
-[31mExecuting[0m [32m12:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet up[0m
+Executing 12: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet up
 Current frame
    root
 
-Notes 
+Notes (Sat Jun 10 10:28:22 2023)
    Root:
 
-[31mExecuting[0m [32m13:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet status[0m
+Executing 13: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet status
 Current frame
    root
 
-Notes 
+Notes (Sat Jun 10 10:28:22 2023)
    Root:
 
-[31mExecuting[0m [32m14:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet history[0m
+Executing 14: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet history
 Frame history
 *      0: root
        1: root/one
        2: root
 
-[31mExecuting[0m [32m15:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet push two --message=Two: message two[0m
+Executing 15: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet push two --message=Two: message two
 Created new frame [root/two]
-[31mExecuting[0m [32m16:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet status[0m
+Executing 16: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet status
 Current frame
    root/two
 
-Notes 
+Notes (Sat Jun 10 10:28:22 2023)
    Two:
 
-[31mExecuting[0m [32m17:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet history[0m
+Executing 17: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet history
 Frame history
 *      0: root/two
        1: root
        2: root/one
        3: root
 
-[31mExecuting[0m [32m18:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet top[0m
+Executing 18: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet top
 Current frame
    root
 
-Notes 
+Notes (Sat Jun 10 10:28:22 2023)
    Root:
 
-[31mExecuting[0m [32m19:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet down one[0m
+Executing 19: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet down one
 Current frame
    root/one
 
-Notes 
+Notes (Sat Jun 10 10:28:22 2023)
    One:
    \nMessage:
 
-[31mExecuting[0m [32m20:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet status[0m
+Executing 20: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet status
 Current frame
    root/one
 
-Notes 
+Notes (Sat Jun 10 10:28:22 2023)
    One:
    \nMessage:
 
-[31mExecuting[0m [32m21:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet history[0m
+Executing 21: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet history
 Frame history
 *      0: root/one
        1: root
@@ -122,23 +122,23 @@ Frame history
        4: root/one
        5: root
 
-[31mExecuting[0m [32m22:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet back 1[0m
+Executing 22: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet back 1
 Current frame
    root/one
 
-Notes 
+Notes (Sat Jun 10 10:28:22 2023)
    One:
    \nMessage:
 
-[31mExecuting[0m [32m23:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet status[0m
+Executing 23: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet status
 Current frame
    root/one
 
-Notes 
+Notes (Sat Jun 10 10:28:22 2023)
    One:
    \nMessage:
 
-[31mExecuting[0m [32m24:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet history[0m
+Executing 24: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet history
 Frame history
 *      0: root/one
        1: root/one
@@ -148,23 +148,23 @@ Frame history
        5: root/one
        6: root
 
-[31mExecuting[0m [32m25:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet back 1[0m
+Executing 25: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet back 1
 Current frame
    root/one
 
-Notes 
+Notes (Sat Jun 10 10:28:22 2023)
    One:
    \nMessage:
 
-[31mExecuting[0m [32m26:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet status[0m
+Executing 26: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet status
 Current frame
    root/one
 
-Notes 
+Notes (Sat Jun 10 10:28:22 2023)
    One:
    \nMessage:
 
-[31mExecuting[0m [32m27:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet history[0m
+Executing 27: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet history
 Frame history
 *      0: root/one
        1: root/one
@@ -175,16 +175,16 @@ Frame history
        6: root/one
        7: root
 
-[31mExecuting[0m [32m28:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet push three --message=three: three[0m
+Executing 28: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet push three --message=three: three
 Created new frame [root/one/three]
-[31mExecuting[0m [32m29:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet status[0m
+Executing 29: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet status
 Current frame
    root/one/three
 
-Notes 
+Notes (Sat Jun 10 10:28:22 2023)
    three:
 
-[31mExecuting[0m [32m30:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet history[0m
+Executing 30: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet history
 Frame history
 *      0: root/one/three
        1: root/one
@@ -196,23 +196,23 @@ Frame history
        7: root/one
        8: root
 
-[31mExecuting[0m [32m31:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet pop[0m
+Executing 31: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet pop
 Current frame
    root/one
 
-Notes 
+Notes (Sat Jun 10 10:28:22 2023)
    One:
    \nMessage:
 
-[31mExecuting[0m [32m32:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet status[0m
+Executing 32: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet status
 Current frame
    root/one
 
-Notes 
+Notes (Sat Jun 10 10:28:22 2023)
    One:
    \nMessage:
 
-[31mExecuting[0m [32m33:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet history[0m
+Executing 33: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet history
 Frame history
 *      0: root/one
        1: root/one/three
@@ -225,16 +225,16 @@ Frame history
        8: root/one
        9: root
 
-[31mExecuting[0m [32m34:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet push four --message=four: four[0m
+Executing 34: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet push four --message=four: four
 Created new frame [root/one/four]
-[31mExecuting[0m [32m35:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet status[0m
+Executing 35: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet status
 Current frame
    root/one/four
 
-Notes 
+Notes (Sat Jun 10 10:28:22 2023)
    four:
 
-[31mExecuting[0m [32m36:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet history[0m
+Executing 36: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet history
 Frame history
 *      0: root/one/four
        1: root/one
@@ -247,21 +247,21 @@ Frame history
        8: root
        9: root/one
 
-[31mExecuting[0m [32m37:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet delete root/two[0m
+Executing 37: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet delete root/two
 Current frame
    root/one/four
 
-Notes 
+Notes (Sat Jun 10 10:28:22 2023)
    four:
 
-[31mExecuting[0m [32m38:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet status[0m
+Executing 38: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet status
 Current frame
    root/one/four
 
-Notes 
+Notes (Sat Jun 10 10:28:22 2023)
    four:
 
-[31mExecuting[0m [32m39:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet history[0m
+Executing 39: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet history
 Frame history
 *      0: root/one/four
        1: root/one
@@ -274,21 +274,21 @@ Frame history
        8: root
        9: root/one
 
-[31mExecuting[0m [32m40:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet top[0m
+Executing 40: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet top
 Current frame
    root
 
-Notes 
+Notes (Sat Jun 10 10:28:22 2023)
    Root:
 
-[31mExecuting[0m [32m41:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet status[0m
+Executing 41: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet status
 Current frame
    root
 
-Notes 
+Notes (Sat Jun 10 10:28:22 2023)
    Root:
 
-[31mExecuting[0m [32m42:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet history[0m
+Executing 42: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet history
 Frame history
 *      0: root
        1: root/one/four
@@ -301,167 +301,167 @@ Frame history
        8: root/two
        9: root
 
-[31mExecuting[0m [32m43:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet push five --message=five: five[0m
+Executing 43: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet push five --message=five: five
 Created new frame [root/five]
-[31mExecuting[0m [32m44:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet up[0m
+Executing 44: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet up
 Current frame
    root
 
-Notes 
+Notes (Sat Jun 10 10:28:22 2023)
    Root:
 
-[31mExecuting[0m [32m45:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet push six --message=six: six[0m
+Executing 45: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet push six --message=six: six
 Created new frame [root/six]
-[31mExecuting[0m [32m46:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet up[0m
+Executing 46: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet up
 Current frame
    root
 
-Notes 
+Notes (Sat Jun 10 10:28:22 2023)
    Root:
 
-[31mExecuting[0m [32m47:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet push seven --message=seven: seven[0m
+Executing 47: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet push seven --message=seven: seven
 Created new frame [root/seven]
-[31mExecuting[0m [32m48:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet up[0m
+Executing 48: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet up
 Current frame
    root
 
-Notes 
+Notes (Sat Jun 10 10:28:22 2023)
    Root:
 
-[31mExecuting[0m [32m49:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet push eight --message=eight: eight[0m
+Executing 49: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet push eight --message=eight: eight
 Created new frame [root/eight]
-[31mExecuting[0m [32m50:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet up[0m
+Executing 50: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet up
 Current frame
    root
 
-Notes 
+Notes (Sat Jun 10 10:28:22 2023)
    Root:
 
-[31mExecuting[0m [32m51:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet push eighteen --message=eight: eight[0m
+Executing 51: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet push eighteen --message=eight: eight
 Created new frame [root/eighteen]
-[31mExecuting[0m [32m52:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet up[0m
+Executing 52: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet up
 Current frame
    root
 
-Notes 
+Notes (Sat Jun 10 10:28:22 2023)
    Root:
 
-[31mExecuting[0m [32m53:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet push eighty --message=eight: eight[0m
+Executing 53: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet push eighty --message=eight: eight
 Created new frame [root/eighty]
-[31mExecuting[0m [32m54:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet up[0m
+Executing 54: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet up
 Current frame
    root
 
-Notes 
+Notes (Sat Jun 10 10:28:22 2023)
    Root:
 
-[31mExecuting[0m [32m55:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet down one[0m
+Executing 55: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet down one
 Current frame
    root/one
 
-Notes 
+Notes (Sat Jun 10 10:28:22 2023)
    One:
    \nMessage:
 
-[31mExecuting[0m [32m56:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet push one --message=new one[0m
+Executing 56: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet push one --message=new one
 Created new frame [root/one/one]
-[31mExecuting[0m [32m57:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet up[0m
+Executing 57: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet up
 Current frame
    root/one
 
-Notes 
+Notes (Sat Jun 10 10:28:22 2023)
    One:
    \nMessage:
 
-[31mExecuting[0m [32m58:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet push two --message=new one[0m
+Executing 58: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet push two --message=new one
 Created new frame [root/one/two]
-[31mExecuting[0m [32m59:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet up[0m
+Executing 59: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet up
 Current frame
    root/one
 
-Notes 
+Notes (Sat Jun 10 10:28:22 2023)
    One:
    \nMessage:
 
-[31mExecuting[0m [32m60:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet push three --message=new one[0m
+Executing 60: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet push three --message=new one
 Created new frame [root/one/three]
-[31mExecuting[0m [32m61:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet up[0m
+Executing 61: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet up
 Current frame
    root/one
 
-Notes 
+Notes (Sat Jun 10 10:28:22 2023)
    One:
    \nMessage:
 
-[31mExecuting[0m [32m62:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet push five --message=new one[0m
+Executing 62: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet push five --message=new one
 Created new frame [root/one/five]
-[31mExecuting[0m [32m63:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet up[0m
+Executing 63: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet up
 Current frame
    root/one
 
-Notes 
+Notes (Sat Jun 10 10:28:22 2023)
    One:
    \nMessage:
 
-[31mExecuting[0m [32m64:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet push six --message=new one[0m
+Executing 64: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet push six --message=new one
 Created new frame [root/one/six]
-[31mExecuting[0m [32m65:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet up[0m
+Executing 65: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet up
 Current frame
    root/one
 
-Notes 
+Notes (Sat Jun 10 10:28:22 2023)
    One:
    \nMessage:
 
-[31mExecuting[0m [32m66:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet push seven --message=new one[0m
+Executing 66: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet push seven --message=new one
 Created new frame [root/one/seven]
-[31mExecuting[0m [32m67:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet up[0m
+Executing 67: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet up
 Current frame
    root/one
 
-Notes 
+Notes (Sat Jun 10 10:28:22 2023)
    One:
    \nMessage:
 
-[31mExecuting[0m [32m68:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet push eight --message=new one[0m
+Executing 68: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet push eight --message=new one
 Created new frame [root/one/eight]
-[31mExecuting[0m [32m69:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet up[0m
+Executing 69: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet up
 Current frame
    root/one
 
-Notes 
+Notes (Sat Jun 10 10:28:22 2023)
    One:
    \nMessage:
 
-[31mExecuting[0m [32m70:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet push nine --message=new one[0m
+Executing 70: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet push nine --message=new one
 Created new frame [root/one/nine]
-[31mExecuting[0m [32m71:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet up[0m
+Executing 71: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet up
 Current frame
    root/one
 
-Notes 
+Notes (Sat Jun 10 10:28:22 2023)
    One:
    \nMessage:
 
-[31mExecuting[0m [32m72:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet push ten --message=new one[0m
+Executing 72: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet push ten --message=new one
 Created new frame [root/one/ten]
-[31mExecuting[0m [32m73:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet up[0m
+Executing 73: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet up
 Current frame
    root/one
 
-Notes 
+Notes (Sat Jun 10 10:28:22 2023)
    One:
    \nMessage:
 
-[31mExecuting[0m [32m74:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet status[0m
+Executing 74: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet status
 Current frame
    root/one
 
-Notes 
+Notes (Sat Jun 10 10:28:22 2023)
    One:
    \nMessage:
 
-[31mExecuting[0m [32m75:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet list[0m
+Executing 75: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet list
    root/one/eight
    root/one/five
    root/one/four
@@ -472,7 +472,7 @@ Notes
    root/one/ten
    root/one/three
    root/one/two
-[31mExecuting[0m [32m76:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet match --from-root e[0m
+Executing 76: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet match --from-root e
    root/eight
    root/eighteen
    root/eighty
@@ -489,17 +489,17 @@ Notes
    root/one/three
    root/one/two
    root/seven
-[31mExecuting[0m [32m77:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet match --from-root ei[0m
+Executing 77: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet match --from-root ei
    root/eight
    root/eighteen
    root/eighty
    root/one/eight
-[31mExecuting[0m [32m78:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet match --from-root eigh[0m
+Executing 78: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet match --from-root eigh
    root/eight
    root/eighteen
    root/eighty
    root/one/eight
-[31mExecuting[0m [32m79:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet match e[0m
+Executing 79: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet match e
    root/one
    root/one/eight
    root/one/five
@@ -511,11 +511,11 @@ Notes
    root/one/ten
    root/one/three
    root/one/two
-[31mExecuting[0m [32m80:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet match ei[0m
+Executing 80: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet match ei
    root/one/eight
-[31mExecuting[0m [32m81:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet match eigh[0m
+Executing 81: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet match eigh
    root/one/eight
-[31mExecuting[0m [32m82:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet match eigh --invert[0m
+Executing 82: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet match eigh --invert
    root/one
    root/one/five
    root/one/four
@@ -526,41 +526,54 @@ Notes
    root/one/ten
    root/one/three
    root/one/two
-[31mExecuting[0m [32m83:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet status[0m
+Executing 83: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet status
 Current frame
    root/one
 
-Notes 
+Notes (Sat Jun 10 10:28:22 2023)
    One:
    \nMessage:
 
-[31mExecuting[0m [32m85:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet rename ONE[0m
+Executing 85: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet switch root/one/five
 Current frame
-   root/ONE
+   root/one/five
 
-Notes 
-   One:
-   \nMessage:
+Notes (Sat Jun 10 10:28:23 2023)
+   new
 
-[31mExecuting[0m [32m86:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet match --from-root one/ei[0m
+Executing 86: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet rename FIVE
+Current frame
+   root/one/FIVE
+
+Notes (Sat Jun 10 10:28:23 2023)
+   new
+
+Executing 87: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet status
+Current frame
+   root/one/FIVE
+
+Notes (Sat Jun 10 10:28:23 2023)
+   new
+
+Executing 88: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet match --from-root one/ei
    root/one/eight
-[31mExecuting[0m [32m87:[0m [34m./recent/bin/x86_64-linux-gnu/frame.elf --quiet tree[0m
-root 
-   eighty 
-   eighteen 
-   five 
-   ONE 
-      four 
-      five 
-      two 
-      three 
-      six 
-      eight 
-      ten 
-      nine 
-      seven 
-      one 
-   six 
-   eight 
-   seven 
-Use [sed "s:::g"] to strip the dates
+Executing 89: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet tree
+root (Sat Jun 10 10:28:22 2023)
+   eighty (Sat Jun 10 10:28:23 2023)
+   eighteen (Sat Jun 10 10:28:23 2023)
+   five (Sat Jun 10 10:28:23 2023)
+   six (Sat Jun 10 10:28:23 2023)
+   eight (Sat Jun 10 10:28:23 2023)
+   seven (Sat Jun 10 10:28:23 2023)
+   one (Sat Jun 10 10:28:22 2023)
+      four (Sat Jun 10 10:28:22 2023)
+      FIVE (Sat Jun 10 10:28:23 2023)
+      two (Sat Jun 10 10:28:23 2023)
+      three (Sat Jun 10 10:28:23 2023)
+      six (Sat Jun 10 10:28:23 2023)
+      eight (Sat Jun 10 10:28:23 2023)
+      ten (Sat Jun 10 10:28:23 2023)
+      nine (Sat Jun 10 10:28:23 2023)
+      seven (Sat Jun 10 10:28:23 2023)
+      one (Sat Jun 10 10:28:23 2023)
+Use [sed "s:(.\+)::g"] to strip the dates

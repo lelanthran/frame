@@ -19,8 +19,19 @@ export GREEN="\e[32m"
 export BLUE="\e[34m"
 export CYAN="\e[36m"
 export YELLOW="\e[33m"
-
 export HI_ON="${RED}${INV}"
+
+if [ ! -t 1 ]; then
+   export NC=""
+   export INV=""
+   export RED=""
+   export GREEN=""
+   export BLUE=""
+   export CYAN=""
+   export YELLOW=""
+   export HI_ON=""
+fi
+
 export STMT_NUM=0
 
 if [ -z "$DEBUG" ]; then
@@ -164,9 +175,11 @@ if [ `wc -l t | cut -f 1 -d \   ` -ne 1 ]; then
    die expected failed match
 fi
 
-# Rename root/one
-execute $PROG rename 'ONE' || die failed rename
-# Current node is root/ONE
+# Rename root/one/five
+execute $PROG switch root/one/five
+execute $PROG rename 'FIVE' || die failed rename
+# Current node is root/one/FIVE
+execute $PROG status || die failed status
 
 execute $PROG match --from-root "one/ei" || die failed match
 

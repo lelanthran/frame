@@ -45,11 +45,12 @@ struct frm_t {
       free (prefix); free (msg); free (full);\
    } else {\
       fprintf (stderr, "%s\n", full);\
-      x->lastmsg = full;\
+      free (x->lastmsg); x->lastmsg = full;\
+      free (prefix); free (msg);\
    }\
 } while (0)
 
-#define REMOVEME ERR
+#define REMOVEME FRM_ERROR
 
 static const char *lockfile = "framedb.lock";
 
@@ -553,6 +554,7 @@ static void frm_free (frm_t *frm)
 
    free (frm->dbpath);
    free (frm->olddir);
+   free (frm->lastmsg);
    free (frm);
 }
 
@@ -1378,7 +1380,14 @@ bool frm_rename (frm_t *frm, const char *newname)
       return false;
    }
 
-   const char *oldname = &current_name[strlen("root/")];
+   const char *oldname = strrchr (current_name, '/');
+   if (!oldname) {
+      ERR(frm, "Error: Internal corruption (current node has no slash): [%s]\n",
+               current_name);
+      free (current_name);
+      return false;
+   }
+   oldname++;
 
    if (!(frm_up (frm))) {
       ERR (frm, "Error: Failed to switch to parent directory [%s/..]: %m\n",
