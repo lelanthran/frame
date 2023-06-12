@@ -1,3 +1,13 @@
+v0.1.3 - Mon 12 Jun 2023 16:35:42 SAST
+1. Adds some documentation.
+2. Adds '--frame=' option, to execute the command in the context of a different
+   frame.
+3. Adds a gui program, FrameBrowser, for easy navigation and editing of
+   frames.
+4. Adds 'rename' command.
+5. Adds lockfile to prevent different applications using the frm_*() functions
+   at the same time.
+
 v0.1.2 - Fri 05 May 2023 22:02:07 SAST
 
 Features

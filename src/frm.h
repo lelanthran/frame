@@ -54,6 +54,7 @@ extern "C" {
    char *frm_payload (void);
    uint64_t frm_date_epoch (void);
    char *frm_date_str (void);
+   const char *frm_lastmsg (frm_t *frm);
 
    /* Add/create information: new frame (new creates a new one and then
     * returns, push creates a new one and switches to it), replace the
@@ -75,6 +76,7 @@ extern "C" {
    bool frm_back (frm_t *frm, size_t index);
    bool frm_delete (frm_t *frm, const char *target);
    bool frm_pop (frm_t *frm, bool force);
+   bool frm_rename (frm_t *frm, const char *newname);
 
    /* Search/listing functions.
     */
@@ -117,6 +119,11 @@ extern "C" {
    const frm_node_t *frm_node_parent (const frm_node_t *node);
    const frm_node_t *frm_node_root (const frm_node_t *node);
    const frm_node_t *frm_node_find (const frm_node_t *node, const char *fpath);
+
+   /* These functions are not very useful to the caller and should be avoided
+    * in favour of the functions above.
+    */
+   char *frm_switch_path (frm_t *frm, const char *from);
 
 #ifdef __cplusplus
 };

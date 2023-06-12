@@ -30,9 +30,29 @@
 struct frm_t {
    char *dbpath;
    char *olddir;
+   char *lastmsg;
 };
 
+#define ERR(x,...)     do {\
+   char *prefix = NULL;\
+   char *msg = NULL;\
+   char *full = NULL;\
+   ds_str_printf (&prefix, "[%s:%i] ", __FILE__, __LINE__);\
+   ds_str_printf (&msg, __VA_ARGS__);\
+   full = ds_str_cat (prefix, msg, NULL);\
+   if (!prefix || !msg || !full) {\
+      fprintf (stderr, "[%s:%i] FATAL OOM, aborting\n", __FILE__, __LINE__);\
+      free (prefix); free (msg); free (full);\
+   } else {\
+      fprintf (stderr, "%s\n", full);\
+      free (x->lastmsg); x->lastmsg = full;\
+      free (prefix); free (msg);\
+   }\
+} while (0)
+
 #define REMOVEME FRM_ERROR
+
+static const char *lockfile = "framedb.lock";
 
 /* ********************************************************** */
 /* ********************************************************** */
@@ -83,21 +103,21 @@ static char *get_path (frm_t *frm) {
 
    char *pwd = getcwd (NULL, 0);
    if (!pwd) {
-      FRM_ERROR ("Error: failed to retrieve path: %m\n");
+      ERR (frm, "Error: failed to retrieve path: %m\n");
       return NULL;
    }
 
    // Fixup the path, if it is an absolute path.
    size_t nbytes = strlen (frm->dbpath);
    if (nbytes > strlen (pwd)) {
-      FRM_ERROR ("Error: internal corruption detected\n");
+      ERR (frm, "Error: internal corruption detected\n");
       free (pwd);
       return NULL;
    }
 
    char *path = ds_str_dup (&pwd[nbytes + 1]);
    if (!path) {
-      FRM_ERROR ("OOM error: allocating path\n");
+      ERR (frm, "OOM error: allocating path\n");
    }
 
    free (pwd);
@@ -534,6 +554,7 @@ static void frm_free (frm_t *frm)
 
    free (frm->dbpath);
    free (frm->olddir);
+   free (frm->lastmsg);
    free (frm);
 }
 
@@ -547,8 +568,9 @@ static frm_t *frm_alloc (const char *dbpath, const char *olddir)
 
    ret->dbpath = ds_str_dup (dbpath);
    ret->olddir = ds_str_dup (olddir);
+   ret->lastmsg = ds_str_dup ("Success");
 
-   if (!ret->dbpath || !ret->olddir) {
+   if (!ret->dbpath || !ret->olddir || !ret->lastmsg) {
       FRM_ERROR ("Failed to allocate fields [dbpath:%p], [olddir:%p]\n",
                ret->dbpath, ret->olddir);
       frm_free (ret);
@@ -571,7 +593,9 @@ char *frm_readfile (const char *name)
 {
    FILE *inf = fopen (name, "r");
    if (!inf) {
-      FRM_ERROR ("Failed to open [%s] for reading: %m\n", name);
+      // Commenting this out - caller must print out the fname of the failing
+      // frm_readfile(fname) call.
+      // FRM_ERROR ("Failed to open [%s] for reading: %m\n", name);
       return NULL;
    }
 
@@ -687,6 +711,12 @@ frm_t *frm_init (const char *dbpath)
       goto cleanup;
    }
 
+   int fd = -1;
+   if ((fd = open (lockfile, O_CREAT|O_EXCL, S_IRWXU))<0) {
+      FRM_ERROR ("Error: Failed to create lockfile: %m\n");
+      goto cleanup;
+   }
+
    // TODO: replace this with frm_history
    history = frm_readfile ("history");
    frame = NULL;
@@ -739,7 +769,20 @@ void frm_close (frm_t *frm)
    }
 
    popdir (&frm->olddir);
+   if ((chdir (frm->dbpath))!=0) {
+      ERR (frm, "Error: Failed to switch to dbpath [%s]: %m\n", frm->dbpath);
+      ERR (frm, "Warning: lockfile must be maually deleted [%s/%s]\n",
+               frm->dbpath, lockfile);
+   } else {
+      if ((remove (lockfile))!=0) {
+         ERR (frm, "Error: Failed to remove [%s/%s]\n", frm->dbpath, lockfile);
+         ERR (frm, "Warning: lockfile must be maually deleted [%s/%s]\n",
+               frm->dbpath, lockfile);
+      }
+   }
+
    free (frm->dbpath);
+   free (frm->lastmsg);
    free (frm);
 }
 
@@ -763,7 +806,7 @@ char *frm_current (frm_t *frm)
    }
    char *tmp = getcwd (NULL, 0);
    if (!tmp) {
-      FRM_ERROR ("Failed to get the current working directory\n");
+      ERR (frm, "Failed to get the current working directory\n");
       tmp = ds_str_dup ("");
    }
 
@@ -771,7 +814,7 @@ char *frm_current (frm_t *frm)
    char *ret = ds_str_strsubst(tmp, pattern, "", NULL);
    free (pattern);
    if (!ret) {
-      FRM_ERROR ("OOM error allocating current path\n");
+      ERR (frm, "OOM error allocating current path\n");
       ret = ds_str_dup ("");
    }
 
@@ -886,6 +929,18 @@ char *frm_date_str (void)
    return ds_str_dup (tmp);
 }
 
+const char *frm_lastmsg (frm_t *frm)
+{
+   if (!frm) {
+      FRM_ERROR ("Error: null object passed for frm_t\n");
+      errno = EINVAL;
+      return "";
+   }
+
+   return frm->lastmsg;
+}
+
+
 static bool internal_frm_push (frm_t *frm, const char *name, const char *message,
                                bool dir_change)
 {
@@ -896,18 +951,18 @@ static bool internal_frm_push (frm_t *frm, const char *name, const char *message
    }
 
    if ((mkdir (name, 0777))!=0) {
-      FRM_ERROR ("Failed to create directory [%s]: %m\n", name);
+      ERR (frm, "Failed to create directory [%s]: %m\n", name);
       return false;
    }
 
    char *olddir = pushdir (name);
    if (!olddir) {
-      FRM_ERROR ("Failed to switch to [%s]: %m\n", name);
+      ERR (frm, "Failed to switch to [%s]: %m\n", name);
       return false;
    }
 
    if (!(frm_writefile ("payload", message, "\n", NULL))) {
-      FRM_ERROR ("Failed to write message to [%s/payload]: %m\n", name);
+      ERR (frm, "Failed to write message to [%s/payload]: %m\n", name);
       popdir (&olddir);
       return false;
    }
@@ -916,7 +971,7 @@ static bool internal_frm_push (frm_t *frm, const char *name, const char *message
    if (!(frm_writefile ("info",
                "mtime: ", uint64_string(tstring, (uint64_t)time(NULL)), "\n",
                NULL))) {
-      FRM_ERROR ("Failed to create info file [%s/info]: %m\n", name);
+      ERR (frm, "Failed to create info file [%s/info]: %m\n", name);
       popdir (&olddir);
       return false;
    }
@@ -924,7 +979,7 @@ static bool internal_frm_push (frm_t *frm, const char *name, const char *message
    char *path = get_path (frm);
    if (dir_change) {
       if (!(history_append(frm->dbpath, path))) {
-         FRM_ERROR ("Failed to update history\n");
+         ERR (frm, "Failed to update history\n");
          free (path);
          popdir (&olddir);
          return false;
@@ -932,7 +987,7 @@ static bool internal_frm_push (frm_t *frm, const char *name, const char *message
    }
 
    if (!(index_add (frm->dbpath, path))) {
-      FRM_ERROR ("Warning: failed to update index\n");
+      ERR (frm, "Warning: failed to update index\n");
    }
 
    if (dir_change) {
@@ -1019,19 +1074,19 @@ bool frm_top (frm_t *frm)
 
    char *target = ds_str_cat (frm->dbpath, "/root", NULL);
    if (!target) {
-      FRM_ERROR ("OOM error allocating path for root frame\n");
+      ERR (frm, "OOM error allocating path for root frame\n");
       return false;
    }
 
    if ((chdir (target))!=0) {
-      FRM_ERROR ("Error: failed to switchdir to [%s/root]: %m\n", target);
+      ERR (frm, "Error: failed to switchdir to [%s/root]: %m\n", target);
       free (target);
       return false;
    }
 
    free (target);
    if (!(history_append (frm->dbpath, "root"))) {
-      FRM_ERROR ("Error: failed to record history\n");
+      ERR (frm, "Error: failed to record history\n");
       return false;
    }
 
@@ -1048,18 +1103,18 @@ bool frm_up (frm_t *frm)
 
    char *pwd = getcwd (NULL, 0);
    if (!pwd) {
-      FRM_ERROR ("Error: could not retrieve the current working directory: %m\n");
+      ERR (frm, "Error: could not retrieve the current working directory: %m\n");
       return false;
    }
 
    char *tmp = ds_str_cat (frm->dbpath, "/root", NULL);
    if (!tmp) {
-      FRM_ERROR ("OOM error allocating temporary pattern\n");
+      ERR (frm, "OOM error allocating temporary pattern\n");
       return false;
    }
 
    if ((strcmp (tmp, pwd))==0) {
-      FRM_ERROR ("Error: cannot go up a level beyond dbpath [%s]\n", frm->dbpath);
+      ERR (frm, "Error: cannot go up a level beyond dbpath [%s]\n", frm->dbpath);
       free (tmp);
       free (pwd);
       return false;
@@ -1068,14 +1123,14 @@ bool frm_up (frm_t *frm)
 
    char *olddir = pushdir ("..");
    if (!olddir) {
-      FRM_ERROR ("Failed to switch directory [..]: %m\n");
+      ERR (frm, "Failed to switch directory [..]: %m\n");
       free (pwd);
       return false;
    }
 
    char *path = get_path (frm);
    if (!(history_append (frm->dbpath, path))) {
-      FRM_ERROR ("Failed to set the working frame to [root]\n");
+      ERR (frm, "Failed to set the working frame to [root]\n");
       free (olddir);
       free (pwd);
       return false;
@@ -1096,13 +1151,13 @@ bool frm_down (frm_t *frm, const char *target)
    }
 
    if ((chdir (target))!=0) {
-      FRM_ERROR ("Failed to switch to target [%s]\n", target);
+      ERR (frm, "Failed to switch to target [%s]\n", target);
       return false;
    }
 
    char *pwd = get_path (frm);
    if (!(history_append (frm->dbpath, pwd))) {
-      FRM_ERROR ("Failed to set the working frame to [root]\n");
+      ERR (frm, "Failed to set the working frame to [root]\n");
       free (pwd);
       return false;
    }
@@ -1114,7 +1169,7 @@ bool frm_down (frm_t *frm, const char *target)
 bool frm_switch (frm_t *frm, const char *target)
 {
    if (!frm || !target || !target[0]) {
-      FRM_ERROR ("Error: null objects passed for frm_switching\n");
+      ERR (frm, "Error: null objects passed for frm_switching\n");
       return false;
    }
 
@@ -1122,7 +1177,7 @@ bool frm_switch (frm_t *frm, const char *target)
       ? ds_str_dup (target)
       : ds_str_cat (target, "/", NULL);
    if (!suffixed) {
-      FRM_ERROR ("OOM error allocating suffixed string\n");
+      ERR (frm, "OOM error allocating suffixed string\n");
       errno = ENOMEM;
       return false;
    }
@@ -1131,26 +1186,26 @@ bool frm_switch (frm_t *frm, const char *target)
    free (suffixed);
    if (!actual) {
       if (!(actual = ds_str_dup (target))) {
-         FRM_ERROR ("OOM error allocating target to switch to [%s]\n", target);
+         ERR (frm, "OOM error allocating target to switch to [%s]\n", target);
          return false;
       }
    }
 
    if ((chdir (frm->dbpath))!=0) {
-      FRM_ERROR ("Failed to switch to dbpath [%s]\n", frm->dbpath);
+      ERR (frm, "Failed to switch to dbpath [%s]\n", frm->dbpath);
       free (actual);
       return false;
    }
 
    if ((chdir (actual))!=0) {
-      FRM_ERROR ("Failed to switch to target [%s]\n", actual);
+      ERR (frm, "Failed to switch to target [%s]\n", actual);
       free (actual);
       return false;
    }
 
    char *pwd = get_path (frm);
    if (!(history_append (frm->dbpath, pwd))) {
-      FRM_ERROR ("Failed to set the working frame to [root]\n");
+      ERR (frm, "Failed to set the working frame to [root]\n");
       free (actual);
       free (pwd);
       return false;
@@ -1164,7 +1219,7 @@ bool frm_switch (frm_t *frm, const char *target)
 bool frm_switch_direct (frm_t *frm, const char *target)
 {
    if (!frm || !target || !target[0]) {
-      FRM_ERROR ("Error: null objects passed for frm_switching\n");
+      ERR (frm, "Error: null objects passed for frm_switching\n");
       return false;
    }
 
@@ -1172,26 +1227,26 @@ bool frm_switch_direct (frm_t *frm, const char *target)
       ? ds_str_dup (target)
       : ds_str_cat (target, "/", NULL);
    if (!suffixed) {
-      FRM_ERROR ("OOM error allocating suffixed string\n");
+      ERR (frm, "OOM error allocating suffixed string\n");
       errno = ENOMEM;
       return false;
    }
 
    if ((chdir (frm->dbpath))!=0) {
-      FRM_ERROR ("Failed to switch to dbpath [%s]\n", frm->dbpath);
+      ERR (frm, "Failed to switch to dbpath [%s]\n", frm->dbpath);
       free (suffixed);
       return false;
    }
 
    if ((chdir (suffixed))!=0) {
-      FRM_ERROR ("Failed to switch to target [%s]\n", suffixed);
+      ERR (frm, "Failed to switch to target [%s]\n", suffixed);
       free (suffixed);
       return false;
    }
 
    char *pwd = get_path (frm);
    if (!(history_append (frm->dbpath, pwd))) {
-      FRM_ERROR ("Failed to set the working frame to [root]\n");
+      ERR (frm, "Failed to append history: [%s]\n", pwd);
       free (suffixed);
       free (pwd);
       return false;
@@ -1217,17 +1272,17 @@ bool frm_back (frm_t *frm, size_t index)
    static const size_t line_len = 1024 * 1024 * 10;
 
    if (!(olddir = pushdir (frm->dbpath))) {
-      FRM_ERROR ("Failed to switch to dbpath directory [%s]: %m\n", frm->dbpath);
+      ERR (frm, "Failed to switch to dbpath directory [%s]: %m\n", frm->dbpath);
       goto cleanup;
    }
 
    if (!(infile = fopen ("history", "r"))) {
-      FRM_ERROR ("Failed to open [history] for reading: %m\n");
+      ERR (frm, "Failed to open [history] for reading: %m\n");
       goto cleanup;
    }
 
    if (!(line = malloc (line_len))) {
-      FRM_ERROR ("OOM error allocating line for reading history\n");
+      ERR (frm, "OOM error allocating line for reading history\n");
    }
 
    size_t nline = 0;
@@ -1241,7 +1296,7 @@ bool frm_back (frm_t *frm, size_t index)
    }
 
    if (!line[0]) {
-      FRM_ERROR ("History file appears to be empty, aborting switch.\n");
+      ERR (frm, "History file appears to be empty, aborting switch.\n");
       goto cleanup;
    }
 
@@ -1283,7 +1338,7 @@ bool frm_pop (frm_t *frm, bool force)
       free (subframes);
 
       if (nsubframes!=0) {
-         FRM_ERROR ("Error: cannot pop a frame that has children\n");
+         ERR (frm, "Error: cannot pop a frame that has children\n");
          errno = ENOTEMPTY;
          return false;
       }
@@ -1291,23 +1346,82 @@ bool frm_pop (frm_t *frm, bool force)
 
    char *oldpath = get_path (frm);
    if (!oldpath) {
-      FRM_ERROR ("Error: failed to retrieve current working directory: %m\n");
+      ERR (frm, "Error: failed to retrieve current working directory: %m\n");
       return false;
    }
 
    if (!(frm_up (frm))) {
-      FRM_ERROR ("Error: failed to switch to parent frame: %m\n");
+      ERR (frm, "Error: failed to switch to parent frame: %m\n");
       free (oldpath);
       return false;
    }
 
    if (!(frm_delete (frm, oldpath))) {
-      FRM_ERROR ("Error: failed to remove path [%s]: %m\n", oldpath);
+      ERR (frm, "Error: failed to remove path [%s]: %m\n", oldpath);
       free (oldpath);
       return false;
    }
 
    free (oldpath);
+   return true;
+}
+
+bool frm_rename (frm_t *frm, const char *newname)
+{
+   if (!frm) {
+      FRM_ERROR ("Error: null object passed for frm_t\n");
+      errno = EINVAL;
+      return false;
+   }
+
+   char *current_name = frm_current(frm);
+   if (!current_name) {
+      ERR (frm, "OOM error retrieving current frame path\n");
+      return false;
+   }
+
+   const char *oldname = strrchr (current_name, '/');
+   if (!oldname) {
+      ERR(frm, "Error: Internal corruption (current node has no slash): [%s]\n",
+               current_name);
+      free (current_name);
+      return false;
+   }
+   oldname++;
+
+   if (!(frm_up (frm))) {
+      ERR (frm, "Error: Failed to switch to parent directory [%s/..]: %m\n",
+            oldname);
+      free (current_name);
+      return false;
+   }
+
+   if ((rename (oldname, newname))!=0) {
+      ERR (frm, "Error: failed to rename [%s] to [%s]: %m\n", oldname, newname);
+      free (current_name);
+      return false;
+   }
+
+   if (!(index_remove (frm->dbpath, current_name))) {
+      ERR (frm, "Warning: failed to remove [%s] from index\n", current_name);
+   }
+   free (current_name);
+
+   if (!(frm_down(frm, newname))) {
+      ERR (frm, "Warning: cannot switch to renamed frame [%s]: %m\n", newname);
+      return false;
+   }
+
+   current_name = frm_current(frm);
+   if (!current_name) {
+      ERR (frm, "OOM error retrieving current frame path\n");
+      return false;
+   }
+
+   if (!(index_add(frm->dbpath, current_name))) {
+      ERR (frm, "Warning: failed to add [%s] to index\n", current_name);
+   }
+   free (current_name);
    return true;
 }
 
@@ -1322,13 +1436,13 @@ bool frm_delete (frm_t *frm, const char *target)
    char **subframes = frm_list (frm, target);
    char *olddir = pushdir (frm->dbpath);
    if (!olddir) {
-      FRM_ERROR ("Error: failed to switch directory: %m\n");
+      ERR (frm, "Error: failed to switch directory: %m\n");
       frm_strarray_free(subframes);
       return false;
    }
 
    if (!(removedir (target))) {
-      FRM_ERROR ("Error: failed to remove directory[%s]: %m\n", target);
+      ERR (frm, "Error: failed to remove directory[%s]: %m\n", target);
       popdir (&olddir);
       frm_strarray_free (subframes);
       return false;
@@ -1336,12 +1450,12 @@ bool frm_delete (frm_t *frm, const char *target)
 
    for (size_t i=0; subframes && subframes[i]; i++) {
       if (!(index_remove (frm->dbpath, subframes[i]))) {
-         FRM_ERROR ("Warning: failed to remove [%s] from index\n", subframes[i]);
+         ERR (frm, "Warning: failed to remove [%s] from index\n", subframes[i]);
       }
    }
    frm_strarray_free (subframes);
    if (!(index_remove (frm->dbpath, target))) {
-      FRM_ERROR ("Warning: failed to remove [%s] from index\n", target);
+      ERR (frm, "Warning: failed to remove [%s] from index\n", target);
    }
 
    popdir (&olddir);
@@ -1359,7 +1473,7 @@ static char **match (frm_t *frm, const char *sterm,
 
    char **index = index_read(frm->dbpath);
    if (!index) {
-      FRM_ERROR ("Error: failed to read index\n");
+      ERR (frm, "Error: failed to read index\n");
       return NULL;
    }
 
@@ -1382,12 +1496,12 @@ static char **match (frm_t *frm, const char *sterm,
          size_t newsize = results_len + 1;
          char **tmp = realloc (results, (sizeof *tmp) * (newsize + 1));
          if (!tmp) {
-            FRM_ERROR ("OOM error allocating match results\n");
+            ERR (frm, "OOM error allocating match results\n");
             goto cleanup;
          }
          tmp[newsize] = NULL;
          if (!(tmp[results_len] = ds_str_dup (index[i]))) {
-            FRM_ERROR ("OOM error allocating match item %zu\n", i);
+            ERR (frm, "OOM error allocating match item %zu\n", i);
             goto cleanup;
          }
 
@@ -1399,7 +1513,7 @@ static char **match (frm_t *frm, const char *sterm,
    // If we reached this point with NULL results then no errors occurred but
    // no matches were found either. Must return an empty list.
    if (!results && !(results = calloc (1, sizeof *results))) {
-      FRM_ERROR ("OOM error allocating empty list\n");
+      ERR (frm, "OOM error allocating empty list\n");
       goto cleanup;
    }
 
@@ -1429,48 +1543,22 @@ char **frm_list (frm_t *frm, const char *from)
       return NULL;
    }
 
-   // Attempt to switch to 'from' as a relative path. If that fails
-   // attempt to switch to 'from' as an absolute framename (absolute
-   // relative to frm->dbpath).
-   if (!from || !from[0]) {
-      from = "./";
-   }
-   char *olddir = pushdir (from);
+   char *olddir = frm_switch_path (frm, from);
    if (!olddir) {
-      FRM_ERROR ("Warning: using relative path [%s] failed, trying absolute path\n",
-            from);
-      char *tmp = ds_str_cat (frm->dbpath, "/", from, NULL);
-      if (!tmp) {
-         FRM_ERROR ("OOM error allocating absolute path for framename [%s/%s]\n",
-               frm->dbpath, from);
-         return NULL;
-      }
-      char *first_errmsg = ds_str_dup (strerror (errno));
-      if (!first_errmsg) {
-         FRM_ERROR ("OOM error allocating error message string: %i\n", errno);
-         return NULL;
-      }
-
-      olddir = pushdir (tmp);
-      free (tmp);
-      if (!olddir) {
-         FRM_ERROR ("Neither [%s] nor [%s/%s] could be used: [%s][%m]\n",
-               from, frm->dbpath, from, first_errmsg);
-         free (first_errmsg);
-         return NULL;
-      }
-      free (first_errmsg);
+      ERR (frm, "Error: failed to switch path to [%s]\n", from);
+      return NULL;
    }
 
    char *current = frm_current (frm);
    if (!current) {
-      FRM_ERROR ("Error: unable to determine current frame: %m\n");
+      ERR (frm, "Error: unable to determine current frame: %m\n");
+      popdir (&olddir);
       return NULL;
    }
 
    char *prefixed_current = ds_str_cat (current, "/", NULL);
    if (!prefixed_current) {
-      FRM_ERROR ("OOM error allocating temporary string for current frame\n");
+      ERR (frm, "OOM error allocating temporary string for current frame\n");
       free (current);
       popdir (&olddir);
       return NULL;
@@ -1487,7 +1575,7 @@ char **frm_match (frm_t *frm, const char *sterm, uint32_t flags)
 {
    char *current = frm_current (frm);
    if (!current) {
-      FRM_ERROR ("Failed to retrieve the current frame\n");
+      ERR (frm, "Failed to retrieve the current frame\n");
       return NULL;
    }
 
@@ -1621,7 +1709,7 @@ frm_node_t *frm_node_create (frm_t *frm)
 {
    char *pwd = pushdir (frm->dbpath);
    if (!pwd) {
-      FRM_ERROR ("Error: failed to switch to [%s]: %m\n", frm->dbpath);
+      ERR (frm, "Error: failed to switch to [%s]: %m\n", frm->dbpath);
       return NULL;
    }
 
@@ -1724,4 +1812,40 @@ const frm_node_t *frm_node_find (const frm_node_t *node, const char *fpath)
    return NULL;
 }
 
+char *frm_switch_path (frm_t *frm, const char *from)
+{
+   // Attempt to switch to 'from' as a relative path. If that fails
+   // attempt to switch to 'from' as an absolute framename (absolute
+   // relative to frm->dbpath).
+   if (!from || !from[0]) {
+      from = "./";
+   }
+   char *olddir = pushdir (from);
+   if (!olddir) {
+      ERR (frm, "Warning: using relative path [%s] failed, trying absolute path\n",
+            from);
+      char *tmp = ds_str_cat (frm->dbpath, "/", from, NULL);
+      if (!tmp) {
+         ERR (frm, "OOM error allocating absolute path for framename [%s/%s]\n",
+               frm->dbpath, from);
+         return NULL;
+      }
+      char *first_errmsg = ds_str_dup (strerror (errno));
+      if (!first_errmsg) {
+         ERR (frm, "OOM error allocating error message string: %i\n", errno);
+         return NULL;
+      }
 
+      olddir = pushdir (tmp);
+      free (tmp);
+      if (!olddir) {
+         ERR (frm, "Neither [%s] nor [%s/%s] could be used: [%s][%m]\n",
+               from, frm->dbpath, from, first_errmsg);
+         free (first_errmsg);
+         return NULL;
+      }
+      free (first_errmsg);
+   }
+
+   return olddir;
+}

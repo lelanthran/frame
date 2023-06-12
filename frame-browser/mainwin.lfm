@@ -1,7 +1,7 @@
 object frmMain: TfrmMain
-  Left = 537
+  Left = 472
   Height = 486
-  Top = 206
+  Top = 234
   Width = 1046
   Caption = 'Frame Browser'
   ClientHeight = 486
@@ -66,7 +66,7 @@ object frmMain: TfrmMain
     Height = 454
     Top = 32
     Width = 1046
-    HorzScrollBar.Page = 904
+    HorzScrollBar.Page = 948
     HorzScrollBar.Tracking = True
     VertScrollBar.Page = 195
     Anchors = [akTop, akLeft, akRight, akBottom]
@@ -195,10 +195,11 @@ object frmMain: TfrmMain
               Top = 45
               Width = 336
               Anchors = [akTop, akLeft, akRight, akBottom]
-              ReadOnly = True
-              TabOrder = 1
+              PopupMenu = ctxMenuCurrentFrame
+              TabOrder = 2
+              OnEditingEnd = tvFramesEditingEnd
+              OnKeyDown = tvFramesKeyDown
               OnSelectionChanged = tvFramesSelectionChanged
-              Options = [tvoAutoItemHeight, tvoHideSelection, tvoKeepCollapsedNodes, tvoReadOnly, tvoShowButtons, tvoShowLines, tvoShowRoot, tvoToolTips, tvoThemedDraw]
               Items.Data = {
                 F9FFFFFF020001000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF010000000000
                 000001050000004974656D30FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF01000000
@@ -218,7 +219,8 @@ object frmMain: TfrmMain
               Top = 17
               Width = 336
               Anchors = [akTop, akLeft, akRight]
-              TabOrder = 2
+              Enabled = False
+              TabOrder = 1
             end
           end
           object PairSplitterSide4: TPairSplitterSide
@@ -237,8 +239,7 @@ object frmMain: TfrmMain
               Left = 0
               Height = 17
               Top = 0
-              Width = 290
-              Anchors = [akTop, akLeft, akRight]
+              Width = 58
               Caption = 'Notes'
               TabOrder = 0
             end
@@ -258,13 +259,60 @@ object frmMain: TfrmMain
               Lines.Strings = (
                 ''
               )
+              OnChange = memoNotesChange
               OnEditingDone = memoNotesEditingDone
               ScrollBars = ssBoth
               TabOrder = 1
             end
+            object stxtStatusChanged: TStaticText
+              AnchorSideTop.Control = PairSplitterSide4
+              AnchorSideRight.Control = PairSplitterSide4
+              AnchorSideRight.Side = asrBottom
+              Left = 96
+              Height = 17
+              Top = 0
+              Width = 194
+              Anchors = [akTop, akRight]
+              Caption = 'Notes Changed'
+              Color = clDefault
+              Font.Color = clRed
+              ParentFont = False
+              ParentColor = False
+              TabOrder = 2
+            end
           end
         end
       end
+    end
+  end
+  object sbarStatus: TStatusBar
+    Left = 0
+    Height = 18
+    Top = 468
+    Width = 1046
+    Panels = <>
+    SimpleText = 'help'
+  end
+  object ctxMenuCurrentFrame: TPopupMenu
+    Left = 208
+    object MenuItem1: TMenuItem
+      Caption = 'Push Child Frame'
+      OnClick = MenuItem1Click
+    end
+    object MenuItem2: TMenuItem
+      Caption = 'Pop This Frame'
+      OnClick = MenuItem2Click
+    end
+    object MenuItem3: TMenuItem
+      Caption = 'Rename This Frame'
+      OnClick = MenuItem3Click
+    end
+    object Separator1: TMenuItem
+      Caption = '-'
+    end
+    object MenuItem4: TMenuItem
+      Caption = 'Pop Frame and All Children'
+      OnClick = MenuItem4Click
     end
   end
 end

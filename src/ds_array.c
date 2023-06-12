@@ -1,3 +1,13 @@
+
+/* ************************************************************************** *
+ * Frame  (©2023 Lelanthran Manickum)                                         *
+ *                                                                            *
+ * This program comes with ABSOLUTELY NO WARRANTY. This is free software      *
+ * and you are welcome to redistribute it under certain conditions;  see      *
+ * the LICENSE file for details.                                              *
+ * ****************************************************************************/
+
+
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>

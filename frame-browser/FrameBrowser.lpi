@@ -58,7 +58,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <Libraries Value="../debug/lib/x86_64-linux-gnu"/>
+      <Libraries Value="../recent/lib/x86_64-linux-gnu"/>
       <OtherUnitFiles Value="../debug/lib/x86_64-linux-gnu"/>
       <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
@@ -74,7 +74,7 @@
         <UseValgrind Value="True"/>
       </Debugging>
       <Options>
-        <LinkerOptions Value="frame"/>
+        <LinkerOptions Value="lasan"/>
         <Win32>
           <GraphicApplication Value="True"/>
         </Win32>

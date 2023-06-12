@@ -1,10 +1,19 @@
 #!/bin/bash
 
+# ########################################################################## #
+# Frame  (©2023 Lelanthran Manickum)                                         #
+#                                                                            #
+# This program comes with ABSOLUTELY NO WARRANTY. This is free software      #
+# and you are welcome to redistribute it under certain conditions;  see      #
+# the LICENSE file for details.                                              #
+# ########################################################################## #
+
+
 export DBPATH=/tmp/frame/
-export PROG="./debug/bin/x86_64-linux-gnu/frame.elf --quiet"
+export PROG="./recent/bin/x86_64-linux-gnu/frame.elf --quiet"
 
 if [ ! -z "$VG" ]; then
-   export VG="valgrind --leak-check=full --show-leak-kinds=all --error-exitcode=1"
+   export VG="valgrind -q --leak-check=full --show-leak-kinds=all --error-exitcode=1"
 fi
 
 die () {
@@ -19,8 +28,19 @@ export GREEN="\e[32m"
 export BLUE="\e[34m"
 export CYAN="\e[36m"
 export YELLOW="\e[33m"
-
 export HI_ON="${RED}${INV}"
+
+if [ ! -t 1 ]; then
+   export NC=""
+   export INV=""
+   export RED=""
+   export GREEN=""
+   export BLUE=""
+   export CYAN=""
+   export YELLOW=""
+   export HI_ON=""
+fi
+
 export STMT_NUM=0
 
 if [ -z "$DEBUG" ]; then
@@ -163,6 +183,12 @@ execute $PROG match "one/egh" > t
 if [ `wc -l t | cut -f 1 -d \   ` -ne 1 ]; then
    die expected failed match
 fi
+
+# Rename root/one/five
+execute $PROG switch root/one/five
+execute $PROG rename 'FIVE' || die failed rename
+# Current node is root/one/FIVE
+execute $PROG status || die failed status
 
 execute $PROG match --from-root "one/ei" || die failed match
 
