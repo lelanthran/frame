@@ -20,8 +20,8 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="mainWin"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="202"/>
-        <CursorPos X="10" Y="223"/>
+        <TopLine Value="163"/>
+        <CursorPos X="39" Y="184"/>
         <UsageCount Value="173"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -90,7 +90,7 @@
         <UsageCount Value="8"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="27">
+    <JumpHistory HistoryIndex="29">
       <Position>
         <Filename Value="mainwin.pas"/>
         <Caret Line="98" TopLine="91"/>
@@ -202,6 +202,14 @@
       <Position>
         <Filename Value="mainwin.pas"/>
         <Caret Line="251" Column="19" TopLine="234"/>
+      </Position>
+      <Position>
+        <Filename Value="mainwin.pas"/>
+        <Caret Line="223" Column="10" TopLine="202"/>
+      </Position>
+      <Position>
+        <Filename Value="mainwin.pas"/>
+        <Caret Line="174" Column="3" TopLine="170"/>
       </Position>
     </JumpHistory>
     <RunParams>

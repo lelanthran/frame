@@ -180,6 +180,8 @@ begin
   begin
     frm_payload_replace(PChar(frmMain.memoNotes.Text));
   end;
+  frmMain.notesChanged:=false;
+  frmMain.stxtStatusChanged.Caption:='';
 end;
 
 procedure TfrmMain.MenuItem1Click(Sender: TObject);
