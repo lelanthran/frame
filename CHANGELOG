@@ -1,4 +1,4 @@
-v0.1.3 - ???
+v0.1.3 - Mon 12 Jun 2023 16:35:42 SAST
 1. Adds some documentation.
 2. Adds '--frame=' option, to execute the command in the context of a different
    frame.

@@ -1,5 +1,14 @@
 #!/bin/bash
 
+# ########################################################################## #
+# Frame  (©2023 Lelanthran Manickum)                                         #
+#                                                                            #
+# This program comes with ABSOLUTELY NO WARRANTY. This is free software      #
+# and you are welcome to redistribute it under certain conditions;  see      #
+# the LICENSE file for details.                                              #
+# ########################################################################## #
+
+
 export DBPATH=/tmp/frame/
 export PROG="./recent/bin/x86_64-linux-gnu/frame.elf --quiet"
 
