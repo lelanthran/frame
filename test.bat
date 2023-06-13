@@ -22,6 +22,8 @@ set HI_ON="%RED%%INV%"
 
 set STMT_NUM=0
 
+set LIMIT=%1
+
 echo Removing %DBPATH%
 rmdir /q /s  %DBPATH%
 
@@ -147,13 +149,16 @@ call :execute %PROG% match --from-root "one/ei"
 call :execute %PROG% tree
 
 
-exit /B 0
+exit 0
 
 :execute
 echo %RED%Executing%NC% %GREEN% %STMT_NUM%:%NC%
 echo %BLUE%%*%NC%
 set /A "STMT_NUM+=1"
-%* --dbpath=%DBPATH% || call :end
-exit /B 0
+%* --dbpath=%DBPATH% || goto :end
+if %STMT_NUM% GEQ %LIMIT% goto :end
+goto :eof
 
 :end
+exit
+

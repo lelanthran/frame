@@ -512,11 +512,9 @@ int main (int argc, char **argv)
       if ((frm = frm_create (dbpath))) {
          fprintf (stderr, "Created framedb at [%s]\n", dbpath);
          ret = EXIT_SUCCESS;
-         FRM_ERROR ("Returning %i\n", ret);
       } else {
          fprintf (stderr, "Failed to create framedb at [%s]: %m\n", dbpath);
          ret = EXIT_FAILURE;
-         FRM_ERROR ("Returning %i\n", ret);
       }
       goto cleanup;
    }

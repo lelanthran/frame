@@ -54,6 +54,51 @@ struct frm_t {
 
 static const char *lockfile = "framedb.lock";
 
+
+
+/* ********************************************************** */
+/* ********************************************************** */
+/* ********************************************************** */
+
+static bool wrapper_isdir (const struct dirent *de)
+{
+#if PLATFORM == Windows
+
+   struct stat sb;
+   if ((stat (de->d_name, &sb)) != 0) {
+      FRM_ERROR ("Error: Failed to stat [%s]: %m\n", de->d_name);
+      return false;
+   }
+   return S_ISDIR(sb.st_mode);
+
+#else
+
+   return de->d_type == DT_DIR;
+
+#endif
+}
+
+static int wrapper_mkdir (const char *name)
+{
+   int result = -1;
+#if PLATFORM == Windows
+
+   result = mkdir (name);
+
+#else
+
+   result = mkdir (name, 0777);
+
+#endif
+
+   if (result!=0) {
+      FRM_ERROR ("Error: failed to create directory [%s]: %m\n", name);
+      return -1;
+   }
+   return 0;
+}
+
+
 /* ********************************************************** */
 /* ********************************************************** */
 /* ********************************************************** */
@@ -361,45 +406,6 @@ cleanup:
    return !error;
 }
 
-static bool wrapper_isdir (const struct dirent *de)
-{
-#if PLATFORM == Windows
-
-   struct stat sb;
-   if ((stat (de->d_name, &sb)) != 0) {
-      FRM_ERROR ("Error: Failed to stat [%s]: %m\n", de->d_name);
-      return false;
-   }
-   return S_ISDIR(sb.st_mode);
-
-#else
-
-   return de->d_type == DT_DIR;
-
-#endif
-}
-
-static int wrapper_mkdir (const char *name)
-{
-   int result = -1;
-#if PLATFORM == Windows
-
-   result = mkdir (name);
-
-#else
-
-   result = mkdir (name, 0777);
-
-#endif
-
-   if (result!=0) {
-      FRM_ERROR ("Error: failed to create directory [%s]: %m\n", name);
-      return -1;
-   }
-   return 0;
-}
-
-
 static bool removedir (const char *target)
 {
    if (!target || !target[0] || target[0]=='/' || target[0] == '.') {
@@ -656,15 +662,15 @@ char *frm_readfile (const char *name)
       return NULL;
    }
 
-   char *ret = malloc (len + 1);
+   char *ret = malloc (len + 2);
    if (!ret) {
       FRM_ERROR ("OOM error allocating file contents [%s]\n", name);
       fclose (inf);
       return NULL;
    }
 
-   size_t nbytes = fread (ret, 1, len, inf);
-   if (nbytes != (size_t)len) {
+   size_t nbytes = fread (ret, 1, len+1, inf);
+   if (!feof (inf) || ferror (inf)) {
       FRM_ERROR ("Read [%zu of %li] bytes in [%s]: %m\n", nbytes, len, name);
       fclose (inf);
       free (ret);
@@ -678,7 +684,7 @@ char *frm_readfile (const char *name)
 
 bool frm_vwritefile (const char *name, const char *data, va_list ap)
 {
-   FILE *outf = fopen (name, "w");
+   FILE *outf = fopen (name, "wt");
    if (!outf) {
       FRM_ERROR ("Failed to open [%s] for writing: %m\n", name);
       return false;
@@ -822,7 +828,6 @@ void frm_close (frm_t *frm)
          ERR (frm, "Warning: lockfile must be maually deleted [%s/%s]\n",
                frm->dbpath, lockfile);
       }
-      FRM_ERROR ("Error number for remove() == %i (%m)\n", errno);
    }
 
    free (frm->dbpath);
@@ -1424,6 +1429,12 @@ bool frm_rename (frm_t *frm, const char *newname)
       return false;
    }
 
+   // TODO: Why is only this occurrence a problem under Windows.
+   // Seems to me that all the others should also be a problem.
+   // Don't // want to make a wrapper for slashes only to find
+   // that this occurrence is the only one where the filename is
+   // returned by the OS, hence the reason it's the only place
+   // with different slashes.
    const char *oldname = strrchr (current_name, '/');
    if (!oldname) {
       ERR(frm, "Error: Internal corruption (current node has no slash): [%s]\n",
