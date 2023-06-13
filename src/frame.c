@@ -371,6 +371,13 @@ static void current (frm_t *frm)
    free (mtime);
 }
 
+#if PLATFORM == Windows
+static void ctime_r (time_t *date, char *dst)
+{
+   strcpy (dst, ctime (date));
+}
+#endif
+
 int print_tree (const frm_node_t *node, size_t level)
 {
 #define INDENT(x) for (size_t i=0; i<x; i++) {\
@@ -455,7 +462,36 @@ int main (int argc, char **argv)
    }
 
    if (!dbpath) {
-      // TODO: Windows compatibility
+
+#if PLATFORM == Windows
+      const char *homedrive = getenv ("HOMEDRIVE");
+      const char *homepath = getenv ("HOMEPATH");
+      char *winhome = NULL;
+      if ((ds_str_printf (&winhome, "HOME=%s%s", homedrive, homepath)) == 0) {
+         fprintf (stderr, "OOM error allocating environment variable [%s=%s]\n",
+                  homedrive, homepath);
+         ret = EXIT_FAILURE;
+         goto cleanup;
+      }
+
+      if (!winhome) {
+         fprintf (stderr, "Failed to set $HOME variable: [%s][%s][%s]\n",
+                  homedrive, homepath, winhome);
+         free (winhome);
+         ret = EXIT_FAILURE;
+         goto cleanup;
+      }
+
+      if ((putenv (winhome)) != 0) {
+         fprintf (stderr, "Warning: failed to set environment [%s]: %m\n", winhome);
+      }
+
+      free (winhome);
+      homedrive = NULL;
+      homepath = NULL;
+      winhome = NULL;
+#endif
+
       const char *home = getenv("HOME");
       if (!home || !home[0]) {
          fprintf (stderr, "No --dbpath specified and $HOME is not set\n");
@@ -474,11 +510,13 @@ int main (int argc, char **argv)
    // enough to do it.
    if ((strcmp (command, "create"))==0) {
       if ((frm = frm_create (dbpath))) {
-         printf ("Created framedb at [%s]\n", dbpath);
+         fprintf (stderr, "Created framedb at [%s]\n", dbpath);
          ret = EXIT_SUCCESS;
+         FRM_ERROR ("Returning %i\n", ret);
       } else {
          fprintf (stderr, "Failed to create framedb at [%s]: %m\n", dbpath);
          ret = EXIT_FAILURE;
+         FRM_ERROR ("Returning %i\n", ret);
       }
       goto cleanup;
    }
