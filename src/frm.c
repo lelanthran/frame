@@ -406,9 +406,24 @@ cleanup:
    return !error;
 }
 
+static bool isslash (int c)
+{
+   return c=='/' || c=='\\';
+}
+
+static char *strrslash (const char *s)
+{
+   char *ret = strrchr (s, '/');
+   if (ret)
+      return ret;
+
+   return strrchr (s, '\\');
+}
+
+
 static bool removedir (const char *target)
 {
-   if (!target || !target[0] || target[0]=='/' || target[0] == '.') {
+   if (!target || !target[0] || isslash(target[0]) || target[0] == '.') {
       FRM_ERROR ("Error: invalid directory removal name [%s]\n", target);
       errno = EINVAL;
       return false;
@@ -622,7 +637,7 @@ static frm_t *frm_alloc (const char *dbpath, const char *olddir)
    }
 
    size_t dbpath_len = strlen (dbpath);
-   if (ret->dbpath[dbpath_len-1] == '/')
+   if (isslash (ret->dbpath[dbpath_len-1]))
       ret->dbpath[dbpath_len-1] = 0;
 
    return ret;
@@ -1222,7 +1237,7 @@ bool frm_switch (frm_t *frm, const char *target)
       return false;
    }
 
-   char *suffixed = target[strlen(target)-1]=='/'
+   char *suffixed = isslash (target[strlen(target)-1])
       ? ds_str_dup (target)
       : ds_str_cat (target, "/", NULL);
    if (!suffixed) {
@@ -1272,7 +1287,7 @@ bool frm_switch_direct (frm_t *frm, const char *target)
       return false;
    }
 
-   char *suffixed = target[strlen(target)-1]=='/'
+   char *suffixed = isslash (target[strlen(target)-1])
       ? ds_str_dup (target)
       : ds_str_cat (target, "/", NULL);
    if (!suffixed) {
@@ -1429,13 +1444,7 @@ bool frm_rename (frm_t *frm, const char *newname)
       return false;
    }
 
-   // TODO: Why is only this occurrence a problem under Windows.
-   // Seems to me that all the others should also be a problem.
-   // Don't // want to make a wrapper for slashes only to find
-   // that this occurrence is the only one where the filename is
-   // returned by the OS, hence the reason it's the only place
-   // with different slashes.
-   const char *oldname = strrchr (current_name, '/');
+   const char *oldname = strrslash (current_name);
    if (!oldname) {
       ERR(frm, "Error: Internal corruption (current node has no slash): [%s]\n",
                current_name);
