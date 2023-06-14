@@ -80,7 +80,6 @@ var
 begin
    ShowMessage(message);
    tmp := frm_lastmsg(frame_var);
-   Writeln(tmp);
    frmMain.sbarStatus.SimpleText:=frm_lastmsg(frame_var);
 end;
 
@@ -114,7 +113,7 @@ end;
 
 procedure FrameReopen();
 begin
-  FrameInit('/home/lelanthran/.framedb');
+  FrameInit(frm_homepath() + '/.framedb');
   frame_history_populate('', frmMain.lvHistory);
   frame_current_populate(frmMain.edtCurrentFrame);
   frame_notes_populate(frmMain.memoNotes);
@@ -124,7 +123,7 @@ end;
 
 procedure TfrmMain.FormActivate(Sender: TObject);
 begin
-  if FrameInit('/home/lelanthran/.framedb') <> true then
+  if FrameInit(frm_homepath() + '/.framedb') <> true then
   begin
     frmMain.Close;
     Exit;

@@ -724,6 +724,45 @@ bool frm_writefile (const char *fname, const char *data, ...)
    return ret;
 }
 
+const char *frm_homepath (void)
+{
+   static bool set = false;
+
+   if (set) {
+      return getenv ("HOME");
+   }
+
+
+#if PLATFORM == Windows
+   const char *homedrive = getenv ("HOMEDRIVE");
+   const char *homepath = getenv ("HOMEPATH");
+   char *winhome = NULL;
+   if ((ds_str_printf (&winhome, "HOME=%s%s", homedrive, homepath)) == 0) {
+      FRM_ERROR ("OOM error allocating environment variable [%s=%s]\n",
+            homedrive, homepath);
+      return NULL;
+   }
+
+   if (!winhome) {
+      FRM_ERROR ("Failed to set $HOME variable: [%s][%s][%s]\n",
+            homedrive, homepath, winhome);
+      free (winhome);
+      return NULL;
+   }
+
+   if ((putenv (winhome)) != 0) {
+      FRM_ERROR ("Warning: failed to set environment [%s]: %m\n", winhome);
+   }
+
+   free (winhome);
+   homedrive = NULL;
+   homepath = NULL;
+   winhome = NULL;
+#endif
+
+   return getenv ("HOME");
+}
+
 frm_t *frm_create (const char *dbpath)
 {
    if ((wrapper_mkdir (dbpath))!=0) {

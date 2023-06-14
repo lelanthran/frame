@@ -463,42 +463,14 @@ int main (int argc, char **argv)
 
    if (!dbpath) {
 
-#if PLATFORM == Windows
-      const char *homedrive = getenv ("HOMEDRIVE");
-      const char *homepath = getenv ("HOMEPATH");
-      char *winhome = NULL;
-      if ((ds_str_printf (&winhome, "HOME=%s%s", homedrive, homepath)) == 0) {
-         fprintf (stderr, "OOM error allocating environment variable [%s=%s]\n",
-                  homedrive, homepath);
-         ret = EXIT_FAILURE;
-         goto cleanup;
-      }
-
-      if (!winhome) {
-         fprintf (stderr, "Failed to set $HOME variable: [%s][%s][%s]\n",
-                  homedrive, homepath, winhome);
-         free (winhome);
-         ret = EXIT_FAILURE;
-         goto cleanup;
-      }
-
-      if ((putenv (winhome)) != 0) {
-         fprintf (stderr, "Warning: failed to set environment [%s]: %m\n", winhome);
-      }
-
-      free (winhome);
-      homedrive = NULL;
-      homepath = NULL;
-      winhome = NULL;
-#endif
-
-      const char *home = getenv("HOME");
+      const char *home = frm_homepath ();
       if (!home || !home[0]) {
          fprintf (stderr, "No --dbpath specified and $HOME is not set\n");
          ret = EXIT_FAILURE;
          goto cleanup;
       }
       dbpath = ds_str_cat (home, "/.framedb", NULL);
+
       if (!dbpath) {
          fprintf (stderr, "OOM error copying $HOME\n");
          ret = EXIT_FAILURE;
