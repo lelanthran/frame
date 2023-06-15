@@ -62,7 +62,7 @@ static const char *lockfile = "framedb.lock";
 
 static bool wrapper_isdir (const struct dirent *de)
 {
-#if PLATFORM == Windows
+#ifdef PLATFORM_WINDOWS
 
    struct stat sb;
    if ((stat (de->d_name, &sb)) != 0) {
@@ -81,7 +81,7 @@ static bool wrapper_isdir (const struct dirent *de)
 static int wrapper_mkdir (const char *name)
 {
    int result = -1;
-#if PLATFORM == Windows
+#ifdef PLATFORM_WINDOWS
 
    result = mkdir (name);
 
@@ -733,7 +733,7 @@ const char *frm_homepath (void)
    }
 
 
-#if PLATFORM == Windows
+#ifdef PLATFORM_WINDOWS
    const char *homedrive = getenv ("HOMEDRIVE");
    const char *homepath = getenv ("HOMEPATH");
    char *winhome = NULL;

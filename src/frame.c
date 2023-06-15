@@ -371,7 +371,7 @@ static void current (frm_t *frm)
    free (mtime);
 }
 
-#if PLATFORM == Windows
+#ifdef PLATFORM_WINDOWS
 static void ctime_r (time_t *date, char *dst)
 {
    strcpy (dst, ctime (date));
