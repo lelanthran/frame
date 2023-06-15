@@ -1,12 +1,11 @@
 object frmMain: TfrmMain
   Left = 472
-  Height = 608
+  Height = 486
   Top = 234
-  Width = 1308
+  Width = 1278
   Caption = 'Frame Browser'
-  ClientHeight = 608
-  ClientWidth = 1308
-  DesignTimePPI = 120
+  ClientHeight = 486
+  ClientWidth = 1278
   OnActivate = FormActivate
   OnCreate = FormCreate
   LCLVersion = '2.2.6.0'
@@ -16,12 +15,12 @@ object frmMain: TfrmMain
     AnchorSideRight.Control = Owner
     AnchorSideRight.Side = asrBottom
     Left = 0
-    Height = 40
+    Height = 32
     Top = 0
-    Width = 1308
+    Width = 1278
     Anchors = [akTop, akLeft, akRight]
-    ClientHeight = 40
-    ClientWidth = 1308
+    ClientHeight = 32
+    ClientWidth = 1278
     TabOrder = 0
     object bbtnQuit: TBitBtn
       AnchorSideLeft.Control = Panel1
@@ -29,10 +28,10 @@ object frmMain: TfrmMain
       AnchorSideBottom.Control = Panel1
       AnchorSideBottom.Side = asrBottom
       Left = 1
-      Height = 38
+      Height = 30
       Hint = 'Quit FrameBrowser'
       Top = 1
-      Width = 94
+      Width = 75
       Anchors = [akTop, akLeft, akBottom]
       Caption = 'Quit'
       OnClick = bbtnQuitClick
@@ -46,10 +45,10 @@ object frmMain: TfrmMain
       AnchorSideTop.Control = Panel1
       AnchorSideBottom.Control = Panel1
       AnchorSideBottom.Side = asrBottom
-      Left = 95
-      Height = 38
+      Left = 76
+      Height = 30
       Top = 1
-      Width = 94
+      Width = 75
       Anchors = [akTop, akLeft, akBottom]
       Caption = 'Help'
       TabOrder = 1
@@ -64,15 +63,15 @@ object frmMain: TfrmMain
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
     Left = 0
-    Height = 568
-    Top = 40
-    Width = 1308
-    HorzScrollBar.Page = 1184
+    Height = 454
+    Top = 32
+    Width = 1278
+    HorzScrollBar.Page = 946
     HorzScrollBar.Tracking = True
-    VertScrollBar.Page = 237
+    VertScrollBar.Page = 195
     Anchors = [akTop, akLeft, akRight, akBottom]
-    ClientHeight = 564
-    ClientWidth = 1304
+    ClientHeight = 452
+    ClientWidth = 1276
     TabOrder = 1
     object PairSplitter1: TPairSplitter
       AnchorSideLeft.Control = Panel2
@@ -82,28 +81,28 @@ object frmMain: TfrmMain
       AnchorSideBottom.Control = Panel2
       AnchorSideBottom.Side = asrBottom
       Left = 0
-      Height = 564
+      Height = 452
       Top = 0
-      Width = 1304
+      Width = 1276
       Anchors = [akTop, akLeft, akRight, akBottom]
-      Position = 510
+      Position = 408
       object PairSplitterSide1: TPairSplitterSide
         Cursor = crArrow
         Left = 0
-        Height = 564
+        Height = 452
         Top = 0
-        Width = 510
-        ClientWidth = 510
-        ClientHeight = 564
+        Width = 408
+        ClientWidth = 408
+        ClientHeight = 452
         object StaticText2: TStaticText
           AnchorSideLeft.Control = PairSplitterSide1
           AnchorSideTop.Control = PairSplitterSide1
           AnchorSideRight.Control = PairSplitterSide1
           AnchorSideRight.Side = asrBottom
           Left = 0
-          Height = 21
+          Height = 17
           Top = 0
-          Width = 510
+          Width = 408
           Anchors = [akTop, akLeft, akRight]
           Caption = 'History'
           TabOrder = 0
@@ -116,8 +115,8 @@ object frmMain: TfrmMain
           AnchorSideRight.Side = asrBottom
           Left = 0
           Height = 28
-          Top = 21
-          Width = 510
+          Top = 17
+          Width = 408
           Anchors = [akTop, akLeft, akRight]
           OnChange = edtSearchTermChange
           TabOrder = 1
@@ -131,9 +130,9 @@ object frmMain: TfrmMain
           AnchorSideBottom.Control = PairSplitterSide1
           AnchorSideBottom.Side = asrBottom
           Left = 0
-          Height = 515
-          Top = 49
-          Width = 510
+          Height = 407
+          Top = 45
+          Width = 408
           Anchors = [akTop, akLeft, akRight, akBottom]
           Columns = <>
           Enabled = False
@@ -143,12 +142,12 @@ object frmMain: TfrmMain
       end
       object PairSplitterSide2: TPairSplitterSide
         Cursor = crArrow
-        Left = 516
-        Height = 564
+        Left = 412
+        Height = 452
         Top = 0
-        Width = 788
-        ClientWidth = 788
-        ClientHeight = 564
+        Width = 864
+        ClientWidth = 864
+        ClientHeight = 452
         object PairSplitter2: TPairSplitter
           AnchorSideLeft.Control = PairSplitterSide2
           AnchorSideTop.Control = PairSplitterSide2
@@ -157,28 +156,28 @@ object frmMain: TfrmMain
           AnchorSideBottom.Control = PairSplitterSide2
           AnchorSideBottom.Side = asrBottom
           Left = 0
-          Height = 564
+          Height = 452
           Top = 0
-          Width = 788
+          Width = 864
           Anchors = [akTop, akLeft, akRight, akBottom]
-          Position = 420
+          Position = 336
           object PairSplitterSide3: TPairSplitterSide
             Cursor = crArrow
             Left = 0
-            Height = 564
+            Height = 452
             Top = 0
-            Width = 420
-            ClientWidth = 420
-            ClientHeight = 564
+            Width = 336
+            ClientWidth = 336
+            ClientHeight = 452
             object StaticText1: TStaticText
               AnchorSideLeft.Control = PairSplitterSide3
               AnchorSideTop.Control = PairSplitterSide3
               AnchorSideRight.Control = PairSplitterSide3
               AnchorSideRight.Side = asrBottom
               Left = 0
-              Height = 21
+              Height = 17
               Top = 0
-              Width = 420
+              Width = 336
               Anchors = [akTop, akLeft, akRight]
               Caption = 'Current Frame'
               TabOrder = 0
@@ -192,9 +191,9 @@ object frmMain: TfrmMain
               AnchorSideBottom.Control = PairSplitterSide3
               AnchorSideBottom.Side = asrBottom
               Left = 0
-              Height = 515
-              Top = 49
-              Width = 420
+              Height = 407
+              Top = 45
+              Width = 336
               Anchors = [akTop, akLeft, akRight, akBottom]
               PopupMenu = ctxMenuCurrentFrame
               TabOrder = 2
@@ -217,8 +216,8 @@ object frmMain: TfrmMain
               AnchorSideBottom.Control = tvFrames
               Left = 0
               Height = 28
-              Top = 21
-              Width = 420
+              Top = 17
+              Width = 336
               Anchors = [akTop, akLeft, akRight]
               Enabled = False
               TabOrder = 1
@@ -226,21 +225,21 @@ object frmMain: TfrmMain
           end
           object PairSplitterSide4: TPairSplitterSide
             Cursor = crArrow
-            Left = 426
-            Height = 564
+            Left = 340
+            Height = 452
             Top = 0
-            Width = 362
-            ClientWidth = 362
-            ClientHeight = 564
+            Width = 524
+            ClientWidth = 524
+            ClientHeight = 452
             object StaticText3: TStaticText
               AnchorSideLeft.Control = PairSplitterSide4
               AnchorSideTop.Control = PairSplitterSide4
               AnchorSideRight.Control = PairSplitterSide4
               AnchorSideRight.Side = asrBottom
               Left = 0
-              Height = 21
+              Height = 17
               Top = 0
-              Width = 72
+              Width = 58
               Caption = 'Notes'
               TabOrder = 0
             end
@@ -253,15 +252,18 @@ object frmMain: TfrmMain
               AnchorSideBottom.Control = PairSplitterSide4
               AnchorSideBottom.Side = asrBottom
               Left = 0
-              Height = 543
-              Top = 21
-              Width = 362
+              Height = 435
+              Top = 17
+              Width = 524
               Anchors = [akTop, akLeft, akRight, akBottom]
+              Font.Height = -13
+              Font.Name = 'Monospace'
               Lines.Strings = (
                 ''
               )
               OnChange = memoNotesChange
               OnEditingDone = memoNotesEditingDone
+              ParentFont = False
               ScrollBars = ssBoth
               TabOrder = 1
             end
@@ -269,10 +271,10 @@ object frmMain: TfrmMain
               AnchorSideTop.Control = PairSplitterSide4
               AnchorSideRight.Control = PairSplitterSide4
               AnchorSideRight.Side = asrBottom
-              Left = 120
-              Height = 21
+              Left = 330
+              Height = 17
               Top = 0
-              Width = 242
+              Width = 194
               Anchors = [akTop, akRight]
               Caption = 'Notes Changed'
               Color = clDefault
@@ -288,14 +290,14 @@ object frmMain: TfrmMain
   end
   object sbarStatus: TStatusBar
     Left = 0
-    Height = 29
-    Top = 579
-    Width = 1308
+    Height = 18
+    Top = 468
+    Width = 1278
     Panels = <>
     SimpleText = 'help'
   end
   object ctxMenuCurrentFrame: TPopupMenu
-    Left = 260
+    Left = 208
     object MenuItem1: TMenuItem
       Caption = 'Push Child Frame'
       OnClick = MenuItem1Click
