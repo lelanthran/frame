@@ -371,7 +371,7 @@ static void current (frm_t *frm)
    free (mtime);
 }
 
-#ifdef PLATFORM_WINDOWS
+#ifdef PLATFORM_Windows
 static void ctime_r (time_t *date, char *dst)
 {
    strcpy (dst, ctime (date));
