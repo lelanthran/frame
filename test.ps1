@@ -7,17 +7,23 @@
 # the LICENSE file for details.                                              #
 # ########################################################################## #
 
+param (
+   [switch]$mono
+)
+
 $DBPATH="$Env:TEMP\frame"
 $PROG="$PWD\recent\bin\x86_64-w64-mingw32\frame.exe"
 
-$NC="[0m"
-$INV="[7m"
-$RED="[31m"
-$GREEN="[32m"
-$BLUE="[34m"
-$CYAN="[36m"
-$YELLOW="[33m"
-$HI_ON="$RED$NV"
+if ($mono -eq $false) {
+   $NC="[0m"
+   $INV="[7m"
+   $RED="[31m"
+   $GREEN="[32m"
+   $BLUE="[34m"
+   $CYAN="[36m"
+   $YELLOW="[33m"
+   $HI_ON="$RED$NV"
+}
 
 $STMT_NUM=0
 
@@ -34,10 +40,9 @@ function Execute-Frame {
       [string]$p4,
       [string]$p5
    )
-   echo "$REDExecuting$NC $GREEN $global:STMT_NUM $NC"
-   echo "$BLUE" $p1 $p2 $p3 $p4 $p5 " "  "$NC"
+   echo "${RED}Executing $NC$GREEN$global:STMT_NUM$NC$BLUE $p1 $p2 $p3 $p4 $p5$NC"
    $global:STMT_NUM++
-   &  $p1 $p2 $p3 $p4 $p5 "--dbpath=$DBPATH"
+   &  "$p1" "$p2" "$p3" "$p4" "$p5" "--dbpath=$DBPATH" "--quiet"
    if ($LastExitCode -ne 0) {
       die "Command Failure"
    }
@@ -175,6 +180,7 @@ Execute-Frame $PROG match --from-root "one/ei"
 
 Execute-Frame $PROG tree
 
+echo 'Use [sed "s:(.\+)::g"] to strip the dates'
 
 exit 0
 

@@ -1,4 +1,5 @@
 v0.1.4 - ???
+1. Adds Windows support, including powershell test script.
 
 v0.1.3 - Mon 12 Jun 2023 16:35:42 SAST
 1. Adds some documentation.
