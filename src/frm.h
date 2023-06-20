@@ -22,6 +22,12 @@ typedef struct frm_t frm_t;
 typedef struct frm_node_t frm_node_t;
 
 
+#ifdef PLATFORM_Windows
+#define  FRM_DIR_SEPARATOR  "\\"
+#else
+#define  FRM_DIR_SEPARATOR  "/"
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif

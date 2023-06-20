@@ -913,7 +913,7 @@ char *frm_current (frm_t *frm)
       tmp = ds_str_dup ("");
    }
 
-   char *pattern = ds_str_cat (frm->dbpath, "/", NULL);
+   char *pattern = ds_str_cat (frm->dbpath, FRM_DIR_SEPARATOR, NULL);
    char *ret = ds_str_strsubst(tmp, pattern, "", NULL);
    free (pattern);
    if (!ret) {

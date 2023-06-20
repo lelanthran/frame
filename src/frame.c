@@ -232,6 +232,7 @@ static void print_helpmsg (void)
 "",
 "  --dbpath=<path>      Specify the location of the database path. Defaults to",
 "                       '$HOME/.framedb' unless overridden by this option.",
+"                       The Windows default is '$HOMEDRIVE\\$HOMEPATH\\.framedb'",
 "",
 "  --message=<string>   Provides the message for any command that requires a",
 "                       message (such as 'push', 'replace', etc). If this option",
@@ -469,7 +470,7 @@ int main (int argc, char **argv)
          ret = EXIT_FAILURE;
          goto cleanup;
       }
-      dbpath = ds_str_cat (home, "/.framedb", NULL);
+      dbpath = ds_str_cat (home, FRM_DIR_SEPARATOR, ".framedb", NULL);
 
       if (!dbpath) {
          fprintf (stderr, "OOM error copying $HOME\n");
