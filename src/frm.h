@@ -22,6 +22,12 @@ typedef struct frm_t frm_t;
 typedef struct frm_node_t frm_node_t;
 
 
+#ifdef PLATFORM_Windows
+#define  FRM_DIR_SEPARATOR  "\\"
+#else
+#define  FRM_DIR_SEPARATOR  "/"
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -33,11 +39,12 @@ extern "C" {
    void frm_strarray_free (char **array);
 
    /* A few utility functions: simple ways to read and write entire
-    * files.
+    * files, get the correct home directory regardless of platform.
     */
    char *frm_readfile (const char *fname);
    bool frm_vwritefile (const char *fname, const char *data, va_list ap);
    bool frm_writefile (const char *fname, const char *data, ...);
+   const char *frm_homepath (void);
 
    /* Create a new framedb, initialise an existing one and close the
     * handle to the framedb.

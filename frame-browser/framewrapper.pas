@@ -53,6 +53,7 @@ var frame_var: frm_t;
     function frm_readfile(fname: PAnsiChar): PAnsiChar; cdecl; external 'frame';
     function frm_vwritefile(fname: PAnsiChar; data: PAnsiChar; ap: Pointer): LongBool; cdecl; external 'frame';
     function frm_writefile(fname: PAnsiChar; data: PAnsiChar; args: array of const): LongBool; cdecl; varargs; external 'frame';
+    function frm_homepath: PAnsiChar; cdecl; external 'frame';
 
     function frm_node_create(frm: frm_t): frm_node_t; cdecl; external 'frame';
     procedure frm_node_free(rootnode: frm_node_t); cdecl; external 'frame';

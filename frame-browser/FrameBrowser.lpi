@@ -75,9 +75,6 @@
       </Debugging>
       <Options>
         <LinkerOptions Value="lasan"/>
-        <Win32>
-          <GraphicApplication Value="True"/>
-        </Win32>
       </Options>
     </Linking>
   </CompilerOptions>

@@ -54,6 +54,51 @@ struct frm_t {
 
 static const char *lockfile = "framedb.lock";
 
+
+
+/* ********************************************************** */
+/* ********************************************************** */
+/* ********************************************************** */
+
+static bool wrapper_isdir (const struct dirent *de)
+{
+#ifdef PLATFORM_Windows
+
+   struct stat sb;
+   if ((stat (de->d_name, &sb)) != 0) {
+      FRM_ERROR ("Error: Failed to stat [%s]: %m\n", de->d_name);
+      return false;
+   }
+   return S_ISDIR(sb.st_mode);
+
+#else
+
+   return de->d_type == DT_DIR;
+
+#endif
+}
+
+static int wrapper_mkdir (const char *name)
+{
+   int result = -1;
+#ifdef PLATFORM_Windows
+
+   result = mkdir (name);
+
+#else
+
+   result = mkdir (name, 0777);
+
+#endif
+
+   if (result!=0) {
+      FRM_ERROR ("Error: failed to create directory [%s]: %m\n", name);
+      return -1;
+   }
+   return 0;
+}
+
+
 /* ********************************************************** */
 /* ********************************************************** */
 /* ********************************************************** */
@@ -361,9 +406,24 @@ cleanup:
    return !error;
 }
 
+static bool isslash (int c)
+{
+   return c=='/' || c=='\\';
+}
+
+static char *strrslash (const char *s)
+{
+   char *ret = strrchr (s, '/');
+   if (ret)
+      return ret;
+
+   return strrchr (s, '\\');
+}
+
+
 static bool removedir (const char *target)
 {
-   if (!target || !target[0] || target[0]=='/' || target[0] == '.') {
+   if (!target || !target[0] || isslash(target[0]) || target[0] == '.') {
       FRM_ERROR ("Error: invalid directory removal name [%s]\n", target);
       errno = EINVAL;
       return false;
@@ -384,7 +444,7 @@ static bool removedir (const char *target)
    while ((de = readdir (dirp))) {
       if (de->d_name[0] == '.')
          continue;
-      if (de->d_type == DT_DIR) {
+      if (wrapper_isdir (de)) {
          removedir (de->d_name);
       } else {
          if ((unlink (de->d_name)) != 0) {
@@ -502,8 +562,7 @@ static bool internal_frame_create (const char *path,
       return false;
    }
 
-   static const mode_t mode = 0777;
-   if ((mkdir (name, mode))!=0) {
+   if ((wrapper_mkdir (name))!=0) {
       FRM_ERROR ("Failed to create directory [%s/%s]: %m\n", path, name);
       popdir (&pwd);
       return false;
@@ -578,7 +637,7 @@ static frm_t *frm_alloc (const char *dbpath, const char *olddir)
    }
 
    size_t dbpath_len = strlen (dbpath);
-   if (ret->dbpath[dbpath_len-1] == '/')
+   if (isslash (ret->dbpath[dbpath_len-1]))
       ret->dbpath[dbpath_len-1] = 0;
 
    return ret;
@@ -618,16 +677,16 @@ char *frm_readfile (const char *name)
       return NULL;
    }
 
-   char *ret = malloc (len + 1);
+   char *ret = malloc (len + 2);
    if (!ret) {
       FRM_ERROR ("OOM error allocating file contents [%s]\n", name);
       fclose (inf);
       return NULL;
    }
 
-   size_t nbytes = fread (ret, 1, len, inf);
-   if (nbytes != (size_t)len) {
-      FRM_ERROR ("Read {%zu of %li] bytes in [%s]: %m\n", nbytes, len, name);
+   size_t nbytes = fread (ret, 1, len+1, inf);
+   if (!feof (inf) || ferror (inf)) {
+      FRM_ERROR ("Read [%zu of %li] bytes in [%s]: %m\n", nbytes, len, name);
       fclose (inf);
       free (ret);
       return NULL;
@@ -640,7 +699,7 @@ char *frm_readfile (const char *name)
 
 bool frm_vwritefile (const char *name, const char *data, va_list ap)
 {
-   FILE *outf = fopen (name, "w");
+   FILE *outf = fopen (name, "wt");
    if (!outf) {
       FRM_ERROR ("Failed to open [%s] for writing: %m\n", name);
       return false;
@@ -665,10 +724,48 @@ bool frm_writefile (const char *fname, const char *data, ...)
    return ret;
 }
 
+const char *frm_homepath (void)
+{
+   static bool set = false;
+
+   if (set) {
+      return getenv ("HOME");
+   }
+
+
+#ifdef PLATFORM_Windows
+   const char *homedrive = getenv ("HOMEDRIVE");
+   const char *homepath = getenv ("HOMEPATH");
+   char *winhome = NULL;
+   if ((ds_str_printf (&winhome, "HOME=%s%s", homedrive, homepath)) == 0) {
+      FRM_ERROR ("OOM error allocating environment variable [%s=%s]\n",
+            homedrive, homepath);
+      return NULL;
+   }
+
+   if (!winhome) {
+      FRM_ERROR ("Failed to set $HOME variable: [%s][%s][%s]\n",
+            homedrive, homepath, winhome);
+      free (winhome);
+      return NULL;
+   }
+
+   if ((putenv (winhome)) != 0) {
+      FRM_ERROR ("Warning: failed to set environment [%s]: %m\n", winhome);
+   }
+
+   free (winhome);
+   homedrive = NULL;
+   homepath = NULL;
+   winhome = NULL;
+#endif
+
+   return getenv ("HOME");
+}
+
 frm_t *frm_create (const char *dbpath)
 {
-   static const mode_t mode = 0777;
-   if ((mkdir (dbpath, mode))!=0) {
+   if ((wrapper_mkdir (dbpath))!=0) {
       FRM_ERROR ("Failed to create directory [%s]: %m\n", dbpath);
       return NULL;
    }
@@ -713,7 +810,8 @@ frm_t *frm_init (const char *dbpath)
 
    int fd = -1;
    if ((fd = open (lockfile, O_CREAT|O_EXCL, S_IRWXU))<0) {
-      FRM_ERROR ("Error: Failed to create lockfile: %m\n");
+      FRM_ERROR ("Error: Failed to create lockfile [%s][%s]: %m\n",
+               dbpath, lockfile);
       goto cleanup;
    }
 
@@ -722,7 +820,7 @@ frm_t *frm_init (const char *dbpath)
    frame = NULL;
    if (!history) {
       FRM_ERROR ("Warning: no history found, defaulting to root frame\n");
-      frame = "root";
+      frame = ds_str_dup ("root");
    } else {
       char *eol = strchr (history, '\n');
       if (!eol) {
@@ -750,6 +848,10 @@ frm_t *frm_init (const char *dbpath)
    error = false;
 
 cleanup:
+   if ((close (fd)) != 0) {
+      FRM_ERROR ("Error: unable to close lockfile descriptor %i: %m\n", fd);
+   }
+
    free (pwd);
    free (history);
    free (frame);
@@ -771,11 +873,12 @@ void frm_close (frm_t *frm)
    popdir (&frm->olddir);
    if ((chdir (frm->dbpath))!=0) {
       ERR (frm, "Error: Failed to switch to dbpath [%s]: %m\n", frm->dbpath);
-      ERR (frm, "Warning: lockfile must be maually deleted [%s/%s]\n",
+      ERR (frm, "Warning: lockfile must be maually deleted [%s][%s]\n",
                frm->dbpath, lockfile);
    } else {
+      errno = 0;
       if ((remove (lockfile))!=0) {
-         ERR (frm, "Error: Failed to remove [%s/%s]\n", frm->dbpath, lockfile);
+         ERR (frm, "Error: Failed to remove [%s][%s]: %m\n", frm->dbpath, lockfile);
          ERR (frm, "Warning: lockfile must be maually deleted [%s/%s]\n",
                frm->dbpath, lockfile);
       }
@@ -810,7 +913,7 @@ char *frm_current (frm_t *frm)
       tmp = ds_str_dup ("");
    }
 
-   char *pattern = ds_str_cat (frm->dbpath, "/", NULL);
+   char *pattern = ds_str_cat (frm->dbpath, FRM_DIR_SEPARATOR, NULL);
    char *ret = ds_str_strsubst(tmp, pattern, "", NULL);
    free (pattern);
    if (!ret) {
@@ -950,7 +1053,7 @@ static bool internal_frm_push (frm_t *frm, const char *name, const char *message
       return false;
    }
 
-   if ((mkdir (name, 0777))!=0) {
+   if ((wrapper_mkdir (name))!=0) {
       ERR (frm, "Failed to create directory [%s]: %m\n", name);
       return false;
    }
@@ -1173,7 +1276,7 @@ bool frm_switch (frm_t *frm, const char *target)
       return false;
    }
 
-   char *suffixed = target[strlen(target)-1]=='/'
+   char *suffixed = isslash (target[strlen(target)-1])
       ? ds_str_dup (target)
       : ds_str_cat (target, "/", NULL);
    if (!suffixed) {
@@ -1223,7 +1326,7 @@ bool frm_switch_direct (frm_t *frm, const char *target)
       return false;
    }
 
-   char *suffixed = target[strlen(target)-1]=='/'
+   char *suffixed = isslash (target[strlen(target)-1])
       ? ds_str_dup (target)
       : ds_str_cat (target, "/", NULL);
    if (!suffixed) {
@@ -1380,7 +1483,7 @@ bool frm_rename (frm_t *frm, const char *newname)
       return false;
    }
 
-   const char *oldname = strrchr (current_name, '/');
+   const char *oldname = strrslash (current_name);
    if (!oldname) {
       ERR(frm, "Error: Internal corruption (current node has no slash): [%s]\n",
                current_name);
@@ -1677,7 +1780,7 @@ static frm_node_t *node_open (const frm_node_t *parent, const char *dirname)
    while ((de = readdir (dirp))) {
       if (de->d_name[0] == '.')
          continue;
-      if (de->d_type == DT_DIR) {
+      if (wrapper_isdir (de)) {
          frm_node_t *child = node_open (ret, de->d_name);
          if (!child) {
             FRM_ERROR ("Error: failed to read child [%s] of [%s]: %m\n",
@@ -1748,12 +1851,12 @@ char *frm_node_fpath (const frm_node_t *node)
    }
 
    char *ret = ds_str_cat (parent_fpath, "/", node->name, NULL);
-   free (parent_fpath);
 
    if (!ret) {
       FRM_ERROR ("OOM error joining name [%s] to parent fpath [%s]\n",
                node->name, parent_fpath);
    }
+   free (parent_fpath);
 
    return ret;
 }

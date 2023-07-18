@@ -232,6 +232,7 @@ static void print_helpmsg (void)
 "",
 "  --dbpath=<path>      Specify the location of the database path. Defaults to",
 "                       '$HOME/.framedb' unless overridden by this option.",
+"                       The Windows default is '$HOMEDRIVE\\$HOMEPATH\\.framedb'",
 "",
 "  --message=<string>   Provides the message for any command that requires a",
 "                       message (such as 'push', 'replace', etc). If this option",
@@ -371,6 +372,13 @@ static void current (frm_t *frm)
    free (mtime);
 }
 
+#ifdef PLATFORM_Windows
+static void ctime_r (time_t *date, char *dst)
+{
+   strcpy (dst, ctime (date));
+}
+#endif
+
 int print_tree (const frm_node_t *node, size_t level)
 {
 #define INDENT(x) for (size_t i=0; i<x; i++) {\
@@ -455,14 +463,15 @@ int main (int argc, char **argv)
    }
 
    if (!dbpath) {
-      // TODO: Windows compatibility
-      const char *home = getenv("HOME");
+
+      const char *home = frm_homepath ();
       if (!home || !home[0]) {
          fprintf (stderr, "No --dbpath specified and $HOME is not set\n");
          ret = EXIT_FAILURE;
          goto cleanup;
       }
-      dbpath = ds_str_cat (home, "/.framedb", NULL);
+      dbpath = ds_str_cat (home, FRM_DIR_SEPARATOR, ".framedb", NULL);
+
       if (!dbpath) {
          fprintf (stderr, "OOM error copying $HOME\n");
          ret = EXIT_FAILURE;
@@ -474,7 +483,7 @@ int main (int argc, char **argv)
    // enough to do it.
    if ((strcmp (command, "create"))==0) {
       if ((frm = frm_create (dbpath))) {
-         printf ("Created framedb at [%s]\n", dbpath);
+         fprintf (stderr, "Created framedb at [%s]\n", dbpath);
          ret = EXIT_SUCCESS;
       } else {
          fprintf (stderr, "Failed to create framedb at [%s]: %m\n", dbpath);

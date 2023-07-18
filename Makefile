@@ -68,7 +68,7 @@ endif
 	PLATFORM:=Windows
 	EXE_EXT:=.exe
 	LIB_EXT:=.dll
-	PLATFORM_LDFLAGS:=--L$(HOME)/lib lmingw32 -lws2_32 -lmsvcrt -lgcc
+	PLATFORM_LDFLAGS:=-L$(HOME)/lib -lws2_32 -lmsvcrt -lgcc
 	PLATFORM_CFLAGS:= -D__USE_MINGW_ANSI_STDIO
 	ECHO:=echo -e
 endif
@@ -259,9 +259,9 @@ debug:	CXXFLAGS+= -ggdb -DDEBUG
 debug:	$(SWIG_WRAPPERS)
 debug:	all
 
-release:	CFLAGS+= -O3 -fsanitize=address -fsanitize=undefined -fsanitize=leak
-release:	CXXFLAGS+= -O3 -fsanitize=address -fsanitize=undefined -fsanitize=leak
-release:	LDFLAGS+= -fsanitize=address -fsanitize=undefined -fsanitize=leak
+release:	CFLAGS+= -O3
+release:	CXXFLAGS+= -O3
+release:	LDFLAGS+=
 
 debug:	$(SWIG_WRAPPERS)
 release:	all
@@ -293,7 +293,7 @@ real-help:
 
 
 real-all:	$(OUTDIRS) $(DYNLIB) $(STCLIB) $(BINPROGS)
-	@unlink ./recent &> /dev/null
+	@unlink ./recent || rm -rf ./recent
 	@ln -s $(OUTDIR) ./recent
 
 all:	$(SWIG_WRAPPERS) real-all
@@ -321,56 +321,58 @@ all:	$(SWIG_WRAPPERS) real-all
 
 
 real-show:
-	@$(ECHO) "$(GREEN)PROJNAME$(NONE)     $(PROJNAME)"
-	@$(ECHO) "$(GREEN)VERSION$(NONE)      $(VERSION)"
-	@$(ECHO) "$(GREEN)MAINTAINER$(NONE)   $(MAINTAINER)"
-	@$(ECHO) "$(GREEN)HOMEPAGE$(NONE)     $(HOMEPAGE)"
-	@$(ECHO) "$(GREEN)DESCRIPTION$(NONE)  $$DESCRIPTION"
-	@$(ECHO) "$(GREEN)TARGET-ARCH$(NONE)  $(T_ARCH)"
-	@$(ECHO) "$(GREEN)HOME$(NONE)         $(HOME)"
-	@$(ECHO) "$(GREEN)SHELL$(NONE)        $(SHELL)"
-	@$(ECHO) "$(GREEN)EXE_EXT$(NONE)      $(EXE_EXT)"
-	@$(ECHO) "$(GREEN)LIB_EXT$(NONE)      $(LIB_EXT)"
-	@$(ECHO) "$(GREEN)DYNLIB$(NONE)       $(DYNLIB)"
-	@$(ECHO) "$(GREEN)STCLIB$(NONE)       $(STCLIB)"
-	@$(ECHO) "$(GREEN)CC$(NONE)           $(CC)"
-	@$(ECHO) "$(GREEN)CXX$(NONE)          $(CXX)"
-	@$(ECHO) "$(GREEN)CFLAGS$(NONE)       $(CFLAGS)"
-	@$(ECHO) "$(GREEN)CXXFLAGS$(NONE)     $(CXXFLAGS)"
-	@$(ECHO) "$(GREEN)LD_LIB$(NONE)       $(LD_LIB)"
-	@$(ECHO) "$(GREEN)LD_PROG$(NONE)      $(LD_PROG)"
-	@$(ECHO) "$(GREEN)LDFLAGS$(NONE)      $(LDFLAGS)"
-	@$(ECHO) "$(GREEN)AR$(NONE)           $(AR)"
-	@$(ECHO) "$(GREEN)ARFLAGS$(NONE)      $(ARFLAGS)"
+	@$(ECHO) "$(GREEN)PROJNAME$(NONE)         $(PROJNAME)"
+	@$(ECHO) "$(GREEN)VERSION$(NONE)          $(VERSION)"
+	@$(ECHO) "$(GREEN)MAINTAINER$(NONE)       $(MAINTAINER)"
+	@$(ECHO) "$(GREEN)HOMEPAGE$(NONE)         $(HOMEPAGE)"
+	@$(ECHO) "$(GREEN)INSTALL_PREFIX$(NONE)   $(INSTALL_PREFIX)"
+	@$(ECHO) "$(GREEN)DESCRIPTION$(NONE)      $$DESCRIPTION"
+	@$(ECHO) "$(GREEN)TARGET-ARCH$(NONE)      $(T_ARCH)"
+	@$(ECHO) "$(GREEN)HOME$(NONE)             $(HOME)"
+	@$(ECHO) "$(GREEN)SHELL$(NONE)            $(SHELL)"
+	@$(ECHO) "$(GREEN)EXE_EXT$(NONE)          $(EXE_EXT)"
+	@$(ECHO) "$(GREEN)LIB_EXT$(NONE)          $(LIB_EXT)"
+	@$(ECHO) "$(GREEN)DYNLIB$(NONE)           $(DYNLIB)"
+	@$(ECHO) "$(GREEN)STCLIB$(NONE)           $(STCLIB)"
+	@$(ECHO) "$(GREEN)CC$(NONE)               $(CC)"
+	@$(ECHO) "$(GREEN)CXX$(NONE)              $(CXX)"
+	@$(ECHO) "$(GREEN)CFLAGS$(NONE)           $(CFLAGS)"
+	@$(ECHO) "$(GREEN)CXXFLAGS$(NONE)         $(CXXFLAGS)"
+	@$(ECHO) "$(GREEN)LD_LIB$(NONE)           $(LD_LIB)"
+	@$(ECHO) "$(GREEN)LD_PROG$(NONE)          $(LD_PROG)"
+	@$(ECHO) "$(GREEN)LDFLAGS$(NONE)          $(LDFLAGS)"
+	@$(ECHO) "$(GREEN)LIBDIRS$(NONE)          $(LIBDIRS)"
+	@$(ECHO) "$(GREEN)AR$(NONE)               $(AR)"
+	@$(ECHO) "$(GREEN)ARFLAGS$(NONE)          $(ARFLAGS)"
 	@$(ECHO) "$(GREEN)"
-	@$(ECHO) "$(GREEN)PLATFORM$(NONE)     $(PLATFORM)"
-	@$(ECHO) "$(GREEN)TARGET$(NONE)       $(TARGET)"
-	@$(ECHO) "$(GREEN)OUTBIN$(NONE)       $(OUTBIN)"
-	@$(ECHO) "$(GREEN)OUTLIB$(NONE)       $(OUTLIB)"
-	@$(ECHO) "$(GREEN)OUTOBS$(NONE)       $(OUTOBS)"
-	@$(ECHO) "$(GREEN)SWIG_OBJECTS$(NONE) $(SWIG_OBJECTS)"
+	@$(ECHO) "$(GREEN)PLATFORM$(NONE)         $(PLATFORM)"
+	@$(ECHO) "$(GREEN)TARGET$(NONE)           $(TARGET)"
+	@$(ECHO) "$(GREEN)OUTBIN$(NONE)           $(OUTBIN)"
+	@$(ECHO) "$(GREEN)OUTLIB$(NONE)           $(OUTLIB)"
+	@$(ECHO) "$(GREEN)OUTOBS$(NONE)           $(OUTOBS)"
+	@$(ECHO) "$(GREEN)SWIG_OBJECTS$(NONE)     $(SWIG_OBJECTS)"
 	@$(ECHO) "$(GREEN)OUTDIRS$(NONE)      "
-	@for X in $(OUTDIRS); do $(ECHO) "              $$X"; done
+	@for X in $(OUTDIRS); do $(ECHO) "                 $$X"; done
 	@$(ECHO) "$(GREEN)DEPS$(NONE)      "
-	@for X in $(DEPS); do $(ECHO) "              $$X"; done
+	@for X in $(DEPS); do $(ECHO) "                 $$X"; done
 	@$(ECHO) "$(GREEN)HEADERS$(NONE)      "
-	@for X in $(HEADERS); do $(ECHO) "              $$X"; done
+	@for X in $(HEADERS); do $(ECHO) "                 $$X"; done
 	@$(ECHO) "$(GREEN)COBS$(NONE)          "
-	@for X in $(COBS); do $(ECHO) "              $$X"; done
+	@for X in $(COBS); do $(ECHO) "                 $$X"; done
 	@$(ECHO) "$(GREEN)CPPOBS$(NONE)          "
-	@for X in $(CPPOBS); do $(ECHO) "              $$X"; done
+	@for X in $(CPPOBS); do $(ECHO) "                 $$X"; done
 	@$(ECHO) "$(GREEN)OBS$(NONE)          "
-	@for X in $(OBS); do $(ECHO) "              $$X"; done
+	@for X in $(OBS); do $(ECHO) "                 $$X"; done
 	@$(ECHO) "$(GREEN)BIN_COBS$(NONE)       "
-	@for X in $(BIN_COBS); do $(ECHO) "              $$X"; done
+	@for X in $(BIN_COBS); do $(ECHO) "                 $$X"; done
 	@$(ECHO) "$(GREEN)BIN_CPPOBS$(NONE)       "
-	@for X in $(BIN_CPPOBS); do $(ECHO) "              $$X"; done
+	@for X in $(BIN_CPPOBS); do $(ECHO) "                 $$X"; done
 	@$(ECHO) "$(GREEN)BINOBS$(NONE)       "
-	@for X in $(BINOBS); do $(ECHO) "              $$X"; done
+	@for X in $(BINOBS); do $(ECHO) "                 $$X"; done
 	@$(ECHO) "$(GREEN)BINPROGS$(NONE)     "
-	@for X in $(BINPROGS); do $(ECHO) "              $$X"; done
+	@for X in $(BINPROGS); do $(ECHO) "                 $$X"; done
 	@$(ECHO) "$(GREEN)SOURCES$(NONE)     "
-	@for X in $(SOURCES); do $(ECHO) "              $$X"; done
+	@for X in $(SOURCES); do $(ECHO) "                 $$X"; done
 	@$(ECHO) "$(GREEN)PWD$(NONE)          $(PWD)"
 
 show:	real-show
@@ -472,6 +474,7 @@ clean-debug:
 	@rm -rfv debug wrappers
 
 clean-all:	clean-release clean-debug
+	@unlink ./recent || rm -rf ./recent
 	@rm -rfv include
 	@rm -rfv `find . | grep "\.d$$"`
 
