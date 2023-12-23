@@ -1,14 +1,14 @@
 object frmMain: TfrmMain
-  Left = 472
+  Left = 285
   Height = 486
-  Top = 234
-  Width = 1278
+  Top = 354
+  Width = 1466
   Caption = 'Frame Browser'
   ClientHeight = 486
-  ClientWidth = 1278
+  ClientWidth = 1466
   OnActivate = FormActivate
   OnCreate = FormCreate
-  LCLVersion = '2.2.6.0'
+  LCLVersion = '3.0.0.3'
   object Panel1: TPanel
     AnchorSideLeft.Control = Owner
     AnchorSideTop.Control = Owner
@@ -17,10 +17,10 @@ object frmMain: TfrmMain
     Left = 0
     Height = 32
     Top = 0
-    Width = 1278
+    Width = 1466
     Anchors = [akTop, akLeft, akRight]
     ClientHeight = 32
-    ClientWidth = 1278
+    ClientWidth = 1466
     TabOrder = 0
     object bbtnQuit: TBitBtn
       AnchorSideLeft.Control = Panel1
@@ -65,13 +65,13 @@ object frmMain: TfrmMain
     Left = 0
     Height = 454
     Top = 32
-    Width = 1278
-    HorzScrollBar.Page = 946
+    Width = 1466
+    HorzScrollBar.Page = 948
     HorzScrollBar.Tracking = True
     VertScrollBar.Page = 195
     Anchors = [akTop, akLeft, akRight, akBottom]
     ClientHeight = 452
-    ClientWidth = 1276
+    ClientWidth = 1464
     TabOrder = 1
     object PairSplitter1: TPairSplitter
       AnchorSideLeft.Control = Panel2
@@ -83,7 +83,7 @@ object frmMain: TfrmMain
       Left = 0
       Height = 452
       Top = 0
-      Width = 1276
+      Width = 1464
       Anchors = [akTop, akLeft, akRight, akBottom]
       Position = 408
       object PairSplitterSide1: TPairSplitterSide
@@ -118,8 +118,8 @@ object frmMain: TfrmMain
           Top = 17
           Width = 408
           Anchors = [akTop, akLeft, akRight]
-          OnChange = edtSearchTermChange
           TabOrder = 1
+          OnChange = edtSearchTermChange
         end
         object lvHistory: TListView
           AnchorSideLeft.Control = PairSplitterSide1
@@ -142,11 +142,11 @@ object frmMain: TfrmMain
       end
       object PairSplitterSide2: TPairSplitterSide
         Cursor = crArrow
-        Left = 412
+        Left = 413
         Height = 452
         Top = 0
-        Width = 864
-        ClientWidth = 864
+        Width = 1051
+        ClientWidth = 1051
         ClientHeight = 452
         object PairSplitter2: TPairSplitter
           AnchorSideLeft.Control = PairSplitterSide2
@@ -158,7 +158,7 @@ object frmMain: TfrmMain
           Left = 0
           Height = 452
           Top = 0
-          Width = 864
+          Width = 1051
           Anchors = [akTop, akLeft, akRight, akBottom]
           Position = 336
           object PairSplitterSide3: TPairSplitterSide
@@ -225,11 +225,11 @@ object frmMain: TfrmMain
           end
           object PairSplitterSide4: TPairSplitterSide
             Cursor = crArrow
-            Left = 340
+            Left = 341
             Height = 452
             Top = 0
-            Width = 524
-            ClientWidth = 524
+            Width = 710
+            ClientWidth = 710
             ClientHeight = 452
             object StaticText3: TStaticText
               AnchorSideLeft.Control = PairSplitterSide4
@@ -254,24 +254,24 @@ object frmMain: TfrmMain
               Left = 0
               Height = 435
               Top = 17
-              Width = 524
+              Width = 710
               Anchors = [akTop, akLeft, akRight, akBottom]
               Font.Height = -13
               Font.Name = 'Monospace'
               Lines.Strings = (
                 ''
               )
-              OnChange = memoNotesChange
-              OnEditingDone = memoNotesEditingDone
               ParentFont = False
               ScrollBars = ssBoth
               TabOrder = 1
+              OnChange = memoNotesChange
+              OnEditingDone = memoNotesEditingDone
             end
             object stxtStatusChanged: TStaticText
               AnchorSideTop.Control = PairSplitterSide4
               AnchorSideRight.Control = PairSplitterSide4
               AnchorSideRight.Side = asrBottom
-              Left = 330
+              Left = 516
               Height = 17
               Top = 0
               Width = 194
@@ -292,7 +292,7 @@ object frmMain: TfrmMain
     Left = 0
     Height = 18
     Top = 468
-    Width = 1278
+    Width = 1466
     Panels = <>
     SimpleText = 'help'
   end
