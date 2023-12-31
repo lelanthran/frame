@@ -25,6 +25,12 @@
     </RunParams>
     <RequiredPackages>
       <Item>
+        <PackageName Value="SynEditDsgn"/>
+      </Item>
+      <Item>
+        <PackageName Value="SynEdit"/>
+      </Item>
+      <Item>
         <PackageName Value="LazControls"/>
       </Item>
       <Item>

@@ -5,6 +5,7 @@ unit FrameWrapper;
 interface
 uses
   Classes, SysUtils, Ctypes, ComCtrls, Types, StrUtils,
+  SynEdit,
   StdCtrls;
 
 type
@@ -72,7 +73,7 @@ function frm_node_find(node: frm_node_t; fpath: PChar): frm_node_t; cdecl; exter
 procedure frame_history_populate(searchTerm: String; tlView: TListView);
 procedure frame_frames_populate(tv: TTreeView);
 procedure frame_current_populate(edt: TEdit);
-procedure frame_notes_populate(memo: TMemo);
+procedure frame_notes_populate(memo: TSynEdit);
 procedure frame_set_frames_selected(tv: TTreeView; edt: TEdit);
 
 implementation
@@ -141,10 +142,10 @@ begin
   edt.Caption := frm_current(frame_var);
 end;
 
-procedure frame_notes_populate(memo: TMemo);
+procedure frame_notes_populate(memo: TSynEdit);
 begin
   memo.Clear;
-  memo.Append(frm_payload());
+  memo.Text:=frm_payload();
 end;
 
 procedure frame_set_frames_selected(tv: TTreeView; edt: TEdit);

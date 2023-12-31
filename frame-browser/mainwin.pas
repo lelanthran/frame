@@ -6,9 +6,8 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Buttons,
-  StdCtrls, PairSplitter, Types, ComCtrls, TreeFilterEdit, CTypes, Cmem,
-  LCLType, Menus,
-  FrameWrapper;
+  StdCtrls, PairSplitter, Types, ComCtrls, TreeFilterEdit, SynEdit, CTypes,
+  Cmem, LCLType, Menus, FrameWrapper;
 
 type
 
@@ -19,7 +18,7 @@ type
     bbtnHelp: TBitBtn;
     edtSearchTerm: TEdit;
     lvHistory: TListView;
-    memoNotes: TMemo;
+    memoNotes: TSynEdit;
     MenuItem1: TMenuItem;
     MenuItem2: TMenuItem;
     MenuItem3: TMenuItem;
