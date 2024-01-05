@@ -1,5 +1,4 @@
 Executing 0: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet create
-Created framedb at [/tmp/frame/]
 Executing 1: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet status
 Current frame
    root
@@ -40,7 +39,7 @@ Frame history
 Executing 9: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet append --message=
 Message: 1
 
-root/one: Sat Jun 10 12:36:55 2023
+root/one: Fri Jan  5 10:35:02 2024
 Executing 10: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet status
 Current frame
    root/one
@@ -559,21 +558,21 @@ Executing 88: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet match --from-root 
    root/one/eight
 Executing 89: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet tree
 root 
+   six 
    eighty 
    eighteen 
-   five 
-   six 
-   eight 
-   seven 
    one 
       four 
-      FIVE 
-      two 
-      three 
       six 
-      eight 
-      ten 
       nine 
-      seven 
+      ten 
       one 
+      FIVE 
+      three 
+      eight 
+      two 
+      seven 
+   five 
+   eight 
+   seven 
 Use [sed "s:::g"] to strip the dates
