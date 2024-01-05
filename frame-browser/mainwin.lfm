@@ -7,6 +7,7 @@ object frmMain: TfrmMain
   ClientHeight = 486
   ClientWidth = 1466
   OnActivate = FormActivate
+  OnClose = FormClose
   OnCreate = FormCreate
   LCLVersion = '3.0.0.3'
   object Panel1: TPanel

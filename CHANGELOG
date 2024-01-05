@@ -1,6 +1,7 @@
 v0.1.5 - ???
 1. Replaces plain TextArea type control with line-numbered control.
 2. Deduplicates the history.
+3. Adds prompt to save before exit if there are unsaved changes.
 
 v0.1.4 - Tue 18 Jul 2023 09:49:03 SAST
 1, Adds Windows support, including powershell test script.

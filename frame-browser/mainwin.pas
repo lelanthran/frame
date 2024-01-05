@@ -43,6 +43,7 @@ type
     procedure bbtnQuitClick(Sender: TObject);
     procedure edtSearchTermChange(Sender: TObject);
     procedure FormActivate(Sender: TObject);
+    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure lvHistorySelectItem(Sender: TObject; Item: TListItem;
       Selected: Boolean);
@@ -132,6 +133,11 @@ begin
   frame_notes_populate(frmMain.memoNotes);
   frame_frames_populate(frmMain.tvFrames);
   frame_set_frames_selected(frmMain.tvFrames, frmMain.edtCurrentFrame);
+end;
+
+procedure TfrmMain.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+begin
+  memoNotesEditingDone(Sender);
 end;
 
 
