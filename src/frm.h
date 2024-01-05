@@ -39,9 +39,9 @@ extern "C" {
    void frm_strarray_free (char **array);
 
    /* A few utility functions: simple ways to read and write entire
-    * files, get the correct home directory regardless of platform.
+    * files, get the correct home directory regardless of platform, etc
     */
-   char *frm_readfile (const char *fname);
+   char *frm_readfile (const char *fname, size_t *dst_length);
    bool frm_vwritefile (const char *fname, const char *data, va_list ap);
    bool frm_writefile (const char *fname, const char *data, ...);
    const char *frm_homepath (void);

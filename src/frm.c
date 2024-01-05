@@ -178,7 +178,7 @@ static char *history_read (const char *dbpath, size_t count)
       return NULL;
    }
 
-   char *history = frm_readfile ("history");
+   char *history = frm_readfile ("history", NULL);
    if (!history) {
       // Ignoring empty history. History is allowed to be empty.
       history = ds_str_dup ("");
@@ -188,6 +188,8 @@ static char *history_read (const char *dbpath, size_t count)
          return NULL;
       }
    }
+
+   /* TODO: At this point must deduplicate the history before returning it */
 
    if (count == (size_t)-1) {
       popdir (&pwd);
@@ -298,7 +300,7 @@ static bool index_add (const char *dbpath, const char *entry)
       return false;
    }
 
-   char *index = frm_readfile ("index");
+   char *index = frm_readfile ("index", NULL);
    if (!index) {
       FRM_ERROR ("Error: failed to read index: %m\n");
       popdir (&olddir);
@@ -648,7 +650,7 @@ void frm_mem_free (void *ptr)
    free (ptr);
 }
 
-char *frm_readfile (const char *name)
+char *frm_readfile (const char *name, size_t *dst_length)
 {
    FILE *inf = fopen (name, "r");
    if (!inf) {
@@ -694,6 +696,10 @@ char *frm_readfile (const char *name)
 
    fclose (inf);
    ret[len] = 0;
+   if (dst_length) {
+      *dst_length = len;
+   }
+
    return ret;
 }
 
@@ -816,7 +822,7 @@ frm_t *frm_init (const char *dbpath)
    }
 
    // TODO: replace this with frm_history
-   history = frm_readfile ("history");
+   history = frm_readfile ("history", NULL);
    frame = NULL;
    if (!history) {
       FRM_ERROR ("Warning: no history found, defaulting to root frame\n");
@@ -927,7 +933,7 @@ char *frm_current (frm_t *frm)
 
 char *frm_payload (void)
 {
-   char *ret = frm_readfile ("payload");
+   char *ret = frm_readfile ("payload", NULL);
    if (!ret) {
       FRM_ERROR ("Failed to read [payload]: %m\n");
       return ds_str_dup ("");
@@ -942,7 +948,7 @@ struct info_t {
 
 static bool read_info (struct info_t *dst, const char *fname)
 {
-   char *data = frm_readfile(fname);
+   char *data = frm_readfile(fname, NULL);
    if (!data) {
       FRM_ERROR ("Failed to read [%s]: %m\n", fname);
       return false;
@@ -1130,7 +1136,7 @@ bool frm_payload_replace (const char *message)
 
 bool frm_payload_append (const char *message)
 {
-   char *current = frm_readfile ("payload");
+   char *current = frm_readfile ("payload", NULL);
    if (!current) {
       FRM_ERROR ("Warning: failed to read [payload]: %m\n");
    }

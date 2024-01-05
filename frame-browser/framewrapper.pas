@@ -51,7 +51,7 @@ var frame_var: frm_t;
     procedure frm_mem_free(ptr: Pointer); cdecl; external 'frame';
     procedure frm_strarray_free(array_: PPAnsiChar); cdecl; external 'frame';
 
-    function frm_readfile(fname: PAnsiChar): PAnsiChar; cdecl; external 'frame';
+    function frm_readfile(fname: PAnsiChar, dst_length: ^csize_t): PAnsiChar; cdecl; external 'frame';
     function frm_vwritefile(fname: PAnsiChar; data: PAnsiChar; ap: Pointer): LongBool; cdecl; external 'frame';
     function frm_writefile(fname: PAnsiChar; data: PAnsiChar; args: array of const): LongBool; cdecl; varargs; external 'frame';
     function frm_homepath: PAnsiChar; cdecl; external 'frame';

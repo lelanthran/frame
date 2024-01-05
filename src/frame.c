@@ -183,7 +183,7 @@ static char *run_editor (const char *default_file_contents)
          }
          return NULL;
       }
-      message = frm_readfile (fname);
+      message = frm_readfile (fname, NULL);
       if ((unlink (fname))!=0) {
          FRM_ERROR ("Error: Failed to remove tmpfile [%s]\n", fname);
       }
