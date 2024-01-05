@@ -136,7 +136,6 @@ object frmMain: TfrmMain
           Width = 408
           Anchors = [akTop, akLeft, akRight, akBottom]
           Columns = <>
-          Enabled = False
           TabOrder = 2
           OnSelectItem = lvHistorySelectItem
         end
