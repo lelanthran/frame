@@ -195,3 +195,4 @@ execute $PROG match --from-root "one/ei" || die failed match
 execute $PROG tree || die failed tree
 
 echo 'Use [sed "s:(.\+)::g"] to strip the dates'
+

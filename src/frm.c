@@ -170,6 +170,48 @@ static char *get_path (frm_t *frm) {
 }
 
 
+static char *deduplicate_lines (const char *src, size_t len)
+{
+   char *ret = calloc (1, len + 1);
+   if (!ret) {
+      FRM_ERROR ("OOM error allocating new history\n");
+      return NULL;
+   }
+
+   size_t index = 0;
+   char *saveptr = NULL;
+   char *token = NULL;
+   char *copy = ds_str_dup (src);
+   char *s = (char *)copy;
+   if (!s) {
+      FRM_ERROR ("OOM Error allocating temporary string\n");
+      return NULL;
+   }
+
+   char *tmp = NULL;
+   while ((token = strtok_r (s, "\n", &saveptr)) != NULL){
+      s = NULL;
+      size_t toklen = strlen (token);
+      free (tmp);
+      tmp = ds_str_cat (token, "\n", NULL);
+      if (!tmp) {
+         FRM_ERROR ("OOM error allocating search substring\n");
+         break;
+      }
+
+      if ((strstr (ret, tmp)))
+         continue;
+
+      memcpy (&ret[index], token, toklen);
+      index += toklen;
+      ret[index++] = '\n';
+   }
+   free (tmp);
+   free (copy);
+   ret[index] = 0;
+   return ret;
+}
+
 static char *history_read (const char *dbpath, size_t count)
 {
    char *pwd = pushdir (dbpath);
@@ -178,7 +220,8 @@ static char *history_read (const char *dbpath, size_t count)
       return NULL;
    }
 
-   char *history = frm_readfile ("history", NULL);
+   size_t history_len = 0;
+   char *history = frm_readfile ("history", &history_len);
    if (!history) {
       // Ignoring empty history. History is allowed to be empty.
       history = ds_str_dup ("");
@@ -190,6 +233,14 @@ static char *history_read (const char *dbpath, size_t count)
    }
 
    /* TODO: At this point must deduplicate the history before returning it */
+   char *fixed_history = deduplicate_lines (history, history_len);
+   free (history);
+   history = fixed_history;
+   if (!history) {
+      FRM_ERROR ("OOM error deduplicating history\n");
+      popdir (&pwd);
+      return NULL;
+   }
 
    if (count == (size_t)-1) {
       popdir (&pwd);
@@ -263,9 +314,14 @@ static char *history_find (const char *dbpath, const char *prefix)
       return NULL;
    }
 
-   char *sptr = NULL, *tok = NULL;
+   char *sptr = NULL, *tok = NULL, *s = history;
    tok = strtok_r (history, "\n", &sptr);
-   do {
+   while ((tok = strtok_r (s, "\n", &sptr))) {
+      s = NULL;
+      if (!tok || !prefix) {
+         FRM_ERROR("Unexpected NULL ptrs [%p:%p]\n", tok, prefix);
+      }
+
       char *found = strstr (tok, prefix);
       if (found == tok) {
          // If we can switch to it, it exists and we return it,
@@ -279,7 +335,7 @@ static char *history_find (const char *dbpath, const char *prefix)
             return ret;
          }
       }
-   } while ((tok = strtok_r (NULL, "\n", &sptr)));
+   }
 
    free (history);
    popdir (&pwd);

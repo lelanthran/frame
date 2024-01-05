@@ -39,7 +39,7 @@ Frame history
 Executing 9: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet append --message=
 Message: 1
 
-root/one: Fri Jan  5 10:35:02 2024
+root/one: Fri Jan  5 12:13:22 2024
 Executing 10: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet status
 Current frame
    root/one
@@ -71,7 +71,6 @@ Executing 14: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet history
 Frame history
 *      0: root
        1: root/one
-       2: root
 
 Executing 15: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet push two --message=Two: message two
 Created new frame [root/two]
@@ -87,7 +86,6 @@ Frame history
 *      0: root/two
        1: root
        2: root/one
-       3: root
 
 Executing 18: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet top
 Current frame
@@ -117,9 +115,6 @@ Frame history
 *      0: root/one
        1: root
        2: root/two
-       3: root
-       4: root/one
-       5: root
 
 Executing 22: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet back 1
 Current frame
@@ -140,12 +135,8 @@ Notes
 Executing 24: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet history
 Frame history
 *      0: root/one
-       1: root/one
-       2: root
-       3: root/two
-       4: root
-       5: root/one
-       6: root
+       1: root
+       2: root/two
 
 Executing 25: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet back 1
 Current frame
@@ -166,13 +157,8 @@ Notes
 Executing 27: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet history
 Frame history
 *      0: root/one
-       1: root/one
-       2: root/one
-       3: root
-       4: root/two
-       5: root
-       6: root/one
-       7: root
+       1: root
+       2: root/two
 
 Executing 28: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet push three --message=three: three
 Created new frame [root/one/three]
@@ -187,13 +173,8 @@ Executing 30: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet history
 Frame history
 *      0: root/one/three
        1: root/one
-       2: root/one
-       3: root/one
-       4: root
-       5: root/two
-       6: root
-       7: root/one
-       8: root
+       2: root
+       3: root/two
 
 Executing 31: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet pop
 Current frame
@@ -215,14 +196,8 @@ Executing 33: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet history
 Frame history
 *      0: root/one
        1: root/one/three
-       2: root/one
-       3: root/one
-       4: root/one
-       5: root
-       6: root/two
-       7: root
-       8: root/one
-       9: root
+       2: root
+       3: root/two
 
 Executing 34: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet push four --message=four: four
 Created new frame [root/one/four]
@@ -238,13 +213,8 @@ Frame history
 *      0: root/one/four
        1: root/one
        2: root/one/three
-       3: root/one
-       4: root/one
-       5: root/one
-       6: root
-       7: root/two
-       8: root
-       9: root/one
+       3: root
+       4: root/two
 
 Executing 37: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet delete root/two
 Current frame
@@ -265,13 +235,8 @@ Frame history
 *      0: root/one/four
        1: root/one
        2: root/one/three
-       3: root/one
-       4: root/one
-       5: root/one
-       6: root
-       7: root/two
-       8: root
-       9: root/one
+       3: root
+       4: root/two
 
 Executing 40: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet top
 Current frame
@@ -293,12 +258,7 @@ Frame history
        1: root/one/four
        2: root/one
        3: root/one/three
-       4: root/one
-       5: root/one
-       6: root/one
-       7: root
-       8: root/two
-       9: root
+       4: root/two
 
 Executing 43: ./recent/bin/x86_64-linux-gnu/frame.elf --quiet push five --message=five: five
 Created new frame [root/five]
